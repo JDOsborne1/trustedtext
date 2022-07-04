@@ -1,29 +1,30 @@
 package main
-type Ttc_interface interface {
-	Genesis(_author string, _tags []string) Ttc_interface
-	Amend(_existing_ttc Ttc_interface, _author string, _body string) Ttc_interface
+
+type Trustedtext_chain_i interface {
+	Genesis(_author string, _tags []string) Trustedtext_chain_i
+	Amend(_existing_ttc Trustedtext_chain_i, _author string, _body string) Trustedtext_chain_i
 }
 
-type ttc_struct struct {
+type trustedtext_chain_s struct {
 	original_author string
-	tt_chain []tt_struct
+	tt_chain        []trustedtext_s
 }
 
-func Genesis(_author string, _tags []string) ttc_struct {
+func Genesis(_author string, _tags []string) trustedtext_chain_s {
 	first_element := Instantiate(
-			_author,
-			_tags,
-			"This is the origin message of a trusted text chain",
-		)
-	
-	new_chain :=  ttc_struct{
+		_author,
+		_tags,
+		"This is the origin message of a trusted text chain",
+	)
+
+	new_chain := trustedtext_chain_s{
 		original_author: _author,
-		tt_chain: []tt_struct{first_element},
+		tt_chain:        []trustedtext_s{first_element},
 	}
 	return new_chain
 }
 
-func Amend(_existing_ttc ttc_struct, _author string, _body string) ttc_struct {
+func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trustedtext_chain_s {
 	new_element := Instantiate(
 		_author,
 		_existing_ttc.tt_chain[0].tags,
