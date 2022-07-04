@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 type Ttc_interface interface {
-	Genesis(_author string, _tags []string) ttc_interface
-	Amend(_existing_ttc ttc_interface, _author string, _body string) ttc_interface
+	Genesis(_author string, _tags []string) Ttc_interface
+	Amend(_existing_ttc Ttc_interface, _author string, _body string) Ttc_interface
 }
 
 type ttc_struct struct {
