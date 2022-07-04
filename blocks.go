@@ -21,7 +21,3 @@ func sign_tt(_existing_trustedtext trustedtext_s) trustedtext_s {
 func return_hash(_trusted_text_element trustedtext_s) string {
 	return "testhash"
 }
-
-func Edit(_existing_element trustedtext_s, _new_author string, _new_body string) trustedtext_s {
-	return trustedtext_s{author: _new_author, tags: _existing_element.tags, body: _new_body}
-}
