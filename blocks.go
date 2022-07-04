@@ -4,6 +4,7 @@ type trustedtext_s struct {
 	author string
 	tags   []string
 	body   string
+	previous_hash string
 	hash   string
 }
 

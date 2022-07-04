@@ -3,6 +3,7 @@ package main
 type Trustedtext_chain_i interface {
 	Genesis(_author string, _tags []string) Trustedtext_chain_i
 	Amend(_existing_ttc Trustedtext_chain_i, _author string, _body string) Trustedtext_chain_i
+	Most_recent_hash(_existing_ttc Trustedtext_chain_i) string
 }
 
 type trustedtext_chain_s struct {
@@ -30,6 +31,15 @@ func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trus
 		_existing_ttc.tt_chain[0].tags,
 		_body,
 	)
+
+	new_element.previous_hash = Most_recent_hash(_existing_ttc)
+
 	_existing_ttc.tt_chain =  append(_existing_ttc.tt_chain, new_element)
 	return _existing_ttc
+}
+
+func Most_recent_hash(_existing_ttc trustedtext_chain_s) string {
+	chain_length := len(_existing_ttc.tt_chain)
+	last_element := _existing_ttc.tt_chain[chain_length-1]
+	return last_element.hash
 }
