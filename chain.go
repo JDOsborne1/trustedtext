@@ -30,7 +30,6 @@ func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trus
 		_existing_ttc.tt_chain[0].tags,
 		_body,
 	)
-	new_chain := append(_existing_ttc.tt_chain, new_element)
-	_existing_ttc.tt_chain = new_chain
+	_existing_ttc.tt_chain =  append(_existing_ttc.tt_chain, new_element)
 	return _existing_ttc
 }
