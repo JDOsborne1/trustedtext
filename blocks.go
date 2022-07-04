@@ -1,5 +1,9 @@
 package main
 
+import (
+	"crypto/sha1"
+)
+
 type trustedtext_s struct {
 	author string
 	tags   []string
@@ -19,6 +23,24 @@ func sign_tt(_existing_trustedtext trustedtext_s) trustedtext_s {
 	return _existing_trustedtext
 }
 
+func collapse_tags(_list_of_tags []string) string {
+	tag_list := ""
+	for _, tag := range _list_of_tags {
+		tag_list = tag_list + tag + ","
+	}
+	return tag_list
+}
+
 func return_hash(_trusted_text_element trustedtext_s) string {
-	return "testhash"
+	elements := _trusted_text_element.author +
+		_trusted_text_element.body +
+		_trusted_text_element.previous_hash +
+		collapse_tags(_trusted_text_element.tags)
+
+	hasher := sha1.New()
+
+	hasher.Write([]byte(elements))
+
+	bytestring_hash := hasher.Sum(nil)
+	return string(bytestring_hash)
 }
