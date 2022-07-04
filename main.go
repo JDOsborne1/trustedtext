@@ -24,4 +24,14 @@ func main() {
 	)
 	fmt.Println(test_ttc)
 
+	// test_tt := trustedtext_s{
+	// 	"Jimmy Neutron",
+	// 	[]string{"Science"},
+	// 	"Science is the best",
+	// 	"",
+	// 	"",
+	// }
+	// fmt.Println(test_tt)
+	// fmt.Printf("%x\n", sign_tt(test_tt).hash)
+
 }
