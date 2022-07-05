@@ -4,11 +4,13 @@ type Trustedtext_chain_i interface {
 	Genesis(_author string, _tags []string) Trustedtext_chain_i
 	Amend(_existing_ttc Trustedtext_chain_i, _author string, _body string) Trustedtext_chain_i
 	Most_recent_hash(_existing_ttc Trustedtext_chain_i) string
+	Head_hash(_existing_ttc Trustedtext_chain_i) string
 }
 
 type trustedtext_chain_s struct {
 	original_author string
 	tt_chain        []trustedtext_s
+	head_hash string
 }
 
 func Genesis(_author string, _tags []string) trustedtext_chain_s {
@@ -21,6 +23,7 @@ func Genesis(_author string, _tags []string) trustedtext_chain_s {
 	new_chain := trustedtext_chain_s{
 		original_author: _author,
 		tt_chain:        []trustedtext_s{first_element},
+		head_hash: 		 first_element.hash,
 	}
 	return new_chain
 }
@@ -42,4 +45,8 @@ func Most_recent_hash(_existing_ttc trustedtext_chain_s) string {
 	chain_length := len(_existing_ttc.tt_chain)
 	last_element := _existing_ttc.tt_chain[chain_length-1]
 	return last_element.hash
+}
+
+func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
+	return _existing_trustedtext.head_hash
 }
