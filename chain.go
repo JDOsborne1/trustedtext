@@ -1,5 +1,7 @@
 package main
 
+import "errors"
+
 type Trustedtext_chain_i interface {
 	Genesis(_author string, _tags []string) Trustedtext_chain_i
 	Amend(_existing_ttc Trustedtext_chain_i, _author string, _body string) Trustedtext_chain_i
@@ -21,35 +23,45 @@ type trustedtext_chain_s struct {
 // consider all the text bodies 'validated'. By defering the first real 
 // message to actually be the second message, we can ensure that all real
 // text data is held in blocks with both sides of the chain. 
-func Genesis(_author string, _tags []string) trustedtext_chain_s {
-	first_element,_ := Instantiate(
+func Genesis(_author string, _tags []string) (trustedtext_chain_s, error) {
+	first_element, err := Instantiate(
 		_author,
 		_tags,
 		"This is the origin message of a trusted text chain",
 	)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
 
 	new_chain := trustedtext_chain_s{
 		original_author: _author,
 		tt_chain:        []trustedtext_s{first_element},
 		head_hash: 		 first_element.hash,
 	}
-	return new_chain
+	return new_chain, nil
 }
 
 // Amend is the function called to increment a chain with a new tt block. This is 'stateless' 
 // such that it creates a new chain, which is a copy of the previous, but for the inclusion of 
 // a new block at the end. 
-func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trustedtext_chain_s {
-	new_element,_ := Instantiate(
+func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) (trustedtext_chain_s, error) {
+	if len(_existing_ttc.tt_chain) == 0 {
+		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
+	}
+
+	new_element, err := Instantiate(
 		_author,
 		_existing_ttc.tt_chain[0].tags,
 		_body,
 	)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
 
 	new_element.previous_hash = Most_recent_hash(_existing_ttc)
 
 	_existing_ttc.tt_chain =  append(_existing_ttc.tt_chain, new_element)
-	return _existing_ttc
+	return _existing_ttc, nil
 }
 
 // Most_recent_hash is the function called to find one of the core identifiers of a chain,
