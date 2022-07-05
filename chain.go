@@ -14,7 +14,7 @@ type trustedtext_chain_s struct {
 }
 
 func Genesis(_author string, _tags []string) trustedtext_chain_s {
-	first_element := Instantiate(
+	first_element,_ := Instantiate(
 		_author,
 		_tags,
 		"This is the origin message of a trusted text chain",
@@ -29,7 +29,7 @@ func Genesis(_author string, _tags []string) trustedtext_chain_s {
 }
 
 func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trustedtext_chain_s {
-	new_element := Instantiate(
+	new_element,_ := Instantiate(
 		_author,
 		_existing_ttc.tt_chain[0].tags,
 		_body,

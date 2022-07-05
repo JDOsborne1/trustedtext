@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha1"
+	"errors"
 )
 
 type trustedtext_s struct {
@@ -11,10 +12,18 @@ type trustedtext_s struct {
 	previous_hash string
 	hash   string
 }
-
-func Instantiate(_author string, _tags []string, _body string) trustedtext_s {
+// This function is called to generate a base instance of the trustedtext block, based
+// on its arguments, and then sign it. A block can be valid without tags, as it remains
+// globally unique to the original author, however it must have both an author and body.
+func Instantiate(_author string, _tags []string, _body string) (trustedtext_s, error) {
+	if len(_author) == 0 {
+		return trustedtext_s{}, errors.New("cannot have a missing author")
+	}
+	if len(_body) == 0 {
+		return trustedtext_s{}, errors.New("cannot have an empty body")
+	}
 	unsigned_tt := trustedtext_s{author: _author, tags: _tags, body: _body}
-	return sign_tt(unsigned_tt)
+	return sign_tt(unsigned_tt), nil
 }
 
 func sign_tt(_existing_trustedtext trustedtext_s) trustedtext_s {
