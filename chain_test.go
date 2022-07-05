@@ -82,7 +82,7 @@ func Test_amend_functionality(t *testing.T) {
 	}
 }
 
-func Test_head_hash_functionality(t *testing.T) {
+func Test_recent_hash_functionality(t *testing.T) {
 	lab_chain_1, _ := generate_standard_test_chain(false)
 	first_last_hash := Most_recent_hash(lab_chain_1)
 
@@ -95,3 +95,4 @@ func Test_head_hash_functionality(t *testing.T) {
 		t.Fail()
 	}
 }
+
