@@ -8,6 +8,7 @@ Content hosted using trusted text will be modifiable, But not secretly, and the 
 
 * It is possible for an author to claim a segment of trusted text, by signing it with an identity key (such as PGP). 
 * It is possible to identify a segment of trusted text using a set of keys, identified by the author at creation
+    - It is allowable to have a trusted text segment without any keys. This is considered as the 'profile' of the original author. It is suggested that outside amendments to is segment is ignored.
 * It is possible to easily include this text in a webpage
 * Multiple segments of text can refer to the same set of keys, but only one of them has the 'HEAD' flag
 * In its simplest state, only the authenticated original author can move the 'HEAD' flag
