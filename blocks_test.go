@@ -2,12 +2,20 @@ package main
 
 import "testing"
 
-func Test_Signed_instantiation(t *testing.T) {
-	lab_book_1, err := Instantiate("Dexter", []string{"Labs"}, "DeeDee Better not interfere with this one")
+func generate_standard_test_block() (trustedtext_s, error) {
+	return Instantiate("Dexter", []string{"Labs"}, "DeeDee Better not interfere with this one")
+}
+
+func Test_Basic_instantiation_works(t *testing.T) {
+	_, err := generate_standard_test_block()
 	if err != nil {
 		t.Log("Erroring on valid instantiation input")
 		t.Fail()
 	}
+}
+
+func Test_Signed_instantiation(t *testing.T) {
+	lab_book_1, _ := generate_standard_test_block()
 
 	if lab_book_1.hash == "" {
 		t.Log("Blocks should be instantiated with a hash")
@@ -17,6 +25,7 @@ func Test_Signed_instantiation(t *testing.T) {
 
 func Test_Instantiate_input_validation(t *testing.T) {
 	var err error
+
 	_, err = Instantiate("Dexter", []string{}, "DeeDee Better not interfere with this one")
 	if err != nil {
 		t.Log("Erroring on valid instantiation input")
@@ -28,9 +37,28 @@ func Test_Instantiate_input_validation(t *testing.T) {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()
 	}
+
 	_, err = Instantiate("", []string{}, "DeeDee Better not interfere with this one")
 	if err == nil {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()
 	}
+}
+
+func Test_Signing_adds_hash(t *testing.T) {
+	lab_book_1, _ := generate_standard_test_block()
+
+	signed_book_1, err := sign_tt(lab_book_1) 
+
+	if err != nil {
+		t.Log("signing fails, with error", err)
+		t.Fail()
+	}
+
+	if len(signed_book_1.hash) == 0 {
+		t.Log("signing doesn't generate hash on block")
+		t.Fail()
+	}
+
+
 }
