@@ -15,6 +15,12 @@ type trustedtext_chain_s struct {
 	head_hash string
 }
 
+// Genesis is the function called to create a new trusted text chain. 
+// This is always initiated with the same first message. Partly because 
+// the first element lacks a 'previous hash' which makes it harder to 
+// consider all the text bodies 'validated'. By defering the first real 
+// message to actually be the second message, we can ensure that all real
+// text data is held in blocks with both sides of the chain. 
 func Genesis(_author string, _tags []string) trustedtext_chain_s {
 	first_element,_ := Instantiate(
 		_author,
@@ -30,6 +36,9 @@ func Genesis(_author string, _tags []string) trustedtext_chain_s {
 	return new_chain
 }
 
+// Amend is the function called to increment a chain with a new tt block. This is 'stateless' 
+// such that it creates a new chain, which is a copy of the previous, but for the inclusion of 
+// a new block at the end. 
 func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trustedtext_chain_s {
 	new_element,_ := Instantiate(
 		_author,
@@ -43,12 +52,17 @@ func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) trus
 	return _existing_ttc
 }
 
+// Most_recent_hash is the function called to find one of the core identifiers of a chain,
+// its last hash. For trustedtext this is only one of 2 hashes which are key to operations. 
 func Most_recent_hash(_existing_ttc trustedtext_chain_s) string {
 	chain_length := len(_existing_ttc.tt_chain)
 	last_element := _existing_ttc.tt_chain[chain_length-1]
 	return last_element.hash
 }
 
+// Head_hash is a function called to find a core chain identifier. This is the hash of the header block. 
+// This header block may be moved over time, and points to the block which contains the current definitive 
+// record of the trusted text element.
 func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
 	return _existing_trustedtext.head_hash
 }
