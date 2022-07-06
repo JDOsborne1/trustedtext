@@ -13,7 +13,7 @@ type Trustedtext_chain_i interface {
 
 type trustedtext_chain_s struct {
 	original_author string
-	tt_chain        []trustedtext_s
+	tt_chain        map[string]trustedtext_s
 	head_hash string
 }
 
@@ -32,10 +32,11 @@ func Genesis(_author string, _tags []string) (trustedtext_chain_s, error) {
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
-
+	inital_map := make(map[string]trustedtext_s)
+	inital_map[first_element.hash] = first_element
 	new_chain := trustedtext_chain_s{
 		original_author: _author,
-		tt_chain:        []trustedtext_s{first_element},
+		tt_chain:        inital_map,
 		head_hash: 		 first_element.hash,
 	}
 	return new_chain, nil
@@ -48,28 +49,20 @@ func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) (tru
 	if len(_existing_ttc.tt_chain) == 0 {
 		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
 	}
-
+	current_head_hash := Head_hash(_existing_ttc)
 	new_element, err := Instantiate(
 		_author,
-		_existing_ttc.tt_chain[0].tags,
+		_existing_ttc.tt_chain[current_head_hash].tags,
 		_body,
 	)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
 
-	new_element.previous_hash = Most_recent_hash(_existing_ttc)
+	new_element.head_hash_at_creation = current_head_hash
 
-	_existing_ttc.tt_chain =  append(_existing_ttc.tt_chain, new_element)
+	_existing_ttc.tt_chain[new_element.hash] =  new_element
 	return _existing_ttc, nil
-}
-
-// Most_recent_hash is the function called to find one of the core identifiers of a chain,
-// its last hash. For trustedtext this is only one of 2 hashes which are key to operations. 
-func Most_recent_hash(_existing_ttc trustedtext_chain_s) string {
-	chain_length := len(_existing_ttc.tt_chain)
-	last_element := _existing_ttc.tt_chain[chain_length-1]
-	return last_element.hash
 }
 
 // Head_hash is a function called to find a core chain identifier. This is the hash of the header block. 

@@ -10,7 +10,7 @@ type trustedtext_s struct {
 	author string
 	tags   []string
 	body   string
-	previous_hash string
+	head_hash_at_creation string
 	hash   string
 }
 // This function is called to generate a base instance of the trustedtext block, based
@@ -60,7 +60,7 @@ func collapse_tags(_list_of_tags []string) string {
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	elements := _trusted_text_element.author +
 		_trusted_text_element.body +
-		_trusted_text_element.previous_hash +
+		_trusted_text_element.head_hash_at_creation +
 		collapse_tags(_trusted_text_element.tags)
 
 	hasher := sha1.New()

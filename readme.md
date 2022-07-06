@@ -34,3 +34,12 @@ Most rich text news content includes the use of images. While we could rely on t
 
 
 Using this method to validate videos is likely much more challenging, but it could be used quite easily to keep track of the signing and hashes of the files hosted elsewhere. 
+
+
+## Deviation From 'traditional blockchain' 
+
+Rather than store all the suggestions in an ordered list (prone to races) instead this is modelled as a 'cloud' of suggestions in an unordered map. In this environment, only the head hash matters. Each suggestion needs only keep track of the head hash at the time of it's creation. And branching is permitted. 
+
+When a hash is promoted to a head hash, it is appended to the map of head hashes. All the blocks which are identified here must be retained with each replica of the chain, but the cloud of un-promoted blocks are optional. 
+
+Thus we have a cloud of suggestions, out of which a definitive path is slowly cemented. This path can be a tree, as the consensus reverts to a previous node to continue. Analogous to an iterative algorithm backtracking to avoid local maxima/minima.

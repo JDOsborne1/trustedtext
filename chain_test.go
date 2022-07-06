@@ -82,19 +82,6 @@ func Test_amend_functionality(t *testing.T) {
 	}
 }
 
-func Test_recent_hash_functionality(t *testing.T) {
-	lab_chain_1, _ := generate_standard_test_chain(false)
-	first_last_hash := Most_recent_hash(lab_chain_1)
-
-	lab_chain_2, _ := Amend(lab_chain_1, "Dexter", "Intruder alert, DeeDee in the lab")
-
-	next_last_hash := Most_recent_hash(lab_chain_2)
-
-	if first_last_hash == next_last_hash {
-		t.Log("Last Hashes not moving along with amendments")
-		t.Fail()
-	}
-}
 
 func Test_head_hash_functionality(t *testing.T) {
 	lab_chain_1, _ := generate_standard_test_chain(true)
@@ -106,7 +93,7 @@ func Test_head_hash_functionality(t *testing.T) {
 	lab_chain_2, _ := generate_standard_test_chain(false)
 	var err error
 
-	_, err = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain[1].hash)
+	_, err = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain["03d797a80fb52073fbf599047c862c5e7890a960"].hash)
 	if err != nil {
 		t.Log("Fails to accept a valid hash to change to")
 		t.Fail()
@@ -128,18 +115,18 @@ func Test_return_head_hash_functionality(t *testing.T) {
 		t.Log("Head block doesn't return appropriately")
 		t.Fail()
 	}
-	if head_block.body != lab_chain_1.tt_chain[0].body {
+	if head_block.body != lab_chain_1.tt_chain["cc7ec24ab30220f7efdfdf2f2023301f6265d1f4"].body {
 		t.Log("Head block doesn't return appropriately")
 		t.Fail()
 	}
 
-	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain[1].hash)
+	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain["03d797a80fb52073fbf599047c862c5e7890a960"].hash)
 	new_head_block, err := Return_head_block(lab_chain_1)
 	if err != nil {
 		t.Log("Head block doesn't return properly after moving")
 		t.Fail()
 	}
-	if new_head_block.body != lab_chain_1.tt_chain[1].body {
+	if new_head_block.body != lab_chain_1.tt_chain["03d797a80fb52073fbf599047c862c5e7890a960"].body {
 		t.Log("Head block doesn't return properly after moving")
 		t.Fail()
 	}
