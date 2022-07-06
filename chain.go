@@ -78,3 +78,25 @@ func Most_recent_hash(_existing_ttc trustedtext_chain_s) string {
 func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
 	return _existing_trustedtext.head_hash
 }
+
+// get_valid_hashes is a function which returns an unsorted map of the block hashes present in the chain.
+// When this map is called with an index of a non-existent hash, it will return the boolean default (false).
+func get_valid_hashes(_existing_trustedtext trustedtext_chain_s) map[string]bool {
+	valid_hashes :=  make(map[string]bool)
+
+	for _, block := range _existing_trustedtext.tt_chain {
+		valid_hashes[block.hash] = true
+	}
+	return valid_hashes
+}
+
+// Move_head_hash is the function which executes the change of the head hash. At present this only validates 
+// that the suggested hash is actually in the chain
+func Move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (trustedtext_chain_s, error) {
+	valid_hashes := get_valid_hashes(_existing_ttc)
+	if !valid_hashes[_new_head_hash] {
+		return trustedtext_chain_s{}, errors.New("suggested new hash not in chain")
+	}
+	_existing_ttc.head_hash = _new_head_hash
+	return _existing_ttc, nil
+}

@@ -96,3 +96,26 @@ func Test_recent_hash_functionality(t *testing.T) {
 	}
 }
 
+func Test_head_hash_functionality(t *testing.T) {
+	lab_chain_1, _ := generate_standard_test_chain(true)
+	if len(lab_chain_1.head_hash) == 0 {
+		t.Log("chain not instantiated with a head hash")
+		t.Fail()
+	}
+
+	lab_chain_2, _ := generate_standard_test_chain(false)
+	var err error
+
+	_, err = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain[1].hash)
+	if err != nil {
+		t.Log("Fails to accept a valid hash to change to")
+		t.Fail()
+	}
+
+	_, err = Move_head_hash(lab_chain_2, "randomstring")
+	if err == nil {
+		t.Log("Fails to reject an invalid hash")
+		t.Fail()
+	}
+
+}
