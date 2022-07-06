@@ -119,3 +119,30 @@ func Test_head_hash_functionality(t *testing.T) {
 	}
 
 }
+
+
+func Test_return_head_hash_functionality(t *testing.T) {
+	lab_chain_1, _ := generate_standard_test_chain(false)
+	head_block, err := Return_head_block(lab_chain_1)
+	if err != nil {
+		t.Log("Head block doesn't return appropriately")
+		t.Fail()
+	}
+	if head_block.body != lab_chain_1.tt_chain[0].body {
+		t.Log("Head block doesn't return appropriately")
+		t.Fail()
+	}
+
+	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain[1].hash)
+	new_head_block, err := Return_head_block(lab_chain_1)
+	if err != nil {
+		t.Log("Head block doesn't return properly after moving")
+		t.Fail()
+	}
+	if new_head_block.body != lab_chain_1.tt_chain[1].body {
+		t.Log("Head block doesn't return properly after moving")
+		t.Fail()
+	}
+	
+
+}
