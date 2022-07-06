@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha1"
+	"encoding/hex"
 	"errors"
 )
 
@@ -71,5 +72,5 @@ func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	}
 
 	bytestring_hash := hasher.Sum(nil)
-	return string(bytestring_hash), nil
+	return hex.EncodeToString(bytestring_hash), nil
 }
