@@ -107,6 +107,19 @@ func Test_head_hash_functionality(t *testing.T) {
 
 }
 
+func Test_head_hash_history(t *testing.T) {
+	lab_chain_1, _ := generate_standard_test_chain(false)
+	if !lab_chain_1.head_hash_tree["cc7ec24ab30220f7efdfdf2f2023301f6265d1f4"] {
+		t.Log("Genesis block not in head hash tree")
+		t.Fail()
+	}
+	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain["03d797a80fb52073fbf599047c862c5e7890a960"].hash)
+	if !lab_chain_1.head_hash_tree["03d797a80fb52073fbf599047c862c5e7890a960"] {
+		t.Log("Subsequent head hashes not added to head hash tree")
+		t.Fail()
+	}
+	
+}
 
 func Test_return_head_hash_functionality(t *testing.T) {
 	lab_chain_1, _ := generate_standard_test_chain(false)
