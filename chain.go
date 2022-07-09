@@ -100,10 +100,14 @@ func Move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (t
 // Return_head_block gives back the block object which is currently pointed to by the head hash.
 func Return_head_block(_existing_ttc trustedtext_chain_s) (trustedtext_s, error) {
 	current_head_hash := Head_hash(_existing_ttc)
-	hash_found := _existing_ttc.tt_chain[current_head_hash].body != ""
+	return Return_specified_hash(_existing_ttc, current_head_hash)
+}
+
+// Return_specified_hash returns a specific block in the chain
+func Return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash string) (trustedtext_s, error) {
+	hash_found := _existing_ttc.tt_chain[_specified_hash].body != ""
 	if !hash_found {
 		return trustedtext_s{}, errors.New("head block not found in chain")
 	}
-	
-	return _existing_ttc.tt_chain[current_head_hash], nil
+	return _existing_ttc.tt_chain[_specified_hash], nil
 }
