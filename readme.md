@@ -43,3 +43,16 @@ Rather than store all the suggestions in an ordered list (prone to races) instea
 When a hash is promoted to a head hash, it is appended to the map of head hashes. All the blocks which are identified here must be retained with each replica of the chain, but the cloud of un-promoted blocks are optional. 
 
 Thus we have a cloud of suggestions, out of which a definitive path is slowly cemented. This path can be a tree, as the consensus reverts to a previous node to continue. Analogous to an iterative algorithm backtracking to avoid local maxima/minima.
+
+
+## Distribution strategy
+
+The text chains will be distributed as a network of peers. One chain will exist as the founder. 
+
+That chain can be called with a clone request, where it responds with the serialised chain. That new chain is then eligible as a peer, and will enter the peer list.
+
+On a regular basis, peers will perform a handshake, identifying to each other if there are any missing hashes between them. If any are missing, they share with the peer which URL they can call to claim that resource. 
+
+Peers also regularly check on the n and n+1 peers. By requesting a peerlist, you will be given the peerlist endpoints for all of their peers. After excluding yourself, a given node can check that that peer is a valid one, which is in alignment. 
+
+You can identify specific 'pillars' which you trust, then your own node will only align itself with changes which are aligned to one or more of those nodes. In this manner you can assemble a web of trust which will allow valid messages to propagate through the network without allowing the same access to compromised ones. 
