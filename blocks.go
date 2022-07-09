@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/ed25519"
 	"crypto/sha1"
 	"encoding/hex"
 	"errors"
@@ -12,11 +13,12 @@ type trustedtext_s struct {
 	body   string
 	head_hash_at_creation string
 	hash   string
+	hash_signature string
 }
 // This function is called to generate a base instance of the trustedtext block, based
 // on its arguments, and then sign it. A block can be valid without tags, as it remains
 // globally unique to the original author, however it must have both an author and body.
-func Instantiate(_author string, _tags []string, _body string) (trustedtext_s, error) {
+func Instantiate(_author string, _tags []string, _body string, _private_key string) (trustedtext_s, error) {
 	if len(_author) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing author")
 	}
@@ -25,6 +27,16 @@ func Instantiate(_author string, _tags []string, _body string) (trustedtext_s, e
 	}
 	unsigned_tt := trustedtext_s{author: _author, tags: _tags, body: _body}
 	signed_tt, err := sign_tt(unsigned_tt)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+	decoded_key, err := hex.DecodeString(_private_key)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+	decoded_hash, err := hex.DecodeString(signed_tt.hash)
+	signed_tt_signature := hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash))
+	signed_tt.hash_signature = signed_tt_signature 
 	if err != nil {
 		return trustedtext_s{}, err
 	}

@@ -1,9 +1,50 @@
 package main
 
-import "testing"
+import (
+	"crypto/ed25519"
+	"encoding/hex"
+	"testing"
+)
+const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
+const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 
 func generate_standard_test_block() (trustedtext_s, error) {
-	return Instantiate("Dexter", []string{"Labs"}, "DeeDee Better not interfere with this one")
+	return Instantiate("Dexter", []string{"Labs"}, "DeeDee Better not interfere with this one", junk_pri_key)
+}
+
+func Test_key_pair(t *testing.T) {
+	message :=  []byte("junk message")
+	var err error
+	decoded_pri_key, err := hex.DecodeString(junk_pri_key)
+	if err != nil {
+		t.Log("Cannot decode test primary key")
+		t.Fail()
+	}
+	decoded_pub_key, err := hex.DecodeString(junk_pub_key)
+	if err != nil {
+		t.Log("Cannot decode test public key")
+		t.Fail()
+	}
+	signature := ed25519.Sign(decoded_pri_key, message)
+	valid := ed25519.Verify(decoded_pub_key, message, signature)
+	if !valid {
+		t.Log("Key pair doesn't generate a valid signature")
+		t.Fail()
+	}
+
+}
+
+
+func Test_that_hashes_can_be_validated(t *testing.T) {
+	test_block, _ := generate_standard_test_block()
+	decoded_pub_key, _ := hex.DecodeString(junk_pub_key)
+	decoded_hash_sig, _ := hex.DecodeString(test_block.hash_signature)
+	decoded_hash, _ := hex.DecodeString(test_block.hash)
+	valid_signature := ed25519.Verify(decoded_pub_key, decoded_hash, decoded_hash_sig)
+	if !valid_signature {
+		t.Log("true pairs aren't verifiable")
+		t.Fail()
+	}
 }
 
 func Test_Basic_instantiation_works(t *testing.T) {
@@ -26,19 +67,19 @@ func Test_Signed_instantiation(t *testing.T) {
 func Test_Instantiate_input_validation(t *testing.T) {
 	var err error
 
-	_, err = Instantiate("Dexter", []string{}, "DeeDee Better not interfere with this one")
+	_, err = Instantiate("Dexter", []string{}, "DeeDee Better not interfere with this one", junk_pri_key)
 	if err != nil {
 		t.Log("Erroring on valid instantiation input")
 		t.Fail()
 	}
 
-	_, err = Instantiate("Dexter", []string{}, "")
+	_, err = Instantiate("Dexter", []string{}, "", junk_pri_key)
 	if err == nil {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()
 	}
 
-	_, err = Instantiate("", []string{}, "DeeDee Better not interfere with this one")
+	_, err = Instantiate("", []string{}, "DeeDee Better not interfere with this one", junk_pri_key)
 	if err == nil {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()

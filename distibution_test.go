@@ -2,6 +2,7 @@ package main
 
 import "testing"
 
+
 func Test_fork_keeps_core_tree(t *testing.T) {
 	lab_chain_2, _ := generate_standard_test_chain(false)
 
@@ -14,7 +15,7 @@ func Test_fork_keeps_core_tree(t *testing.T) {
 		t.Fail()
 	}
 
-	lab_chain_3, _ := Amend(lab_chain_2, "DeeDee", "Haha, look at all the fun dials to turn")
+	lab_chain_3, _ := Amend(lab_chain_2, "DeeDee", "Haha, look at all the fun dials to turn", junk_pri_key)
 
 	lab_chain_3_forked := Fork_chain_essentials(lab_chain_3)
 

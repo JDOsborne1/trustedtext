@@ -1,6 +1,8 @@
 package main
 
-import "errors"
+import (
+	"errors"
+)
 
 type Trustedtext_chain_i interface {
 	Genesis(_author string, _tags []string) Trustedtext_chain_i
@@ -24,15 +26,18 @@ type trustedtext_chain_s struct {
 // consider all the text bodies 'validated'. By defering the first real 
 // message to actually be the second message, we can ensure that all real
 // text data is held in blocks with both sides of the chain. 
-func Genesis(_author string, _tags []string) (trustedtext_chain_s, error) {
+func Genesis(_author string, _tags []string, _private_key string) (trustedtext_chain_s, error) {
 	first_element, err := Instantiate(
 		_author,
 		_tags,
 		"This is the origin message of a trusted text chain",
+		_private_key,
 	)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
+	
+
 	inital_block_map := make(map[string]trustedtext_s)
 	inital_block_map[first_element.hash] = first_element
 
@@ -51,7 +56,7 @@ func Genesis(_author string, _tags []string) (trustedtext_chain_s, error) {
 // Amend is the function called to increment a chain with a new tt block. This is 'stateless' 
 // such that it creates a new chain, which is a copy of the previous, but for the inclusion of 
 // a new block at the end. 
-func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) (trustedtext_chain_s, error) {
+func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string, _private_key string) (trustedtext_chain_s, error) {
 	if len(_existing_ttc.tt_chain) == 0 {
 		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
 	}
@@ -60,6 +65,7 @@ func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string) (tru
 		_author,
 		_existing_ttc.tt_chain[current_head_hash].tags,
 		_body,
+		_private_key,
 	)
 	if err != nil {
 		return trustedtext_chain_s{}, err

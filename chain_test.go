@@ -6,6 +6,7 @@ func generate_standard_test_chain(_init_only bool) (trustedtext_chain_s, error) 
 	test_ttc, err := Genesis(
 		"Dexter",
 		[]string{"lab"},
+		junk_pri_key,
 	)
 	if err != nil {
 		return trustedtext_chain_s{}, err
@@ -18,6 +19,7 @@ func generate_standard_test_chain(_init_only bool) (trustedtext_chain_s, error) 
 		test_ttc,
 		"Dexter",
 		"DeeDee Better not interfere with this one",
+		junk_pri_key,
 	)
 	if err != nil {
 		return trustedtext_chain_s{}, err
@@ -39,13 +41,14 @@ func Test_genesis_validation(t *testing.T) {
 	_, err = Genesis(
 		"",
 		[]string{"lab"},
+		junk_pri_key,
 	)
 	if err == nil {
 		t.Log("Genesis doesnt reject chains with no author")
 		t.Fail()
 	}
 
-	_, err = Genesis("Dexter", []string{})
+	_, err = Genesis("Dexter", []string{}, junk_pri_key)
 
 	if err != nil {
 		t.Log("Genesis inappropriately rejects chains with no tags")
@@ -56,7 +59,7 @@ func Test_genesis_validation(t *testing.T) {
 func Test_basic_amend(t *testing.T) {
 	lab_chain_1, _ := generate_standard_test_chain(false)
 
-	_, err := Amend(lab_chain_1, "Dexter", "Intruder alert, DeeDee in the lab")
+	_, err := Amend(lab_chain_1, "Dexter", "Intruder alert, DeeDee in the lab", junk_pri_key)
 
 	if err != nil {
 		t.Log("Amend fails on valid input")
@@ -69,7 +72,7 @@ func Test_amend_functionality(t *testing.T) {
 	existing_head_hash := lab_chain_1.head_hash
 	existing_chain_length := len(lab_chain_1.tt_chain)
 
-	lab_chain_2, _ := Amend(lab_chain_1, "Dexter", "Intruder alert, DeeDee in the lab")
+	lab_chain_2, _ := Amend(lab_chain_1, "Dexter", "Intruder alert, DeeDee in the lab", junk_pri_key)
 
 	if lab_chain_2.head_hash != existing_head_hash {
 		t.Log("Amend interferes with head_hash")
