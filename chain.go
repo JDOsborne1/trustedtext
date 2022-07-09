@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/ed25519"
+	"encoding/hex"
 	"errors"
 )
 
@@ -84,6 +86,57 @@ func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
 	return _existing_trustedtext.head_hash
 }
 
+
+func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _author string, _new_head_hash string, _private_key string) (trustedtext_chain_s, error) {
+	if len(_existing_ttc.tt_chain) == 0 {
+		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
+	}
+	current_head_hash := Head_hash(_existing_ttc)
+	change_instruction := head_change_instruction{New_head: _new_head_hash}
+
+	serialised_change, err := Serialise_head_change(change_instruction)
+
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+	
+	new_element, err := Instantiate(
+		_author,
+		_existing_ttc.tt_chain[current_head_hash].tags,
+		serialised_change,
+		_private_key,
+	)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+	new_element.head_hash_at_creation = current_head_hash
+	
+	
+	signature_of_new_message, err := hex.DecodeString(new_element.hash_signature)
+	
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+	
+	decoded_original_author, err := hex.DecodeString(_existing_ttc.original_author)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+	
+	
+	body_of_new_message := new_element.body
+
+	head_change_by_original_author := ed25519.Verify(decoded_original_author, []byte(body_of_new_message), signature_of_new_message)
+
+	if head_change_by_original_author {
+		_existing_ttc.tt_chain[new_element.hash] =  new_element
+		_existing_ttc.head_hash = _new_head_hash
+		return _existing_ttc, nil
+		
+	}
+
+	return trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
+}
 
 // Move_head_hash is the function which executes the change of the head hash. At present this only validates 
 // that the suggested hash is actually in the chain
