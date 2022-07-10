@@ -5,12 +5,20 @@ import "testing"
 
 
 func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedtext_s {
-	new_block, _ := Instantiate(junk_pub_key, "Intruder alert, DeeDee in the lab. Again!", junk_pri_key)
+	dexters_instruction_2 := tt_body{
+		instruction_type: "publish",
+		instruction: "Intruder alert, DeeDee in the lab. Again!",
+	}
+	new_block, _ := Instantiate(junk_pub_key, dexters_instruction_2, junk_pri_key)
 	return new_block
 }
 
 
 func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
+	dexters_instruction_1 := tt_body{
+		instruction_type: "publish",
+		instruction: "Intruder alert, DeeDee in the lab",
+	}
 	test_ttc, _ := Genesis(
 		junk_pub_key,
 		[]string{"lab"},
@@ -22,7 +30,7 @@ func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 
 
 
-	new_block, _ := Instantiate(junk_pub_key, "Intruder alert, DeeDee in the lab", junk_pri_key)
+	new_block, _ := Instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
 	
 	test_ttc, _ = Amend(
 		test_ttc,
@@ -31,8 +39,8 @@ func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 	return test_ttc
 }
 
-const first_standard_message = "e9dc6f96858d8a3940eaf0dbdb8099eced2eb4bb"
-const second_standard_message = "772b97597b716ea77a84d45691774ec3cfd23d9a"
+const first_standard_message = "b83030a13322e34fe61ef7dfe6d4750cab4d7429"
+const second_standard_message = "f655762bf9c727eb04a71072b26e23c13b7d765c"
 
 
 // func Test_printer(t *testing.T) {
@@ -89,6 +97,7 @@ func Test_amend_functionality(t *testing.T) {
 
 	if len(lab_chain_2.tt_chain) - existing_chain_length  != 1 {
 		t.Log("Amend increments chain length inappropriately")
+		t.Log( "Initial chain length is:", existing_chain_length, "new chain length is:", len(lab_chain_2.tt_chain))
 		t.Fail()
 	}
 }

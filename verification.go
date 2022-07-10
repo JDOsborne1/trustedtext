@@ -48,7 +48,7 @@ func encoded_key_pair_is_valid(_encoded_public_key string, _encoded_private_key 
 
 	publicKey := make([]byte, 32)
 	copy(publicKey, decoded_pri_key[32:])
-	
+
 	encoded_regenerated_pub_key := hex.EncodeToString(publicKey)
 
 	keys_match := encoded_regenerated_pub_key == _encoded_public_key

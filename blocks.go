@@ -8,21 +8,30 @@ import (
 
 type trustedtext_s struct {
 	author                string
-	body                  string
+	body                  tt_body
 	head_hash_at_creation string
 	hash                  string
 	hash_signature        string
 }
 
+type tt_body struct {
+	instruction_type string
+	instruction string
+}
+
 // This function is called to generate a base instance of the trustedtext block, based
 // on its arguments, and then sign it. A block can be valid without tags, as it remains
 // globally unique to the original author, however it must have both an author and body.
-func Instantiate(_author string, _body string, _private_key string) (trustedtext_s, error) {
+func Instantiate(_author string, _body tt_body, _private_key string) (trustedtext_s, error) {
 	if len(_author) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing author")
 	}
-	if len(_body) == 0 {
-		return trustedtext_s{}, errors.New("cannot have an empty body")
+	
+	if len(_body.instruction_type) == 0 {
+		return trustedtext_s{}, errors.New("cannot have a missing instruction type")
+	}
+	if len(_body.instruction) == 0 {
+		return trustedtext_s{}, errors.New("cannot have an empty instruction")
 	}
 	valid_signature_pairs, err := encoded_key_pair_is_valid(_author, _private_key)
 	if err != nil {
@@ -67,7 +76,8 @@ func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 // change to it will almost certainly invalidate all the hashing chains
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	elements := _trusted_text_element.author +
-		_trusted_text_element.body +
+		_trusted_text_element.body.instruction_type +
+		_trusted_text_element.body.instruction +
 		_trusted_text_element.head_hash_at_creation
 
 	hasher := sha1.New()

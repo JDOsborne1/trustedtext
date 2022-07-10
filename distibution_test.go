@@ -14,8 +14,11 @@ func Test_fork_keeps_core_tree(t *testing.T) {
 		t.Log("forked chain doesn't carry both head entries")
 		t.Fail()
 	}
-
-	new_block, _ := Instantiate("DeeDee", "Haha, look at all the fun dials to turn", junk_pri_key)
+	deedees_instruction := tt_body{
+		instruction_type: "publish",
+		instruction: "Haha, look at all the fun dials to turn",
+	}
+	new_block, _ := Instantiate("DeeDee", deedees_instruction, junk_pri_key)
 	lab_chain_3, _ := Amend(lab_chain_2, new_block)
 
 	lab_chain_3_forked := Fork_chain_essentials(lab_chain_3)

@@ -33,13 +33,18 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 
 	serialised_change, err := Serialise_head_change(change_instruction)
 
+	instruction_body := tt_body{
+		instruction_type: "head_change",
+		instruction: serialised_change,
+	}
+
 	if err != nil {
 		return trustedtext_s{}, err
 	}
 	
 	new_element, err := Instantiate(
 		_author,
-		serialised_change,
+		instruction_body,
 		_private_key,
 	)
 	if err != nil {
@@ -66,7 +71,7 @@ func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_bl
 		return trustedtext_chain_s{}, err
 	}
 
-	head_change_value, err := Deserialise_head_change(_head_move_block.body)
+	head_change_value, err := Deserialise_head_change(_head_move_block.body.instruction)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
@@ -84,7 +89,7 @@ func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_bl
 // Move_head_hash is the function which executes the change of the head hash. At present this only validates 
 // that the suggested hash is actually in the chain
 func Move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (trustedtext_chain_s, error) {
-	hash_found := _existing_ttc.tt_chain[_new_head_hash].body != ""
+	hash_found := _existing_ttc.tt_chain[_new_head_hash].body != tt_body{}
 	if !hash_found {
 		return trustedtext_chain_s{}, errors.New("suggested new hash not in chain")
 	}

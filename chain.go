@@ -28,9 +28,14 @@ type trustedtext_chain_s struct {
 // message to actually be the second message, we can ensure that all real
 // text data is held in blocks with both sides of the chain. 
 func Genesis(_author string, _tags []string, _private_key string) (trustedtext_chain_s, error) {
+	original_instruction := tt_body{
+		instruction_type: "publish",
+		instruction: "This is the origin message of a trusted text chain",
+	}
+
 	first_element, err := Instantiate(
 		_author,
-		"This is the origin message of a trusted text chain",
+		original_instruction,
 		_private_key,
 	)
 	if err != nil {
@@ -87,9 +92,38 @@ func Return_head_block(_existing_ttc trustedtext_chain_s) (trustedtext_s, error)
 
 // Return_specified_hash returns a specific block in the chain
 func Return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash string) (trustedtext_s, error) {
-	hash_found := _existing_ttc.tt_chain[_specified_hash].body != ""
+	hash_found := _existing_ttc.tt_chain[_specified_hash].body != tt_body{}
 	if !hash_found {
 		return trustedtext_s{}, errors.New("head block not found in chain")
 	}
 	return _existing_ttc.tt_chain[_specified_hash], nil
 }
+
+
+func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block trustedtext_s) (trustedtext_chain_s, error) {
+
+	// Validate Block
+	block_has_valid_signature, err := Verify_hex_encoded_values(_incoming_block.author, _incoming_block.hash, _incoming_block.hash_signature)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+	if !block_has_valid_signature {
+		return trustedtext_chain_s{}, errors.New("incoming block has invalid signature")
+	}
+	// Process block instruction
+
+
+	// Append block
+	
+	_existing_ttc, err = Amend(_existing_ttc, _incoming_block)
+
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+
+	return _existing_ttc, nil
+}
+
+// func Dispatch_instruction_processor(_block_body string) func(trustedtext_chain_s) trustedtext_chain_s {
+
+// }
