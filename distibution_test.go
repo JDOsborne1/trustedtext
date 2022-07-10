@@ -4,9 +4,9 @@ import "testing"
 
 
 func Test_fork_keeps_core_tree(t *testing.T) {
-	lab_chain_2, _ := generate_standard_test_chain(false)
+	lab_chain_2 := generate_standard_test_chain(false)
 
-	lab_chain_2, _ = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain["59e326b089627118b9a01f7a7666c27d8ec67195"].hash)
+	lab_chain_2, _ = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain[second_standard_message].hash)
 
 	lab_chain_2_forked := Fork_chain_essentials(lab_chain_2)
 
