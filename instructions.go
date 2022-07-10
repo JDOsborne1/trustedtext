@@ -8,7 +8,8 @@ import (
 type head_change_instruction struct {
 	New_head string
 }
-
+// Serialise_head_change takes an instruction for a changed head hash, and serialises it into a JSON string.
+// This string is then used as the body of an instruction block.
 func Serialise_head_change(_change_to_serialise head_change_instruction) (string, error) {
 	json_change, err := json.Marshal(_change_to_serialise)
 	if err != nil {
@@ -16,7 +17,7 @@ func Serialise_head_change(_change_to_serialise head_change_instruction) (string
 	}
 	return string(json_change), nil
 }
-
+// Deserialise_head_change inverts the serialisation of an instruction string, and turns it back into an instruction object.
 func Deserialise_head_change(instruction_body_to_deserialise string) (head_change_instruction, error) {
 	instruction := &head_change_instruction{}
 	err := json.Unmarshal([]byte(instruction_body_to_deserialise), instruction)
@@ -26,6 +27,7 @@ func Deserialise_head_change(instruction_body_to_deserialise string) (head_chang
 	return *instruction, nil
 }
 
+// Generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
 func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
@@ -46,6 +48,8 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 	return new_element, nil
 }
 
+// Amend_with_head_move_block Is a variant on the Amend function which first validates that the instruction was from the original author.
+// It then adds the instruction block to the map, and moves the head hash
 func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
 	
 	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, _head_move_block.body, _head_move_block.hash_signature)
