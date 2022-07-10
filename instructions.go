@@ -52,7 +52,7 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 // It then adds the instruction block to the map, and moves the head hash
 func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
 	
-	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, _head_move_block.body, _head_move_block.hash_signature)
+	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, _head_move_block.hash, _head_move_block.hash_signature)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
