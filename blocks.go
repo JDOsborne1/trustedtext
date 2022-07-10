@@ -30,17 +30,28 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	if err != nil {
 		return trustedtext_s{}, err
 	}
+	
+	signature, err := sign_tt(tt_with_hash.hash, _private_key)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+
+	tt_with_hash.hash_signature = signature
+	return tt_with_hash, nil
+}
+
+func sign_tt(_hash_of_message_body string, _private_key string) (string, error) {
 	decoded_key, err := hex.DecodeString(_private_key)
 	if err != nil {
-		return trustedtext_s{}, err
+		return "", err
 	}
-	decoded_hash, err := hex.DecodeString(tt_with_hash.hash)
-	signed_tt := hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash))
-	tt_with_hash.hash_signature = signed_tt
+	decoded_hash, err := hex.DecodeString(_hash_of_message_body)
 	if err != nil {
-		return trustedtext_s{}, err
+		return "", err
 	}
-	return tt_with_hash, nil
+	
+	return hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash)), nil
+	
 }
 
 // This function wraps the signing process for the trusted text blocks. It will call the
