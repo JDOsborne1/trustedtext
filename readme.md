@@ -56,3 +56,10 @@ On a regular basis, peers will perform a handshake, identifying to each other if
 Peers also regularly check on the n and n+1 peers. By requesting a peerlist, you will be given the peerlist endpoints for all of their peers. After excluding yourself, a given node can check that that peer is a valid one, which is in alignment. 
 
 You can identify specific 'pillars' which you trust, then your own node will only align itself with changes which are aligned to one or more of those nodes. In this manner you can assemble a web of trust which will allow valid messages to propagate through the network without allowing the same access to compromised ones. 
+
+### Distributing complete blocks
+
+The planned usage strategy would be that one would generate new blocks in a local environment. This will then be the only environment that your private key needs to be present, and trusted text should integrate with keyring tools to ensure that there is minimal exposure surface. 
+
+Once you have your new block, it can be distributed to any distribution nodes of your choice, which will be able to verify your message is from you, and include in in their cloud. If the instruction within is merely a publish, then no further action is needed. If it is another action type, such as a head migration, it will further validate the signal within against the authors public key, and either reject or accept it depending on the result. 
+
