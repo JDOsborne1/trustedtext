@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/ed25519"
 	"crypto/sha1"
 	"encoding/hex"
 	"errors"
@@ -30,7 +29,7 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	if err != nil {
 		return trustedtext_s{}, err
 	}
-	
+
 	signature, err := sign_tt(tt_with_hash.hash, _private_key)
 	if err != nil {
 		return trustedtext_s{}, err
@@ -40,19 +39,7 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	return tt_with_hash, nil
 }
 
-func sign_tt(_hash_of_message_body string, _private_key string) (string, error) {
-	decoded_key, err := hex.DecodeString(_private_key)
-	if err != nil {
-		return "", err
-	}
-	decoded_hash, err := hex.DecodeString(_hash_of_message_body)
-	if err != nil {
-		return "", err
-	}
-	
-	return hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash)), nil
-	
-}
+
 
 // This function wraps the signing process for the trusted text blocks. It will call the
 // hashing function, and then return a version of the input with a populated hash element,

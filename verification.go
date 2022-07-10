@@ -25,3 +25,17 @@ func Verify_hex_encoded_values(_author_public_key_hex string, _hash_of_message_b
 	return ed25519.Verify(decoded_original_author, decoded_message_hash, signature_of_new_message), nil
 
 }
+
+func sign_tt(_hash_of_message_body string, _private_key string) (string, error) {
+	decoded_key, err := hex.DecodeString(_private_key)
+	if err != nil {
+		return "", err
+	}
+	decoded_hash, err := hex.DecodeString(_hash_of_message_body)
+	if err != nil {
+		return "", err
+	}
+	
+	return hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash)), nil
+	
+}
