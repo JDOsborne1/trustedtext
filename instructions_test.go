@@ -47,20 +47,20 @@ func Test_serialise_deserialise(t *testing.T) {
 	var err error
 	serialised_instruction, err := Serialise_head_change(test_instruction)
 	if err != nil {
-		t.Log("Fails to serialise valid input")
+		t.Log("Fails to serialise valid input", "Error:", err)
 		t.Fail()
 	}
 
 	deserialised_instruction, err := Deserialise_head_change(serialised_instruction)
 	if err != nil {
-		t.Log("Failed to deserialise valid input")
+		t.Log("Failed to deserialise valid input", "Error:", err)
 		t.Fail()
 	}
 
 	identical_after_serialisation_loop := deserialised_instruction == test_instruction
 
 	if !identical_after_serialisation_loop {
-		t.Log("Serialisation loop doesn't produce equivalent values")
+		t.Log("Serialisation loop doesn't produce equivalent values", "Error:", err)
 		t.Fail()
 	}
 
@@ -75,26 +75,26 @@ func Test_head_move_block(t *testing.T) {
 
 	head_move_block, err := Generate_head_move_block("Dexter", second_standard_message, junk_pri_key)
 	if err != nil {
-		t.Log("Cannot generate a head move block")
+		t.Log("Cannot generate a head move block", "Error:", err)
 		t.Fail()
 	}
 
 	amended_chain, err := Amend_with_head_move_block(lab_chain_2, head_move_block)
 
 	if err != nil {
-		t.Log("Cannot generate an amended chain")
+		t.Log("Cannot generate an amended chain", "Error:", err)
 		t.Fail()
 	}
 
 	if amended_chain.head_hash != second_standard_message {
-		t.Log("Head hash doesn't change after instruction block")
+		t.Log("Head hash doesn't change after instruction block", "Error:", err)
 		t.Fail()
 	}
 
 	second_message_in_head_tree := amended_chain.head_hash_tree[second_standard_message]
 
 	if !second_message_in_head_tree {
-		t.Log("New head hash not included in head tree")
+		t.Log("New head hash not included in head tree", "Error:", err)
 		t.Fail()
 	}
 

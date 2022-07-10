@@ -17,12 +17,12 @@ func Test_key_pair(t *testing.T) {
 	var err error
 	decoded_pri_key, err := hex.DecodeString(junk_pri_key)
 	if err != nil {
-		t.Log("Cannot decode test primary key")
+		t.Log("Cannot decode test primary key", "Error:", err)
 		t.Fail()
 	}
 	decoded_pub_key, err := hex.DecodeString(junk_pub_key)
 	if err != nil {
-		t.Log("Cannot decode test public key")
+		t.Log("Cannot decode test public key", "Error:", err)
 		t.Fail()
 	}
 	signature := ed25519.Sign(decoded_pri_key, message)
@@ -50,7 +50,7 @@ func Test_that_hashes_can_be_validated(t *testing.T) {
 func Test_Basic_instantiation_works(t *testing.T) {
 	_, err := generate_standard_test_block()
 	if err != nil {
-		t.Log("Erroring on valid instantiation input")
+		t.Log("Erroring on valid instantiation input", "Error:", err)
 		t.Fail()
 	}
 }
@@ -69,7 +69,7 @@ func Test_Instantiate_input_validation(t *testing.T) {
 
 	_, err = Instantiate("Dexter", "DeeDee Better not interfere with this one", junk_pri_key)
 	if err != nil {
-		t.Log("Erroring on valid instantiation input")
+		t.Log("Erroring on valid instantiation input", "Error:", err)
 		t.Fail()
 	}
 
@@ -92,7 +92,7 @@ func Test_Signing_adds_hash(t *testing.T) {
 	signed_book_1, err := sign_tt(lab_book_1) 
 
 	if err != nil {
-		t.Log("signing fails, with error", err)
+		t.Log("signing fails", "Error:", err)
 		t.Fail()
 	}
 
