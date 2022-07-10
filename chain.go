@@ -16,6 +16,7 @@ type Trustedtext_chain_i interface {
 type trustedtext_chain_s struct {
 	original_author string
 	tt_chain        map[string]trustedtext_s
+	tags   []string
 	head_hash string
 	head_hash_tree map[string]bool
 }
@@ -29,7 +30,6 @@ type trustedtext_chain_s struct {
 func Genesis(_author string, _tags []string, _private_key string) (trustedtext_chain_s, error) {
 	first_element, err := Instantiate(
 		_author,
-		_tags,
 		"This is the origin message of a trusted text chain",
 		_private_key,
 	)
@@ -47,6 +47,7 @@ func Genesis(_author string, _tags []string, _private_key string) (trustedtext_c
 	new_chain := trustedtext_chain_s{
 		original_author: _author,
 		tt_chain:        inital_block_map,
+		tags: _tags,
 		head_hash: 		 first_element.hash,
 		head_hash_tree:  inital_head_tree,
 	}
@@ -76,7 +77,7 @@ func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
 	return _existing_trustedtext.head_hash
 }
 
-func Generate_head_move_block(_author string, _tags []string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
+func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
 	serialised_change, err := Serialise_head_change(change_instruction)
@@ -87,7 +88,6 @@ func Generate_head_move_block(_author string, _tags []string, _new_head_hash str
 	
 	new_element, err := Instantiate(
 		_author,
-		_tags, 
 		serialised_change,
 		_private_key,
 	)
@@ -101,7 +101,6 @@ func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _author strin
 
 	new_element, err := Generate_head_move_block(
 		_author,
-		_existing_ttc.tt_chain[_existing_ttc.head_hash].tags,
 		_new_head_hash,
 		_private_key,
 	)

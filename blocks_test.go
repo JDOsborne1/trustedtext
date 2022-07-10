@@ -9,7 +9,7 @@ const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d
 const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 
 func generate_standard_test_block() (trustedtext_s, error) {
-	return Instantiate("Dexter", []string{"Labs"}, "DeeDee Better not interfere with this one", junk_pri_key)
+	return Instantiate("Dexter", "DeeDee Better not interfere with this one", junk_pri_key)
 }
 
 func Test_key_pair(t *testing.T) {
@@ -67,19 +67,19 @@ func Test_Signed_instantiation(t *testing.T) {
 func Test_Instantiate_input_validation(t *testing.T) {
 	var err error
 
-	_, err = Instantiate("Dexter", []string{}, "DeeDee Better not interfere with this one", junk_pri_key)
+	_, err = Instantiate("Dexter", "DeeDee Better not interfere with this one", junk_pri_key)
 	if err != nil {
 		t.Log("Erroring on valid instantiation input")
 		t.Fail()
 	}
 
-	_, err = Instantiate("Dexter", []string{}, "", junk_pri_key)
+	_, err = Instantiate("Dexter", "", junk_pri_key)
 	if err == nil {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()
 	}
 
-	_, err = Instantiate("", []string{}, "DeeDee Better not interfere with this one", junk_pri_key)
+	_, err = Instantiate("",  "DeeDee Better not interfere with this one", junk_pri_key)
 	if err == nil {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()

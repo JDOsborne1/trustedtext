@@ -9,7 +9,6 @@ import (
 
 type trustedtext_s struct {
 	author string
-	tags   []string
 	body   string
 	head_hash_at_creation string
 	hash   string
@@ -18,14 +17,14 @@ type trustedtext_s struct {
 // This function is called to generate a base instance of the trustedtext block, based
 // on its arguments, and then sign it. A block can be valid without tags, as it remains
 // globally unique to the original author, however it must have both an author and body.
-func Instantiate(_author string, _tags []string, _body string, _private_key string) (trustedtext_s, error) {
+func Instantiate(_author string, _body string, _private_key string) (trustedtext_s, error) {
 	if len(_author) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing author")
 	}
 	if len(_body) == 0 {
 		return trustedtext_s{}, errors.New("cannot have an empty body")
 	}
-	unsigned_tt := trustedtext_s{author: _author, tags: _tags, body: _body}
+	unsigned_tt := trustedtext_s{author: _author, body: _body}
 	signed_tt, err := sign_tt(unsigned_tt)
 	if err != nil {
 		return trustedtext_s{}, err
@@ -55,16 +54,6 @@ func sign_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 	return _existing_trustedtext, nil
 }
 
-// Fairly straightforward function to collapse the tags on a block in order to hash them.
-// This is a dependency for the hashing wrapper, so must be kept static in order to preserve
-// hashing continuity
-func collapse_tags(_list_of_tags []string) string {
-	tag_list := ""
-	for _, tag := range _list_of_tags {
-		tag_list = tag_list + tag + ","
-	}
-	return tag_list
-}
 
 // This function wraps the underlying hashing process, reducing it simply to
 // block in - string out. This structure should be locked in early, since any 
@@ -72,8 +61,7 @@ func collapse_tags(_list_of_tags []string) string {
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	elements := _trusted_text_element.author +
 		_trusted_text_element.body +
-		_trusted_text_element.head_hash_at_creation +
-		collapse_tags(_trusted_text_element.tags)
+		_trusted_text_element.head_hash_at_creation
 
 	hasher := sha1.New()
 

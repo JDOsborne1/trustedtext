@@ -5,8 +5,7 @@ import "testing"
 
 
 func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedtext_s {
-	existing_block_tags := _existing_chain.tt_chain[_existing_chain.head_hash].tags
-	new_block, _ := Instantiate("Dexter", existing_block_tags, "Intruder alert, DeeDee in the lab. Again!", junk_pri_key)
+	new_block, _ := Instantiate("Dexter", "Intruder alert, DeeDee in the lab. Again!", junk_pri_key)
 	return new_block
 }
 
@@ -21,10 +20,9 @@ func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 		return test_ttc
 	}
 
-	
-	existing_block_tags := test_ttc.tt_chain[test_ttc.head_hash].tags
 
-	new_block, _ := Instantiate("Dexter", existing_block_tags, "Intruder alert, DeeDee in the lab", junk_pri_key)
+
+	new_block, _ := Instantiate("Dexter", "Intruder alert, DeeDee in the lab", junk_pri_key)
 	
 	test_ttc, _ = Amend(
 		test_ttc,
@@ -33,11 +31,14 @@ func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 	return test_ttc
 }
 
-const second_standard_message = "59e326b089627118b9a01f7a7666c27d8ec67195"
+const second_standard_message = "18b1bf12c37a2146fc1025f91dced3728960cd70"
 
-const first_standard_message = "cc7ec24ab30220f7efdfdf2f2023301f6265d1f4"
+const first_standard_message = "4e8a9fbbb44f2756c61681626ac6bcc65e620d31"
 
-
+// func Test_printer(t *testing.T) {
+// 	t.Log("Standard test chain is ", generate_standard_test_chain(false))
+// 	t.Fail()
+// }
 
 func Test_genesis_validation(t *testing.T) {
 	var err error
