@@ -17,6 +17,15 @@ func Serialise_head_change(_change_to_serialise head_change_instruction) (string
 	return string(json_change), nil
 }
 
+func Deserialise_head_change(instruction_body_to_deserialise string) (head_change_instruction, error) {
+	instruction := &head_change_instruction{}
+	err := json.Unmarshal([]byte(instruction_body_to_deserialise), instruction)
+	if err != nil {
+		return head_change_instruction{}, err
+	}
+	return *instruction, nil
+}
+
 func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
@@ -37,32 +46,28 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 	return new_element, nil
 }
 
-func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _author string, _new_head_hash string, _private_key string) (trustedtext_chain_s, error) {
+func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
+	
+	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, _head_move_block.body, _head_move_block.hash_signature)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
 
-	new_element, err := Generate_head_move_block(
-		_author,
-		_new_head_hash,
-		_private_key,
-	)
-	if err != nil {
-		return trustedtext_chain_s{}, err
-	}
-	
-	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, new_element.body, new_element.hash_signature)
-	if err != nil {
-		return trustedtext_chain_s{}, err
-	}
-	
 	if !head_change_by_original_author {
 		return trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
 	}
 	
-	_existing_ttc, err = Amend(_existing_ttc, new_element)
+	_existing_ttc, err = Amend(_existing_ttc, _head_move_block)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
-	
-	_existing_ttc, err = Move_head_hash(_existing_ttc, _new_head_hash)
+
+	head_change_value, err := Deserialise_head_change(_head_move_block.body)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
+
+	_existing_ttc, err = Move_head_hash(_existing_ttc, head_change_value.New_head )
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
