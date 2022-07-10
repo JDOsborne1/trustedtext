@@ -34,10 +34,12 @@ func Test_key_pair(t *testing.T) {
 
 func Test_that_hashes_can_be_validated(t *testing.T) {
 	test_block, _ := generate_standard_test_block()
-	decoded_pub_key, _ := hex.DecodeString(test_block.author)
-	decoded_hash_sig, _ := hex.DecodeString(test_block.hash_signature)
-	decoded_hash, _ := hex.DecodeString(test_block.hash)
-	valid_signature := ed25519.Verify(decoded_pub_key, decoded_hash, decoded_hash_sig)
+
+	valid_signature, err := Verify_hex_encoded_values(test_block.author, test_block.hash, test_block.hash_signature)
+	if err != nil {
+		t.Log("Cannot verify valid hex encoded values", "Error:", err)
+		t.Fail()
+	}
 	if !valid_signature {
 		t.Log("true pairs aren't verifiable")
 		t.Fail()
