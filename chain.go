@@ -56,24 +56,16 @@ func Genesis(_author string, _tags []string, _private_key string) (trustedtext_c
 // Amend is the function called to increment a chain with a new tt block. This is 'stateless' 
 // such that it creates a new chain, which is a copy of the previous, but for the inclusion of 
 // a new block at the end. 
-func Amend(_existing_ttc trustedtext_chain_s, _author string, _body string, _private_key string) (trustedtext_chain_s, error) {
+func Amend(_existing_ttc trustedtext_chain_s, _new_block trustedtext_s) (trustedtext_chain_s, error) {
 	if len(_existing_ttc.tt_chain) == 0 {
 		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
 	}
 	current_head_hash := Head_hash(_existing_ttc)
-	new_element, err := Instantiate(
-		_author,
-		_existing_ttc.tt_chain[current_head_hash].tags,
-		_body,
-		_private_key,
-	)
-	if err != nil {
-		return trustedtext_chain_s{}, err
-	}
 
-	new_element.head_hash_at_creation = current_head_hash
 
-	_existing_ttc.tt_chain[new_element.hash] =  new_element
+	_new_block.head_hash_at_creation = current_head_hash
+
+	_existing_ttc.tt_chain[_new_block.hash] =  _new_block
 	return _existing_ttc, nil
 }
 
