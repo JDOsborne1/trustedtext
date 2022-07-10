@@ -53,10 +53,9 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 	return new_element, nil
 }
 
-// Amend_with_head_move_block Is a variant on the Amend function which first validates that the instruction was from the original author.
-// It then adds the instruction block to the map, and moves the head hash
-func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
-	
+// Action_head_move_block first validates that the instruction was from the original author.
+// It then moves the head hash.
+func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
 	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, _head_move_block.hash, _head_move_block.hash_signature)
 	if err != nil {
 		return trustedtext_chain_s{}, err
@@ -64,11 +63,6 @@ func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_bl
 
 	if !head_change_by_original_author {
 		return trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
-	}
-	
-	_existing_ttc, err = Amend(_existing_ttc, _head_move_block)
-	if err != nil {
-		return trustedtext_chain_s{}, err
 	}
 
 	head_change_value, err := Deserialise_head_change(_head_move_block.body.instruction)
@@ -81,9 +75,7 @@ func Amend_with_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_bl
 		return trustedtext_chain_s{}, err
 	}
 	
-
 	return _existing_ttc, nil
-
 }
 
 // Move_head_hash is the function which executes the change of the head hash. At present this only validates 

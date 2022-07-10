@@ -111,6 +111,12 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 		return trustedtext_chain_s{}, errors.New("incoming block has invalid signature")
 	}
 	// Process block instruction
+	processor := Dispatch_instruction_processor(_incoming_block)
+
+	_existing_ttc, err = processor(_existing_ttc)
+	if err != nil {
+		return trustedtext_chain_s{}, err
+	}
 
 
 	// Append block
@@ -124,6 +130,13 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 	return _existing_ttc, nil
 }
 
-// func Dispatch_instruction_processor(_block_body string) func(trustedtext_chain_s) trustedtext_chain_s {
-
-// }
+func Dispatch_instruction_processor(_block trustedtext_s) func(trustedtext_chain_s) (trustedtext_chain_s, error) {
+	if _block.body.instruction_type == "head_change" {
+		return func(_input_ttc trustedtext_chain_s) (trustedtext_chain_s, error) {
+			return Action_head_move_block(_input_ttc, _block)
+		}
+	}
+	return func (_input_ttc trustedtext_chain_s) (trustedtext_chain_s, error) {
+		return _input_ttc, nil
+	}
+}

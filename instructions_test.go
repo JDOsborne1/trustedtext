@@ -79,7 +79,12 @@ func Test_head_move_block(t *testing.T) {
 		t.Fail()
 	}
 
-	amended_chain, err := Amend_with_head_move_block(lab_chain_2, head_move_block)
+	amended_chain, err := Action_head_move_block(lab_chain_2, head_move_block)
+	if err != nil {
+		t.Log("Cannot action the head move block", "Error:", err)
+		t.Fail()
+	}
+	amended_chain, err = Amend(amended_chain, head_move_block)
 
 	if err != nil {
 		t.Log("Cannot generate an amended chain", "Error:", err)
@@ -87,7 +92,7 @@ func Test_head_move_block(t *testing.T) {
 	}
 
 	if amended_chain.head_hash != second_standard_message {
-		t.Log("Head hash doesn't change after instruction block", "Error:", err)
+		t.Log("Head hash doesn't change after instruction block")
 		t.Fail()
 	}
 
