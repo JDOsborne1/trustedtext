@@ -8,9 +8,6 @@ func generate_standard_test_block() (trustedtext_s, error) {
 	return Instantiate(junk_pub_key, "DeeDee Better not interfere with this one", junk_pri_key)
 }
 
-
-
-
 func Test_Basic_instantiation_works(t *testing.T) {
 	_, err := generate_standard_test_block()
 	if err != nil {
@@ -43,7 +40,7 @@ func Test_Instantiate_input_validation(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = Instantiate("",  "DeeDee Better not interfere with this one", junk_pri_key)
+	_, err = Instantiate("", "DeeDee Better not interfere with this one", junk_pri_key)
 	if err == nil {
 		t.Log("Failing to prevent invalid block creation")
 		t.Fail()
@@ -53,7 +50,7 @@ func Test_Instantiate_input_validation(t *testing.T) {
 func Test_Signing_adds_hash(t *testing.T) {
 	lab_book_1, _ := generate_standard_test_block()
 
-	signed_book_1, err := sign_tt(lab_book_1) 
+	signed_book_1, err := hash_tt(lab_book_1)
 
 	if err != nil {
 		t.Log("signing fails", "Error:", err)
@@ -64,6 +61,5 @@ func Test_Signing_adds_hash(t *testing.T) {
 		t.Log("signing doesn't generate hash on block")
 		t.Fail()
 	}
-
 
 }

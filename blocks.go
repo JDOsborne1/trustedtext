@@ -8,12 +8,13 @@ import (
 )
 
 type trustedtext_s struct {
-	author string
-	body   string
+	author                string
+	body                  string
 	head_hash_at_creation string
-	hash   string
-	hash_signature string
+	hash                  string
+	hash_signature        string
 }
+
 // This function is called to generate a base instance of the trustedtext block, based
 // on its arguments, and then sign it. A block can be valid without tags, as it remains
 // globally unique to the original author, however it must have both an author and body.
@@ -24,8 +25,8 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	if len(_body) == 0 {
 		return trustedtext_s{}, errors.New("cannot have an empty body")
 	}
-	unsigned_tt := trustedtext_s{author: _author, body: _body}
-	signed_tt, err := sign_tt(unsigned_tt)
+	tt_no_hash := trustedtext_s{author: _author, body: _body}
+	tt_with_hash, err := hash_tt(tt_no_hash)
 	if err != nil {
 		return trustedtext_s{}, err
 	}
@@ -33,19 +34,19 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	if err != nil {
 		return trustedtext_s{}, err
 	}
-	decoded_hash, err := hex.DecodeString(signed_tt.hash)
-	signed_tt_signature := hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash))
-	signed_tt.hash_signature = signed_tt_signature 
+	decoded_hash, err := hex.DecodeString(tt_with_hash.hash)
+	signed_tt := hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash))
+	tt_with_hash.hash_signature = signed_tt
 	if err != nil {
 		return trustedtext_s{}, err
 	}
-	return signed_tt, nil
+	return tt_with_hash, nil
 }
 
-// This function wraps the signing process for the trusted text blocks. It will call the 
+// This function wraps the signing process for the trusted text blocks. It will call the
 // hashing function, and then return a version of the input with a populated hash element,
 // derived from the core content of the text element
-func sign_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
+func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 	content_hash, err := return_hash(_existing_trustedtext)
 	if err != nil {
 		return trustedtext_s{}, err
@@ -54,9 +55,8 @@ func sign_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 	return _existing_trustedtext, nil
 }
 
-
 // This function wraps the underlying hashing process, reducing it simply to
-// block in - string out. This structure should be locked in early, since any 
+// block in - string out. This structure should be locked in early, since any
 // change to it will almost certainly invalidate all the hashing chains
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	elements := _trusted_text_element.author +
