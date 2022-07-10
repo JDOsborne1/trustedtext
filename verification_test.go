@@ -45,3 +45,30 @@ func Test_that_hashes_can_be_validated(t *testing.T) {
 		t.Fail()
 	}
 }
+
+
+func Test_that_pairs_are_properly_checked(t *testing.T) {
+	var is_valid bool
+	var err error
+	
+	is_valid, err = encoded_key_pair_is_valid(junk_pub_key, junk_pri_key)
+	if err != nil {
+		t.Log("Error in validating legal inputs", "Error:", err)
+		t.Fail()
+	}
+	if !is_valid {
+		t.Log("Validation rejects true pairs")
+		t.Fail()
+	}
+	
+	is_valid, err = encoded_key_pair_is_valid("asdasd", junk_pri_key)
+	if err != nil {
+		t.Log("Error in validating legal, but incorrect inputs", "Error:", err)
+		t.Fail()
+	}
+	if is_valid {
+		t.Log("Validation allows false pairs")
+		t.Fail()
+	}
+	
+}

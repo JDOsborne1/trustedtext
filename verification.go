@@ -39,3 +39,19 @@ func sign_tt(_hash_of_message_body string, _private_key string) (string, error) 
 	return hex.EncodeToString(ed25519.Sign(decoded_key, decoded_hash)), nil
 	
 }
+
+func encoded_key_pair_is_valid(_encoded_public_key string, _encoded_private_key string) (bool, error) {
+	decoded_pri_key, err := hex.DecodeString(_encoded_private_key)
+	if err != nil {
+		return false, err
+	}
+
+	publicKey := make([]byte, 32)
+	copy(publicKey, decoded_pri_key[32:])
+	
+	encoded_regenerated_pub_key := hex.EncodeToString(publicKey)
+
+	keys_match := encoded_regenerated_pub_key == _encoded_public_key
+
+	return keys_match, nil
+}

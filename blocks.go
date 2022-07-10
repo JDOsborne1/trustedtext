@@ -24,6 +24,14 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	if len(_body) == 0 {
 		return trustedtext_s{}, errors.New("cannot have an empty body")
 	}
+	valid_signature_pairs, err := encoded_key_pair_is_valid(_author, _private_key)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+	if !valid_signature_pairs {
+		return trustedtext_s{}, errors.New("author and key combination don't match")
+	}
+
 	tt_no_hash := trustedtext_s{author: _author, body: _body}
 	tt_with_hash, err := hash_tt(tt_no_hash)
 	if err != nil {
@@ -34,8 +42,9 @@ func Instantiate(_author string, _body string, _private_key string) (trustedtext
 	if err != nil {
 		return trustedtext_s{}, err
 	}
-
 	tt_with_hash.hash_signature = signature
+
+
 	return tt_with_hash, nil
 }
 

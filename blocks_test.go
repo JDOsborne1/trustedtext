@@ -63,3 +63,19 @@ func Test_Signing_adds_hash(t *testing.T) {
 	}
 
 }
+
+
+func Test_that_all_authors_are_valid_pub_keys(t *testing.T) {
+	var err error
+	_, err = Instantiate(junk_pub_key, "TEST BODY", junk_pri_key)
+	if err != nil {
+		t.Log("Instantiate block fails on valid pair", "Error:", err)
+		t.Fail()
+	}
+
+	_, err = Instantiate("Junk string", "TEST BODY", junk_pri_key)
+	if err == nil {
+		t.Log("Instantiate fails to block an invalid pair")
+		t.Fail()
+	}
+}
