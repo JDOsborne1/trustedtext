@@ -25,3 +25,16 @@ func util_subset_map(_original_map map[string]trustedtext_s, _keys_to_keep []str
 
 	return new_map
 }
+
+func util_anti_set_map[Res trustedtext_s | bool](_original_map map[string]Res, _keys_to_compare []string) map[string]Res {
+	mapped_keys_to_keep := util_make_boolean_map_from_slice(_keys_to_compare)
+
+	new_map := make(map[string]Res)
+	for key , value := range _original_map {
+		if !mapped_keys_to_keep[key] {
+			new_map[key] = value
+		}
+	} 
+
+	return new_map
+}

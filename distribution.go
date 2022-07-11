@@ -13,3 +13,11 @@ func Fork_chain_essentials(_trusted_text_chain trustedtext_chain_s) trustedtext_
 	_trusted_text_chain.tt_chain = util_subset_map(_trusted_text_chain.tt_chain, essential_keys)
 	return _trusted_text_chain
 }
+
+// Get_head_hashes_missing_from_comp takes a trusted text chain and a comparison list, and returns any missing keys
+ func Get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext_chain_s, _comparison_list []string) []string {
+	all_head_hashes := _trusted_text_chain.head_hash_tree
+	anti_set_map := util_anti_set_map(all_head_hashes, _comparison_list)
+	return maps.Keys(anti_set_map)
+ }
+
