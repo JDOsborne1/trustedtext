@@ -7,16 +7,16 @@ import (
 )
 
 type trustedtext_s struct {
-	author                string
-	body                  tt_body
-	head_hash_at_creation string
-	hash                  string
-	hash_signature        string
+	Author                string
+	Body                  tt_body
+	Head_hash_at_creation string
+	Hash                  string
+	Hash_signature        string
 }
 
 type tt_body struct {
 	instruction_type string
-	instruction string
+	instruction      string
 }
 
 // This function is called to generate a base instance of the trustedtext block, based
@@ -26,7 +26,7 @@ func Instantiate(_author string, _body tt_body, _private_key string) (trustedtex
 	if len(_author) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing author")
 	}
-	
+
 	if len(_body.instruction_type) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing instruction type")
 	}
@@ -41,23 +41,20 @@ func Instantiate(_author string, _body tt_body, _private_key string) (trustedtex
 		return trustedtext_s{}, errors.New("author and key combination don't match")
 	}
 
-	tt_no_hash := trustedtext_s{author: _author, body: _body}
+	tt_no_hash := trustedtext_s{Author: _author, Body: _body}
 	tt_with_hash, err := hash_tt(tt_no_hash)
 	if err != nil {
 		return trustedtext_s{}, err
 	}
 
-	signature, err := sign_tt(tt_with_hash.hash, _private_key)
+	signature, err := sign_tt(tt_with_hash.Hash, _private_key)
 	if err != nil {
 		return trustedtext_s{}, err
 	}
-	tt_with_hash.hash_signature = signature
-
+	tt_with_hash.Hash_signature = signature
 
 	return tt_with_hash, nil
 }
-
-
 
 // This function wraps the signing process for the trusted text blocks. It will call the
 // hashing function, and then return a version of the input with a populated hash element,
@@ -67,7 +64,7 @@ func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 	if err != nil {
 		return trustedtext_s{}, err
 	}
-	_existing_trustedtext.hash = content_hash
+	_existing_trustedtext.Hash = content_hash
 	return _existing_trustedtext, nil
 }
 
@@ -75,10 +72,10 @@ func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 // block in - string out. This structure should be locked in early, since any
 // change to it will almost certainly invalidate all the hashing chains
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
-	elements := _trusted_text_element.author +
-		_trusted_text_element.body.instruction_type +
-		_trusted_text_element.body.instruction +
-		_trusted_text_element.head_hash_at_creation
+	elements := _trusted_text_element.Author +
+		_trusted_text_element.Body.instruction_type +
+		_trusted_text_element.Body.instruction +
+		_trusted_text_element.Head_hash_at_creation
 
 	hasher := sha1.New()
 

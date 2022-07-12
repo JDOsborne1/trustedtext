@@ -10,7 +10,7 @@ const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d
 const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 
 func Test_key_pair(t *testing.T) {
-	message :=  []byte("junk message")
+	message := []byte("junk message")
 	var err error
 	decoded_pri_key, err := hex.DecodeString(junk_pri_key)
 	if err != nil {
@@ -31,11 +31,10 @@ func Test_key_pair(t *testing.T) {
 
 }
 
-
 func Test_that_hashes_can_be_validated(t *testing.T) {
 	test_block, _ := generate_standard_test_block()
 
-	valid_signature, err := Verify_hex_encoded_values(test_block.author, test_block.hash, test_block.hash_signature)
+	valid_signature, err := Verify_hex_encoded_values(test_block.Author, test_block.Hash, test_block.Hash_signature)
 	if err != nil {
 		t.Log("Cannot verify valid hex encoded values", "Error:", err)
 		t.Fail()
@@ -46,11 +45,10 @@ func Test_that_hashes_can_be_validated(t *testing.T) {
 	}
 }
 
-
 func Test_that_pairs_are_properly_checked(t *testing.T) {
 	var is_valid bool
 	var err error
-	
+
 	is_valid, err = encoded_key_pair_is_valid(junk_pub_key, junk_pri_key)
 	if err != nil {
 		t.Log("Error in validating legal inputs", "Error:", err)
@@ -60,7 +58,7 @@ func Test_that_pairs_are_properly_checked(t *testing.T) {
 		t.Log("Validation rejects true pairs")
 		t.Fail()
 	}
-	
+
 	is_valid, err = encoded_key_pair_is_valid("asdasd", junk_pri_key)
 	if err != nil {
 		t.Log("Error in validating legal, but incorrect inputs", "Error:", err)
@@ -70,5 +68,5 @@ func Test_that_pairs_are_properly_checked(t *testing.T) {
 		t.Log("Validation allows false pairs")
 		t.Fail()
 	}
-	
+
 }

@@ -3,16 +3,16 @@ package main
 import "testing"
 
 func Test_head_hash_functionality(t *testing.T) {
-	lab_chain_1  := generate_standard_test_chain(true)
+	lab_chain_1 := generate_standard_test_chain(true)
 	if len(lab_chain_1.head_hash) == 0 {
 		t.Log("chain not instantiated with a head hash")
 		t.Fail()
 	}
 
-	lab_chain_2  := generate_standard_test_chain(false)
+	lab_chain_2 := generate_standard_test_chain(false)
 	var err error
 
-	_, err = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain[second_standard_message].hash)
+	_, err = Move_head_hash(lab_chain_2, lab_chain_2.tt_chain[second_standard_message].Hash)
 	if err != nil {
 		t.Log("Fails to accept a valid hash to change to")
 		t.Fail()
@@ -32,12 +32,12 @@ func Test_head_hash_history(t *testing.T) {
 		t.Log("Genesis block not in head hash tree")
 		t.Fail()
 	}
-	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain[second_standard_message].hash)
+	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain[second_standard_message].Hash)
 	if !lab_chain_1.head_hash_tree[second_standard_message] {
 		t.Log("Subsequent head hashes not added to head hash tree")
 		t.Fail()
 	}
-	
+
 }
 
 func Test_serialise_deserialise(t *testing.T) {
@@ -64,13 +64,11 @@ func Test_serialise_deserialise(t *testing.T) {
 		t.Fail()
 	}
 
-
 }
-
 
 func Test_head_move_block(t *testing.T) {
 
-	lab_chain_2  := generate_standard_test_chain(false)
+	lab_chain_2 := generate_standard_test_chain(false)
 	var err error
 
 	head_move_block, err := Generate_head_move_block(junk_pub_key, second_standard_message, junk_pri_key)
