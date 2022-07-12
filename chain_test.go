@@ -4,8 +4,8 @@ import "testing"
 
 func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedtext_s {
 	dexters_instruction_2 := tt_body{
-		instruction_type: "publish",
-		instruction:      "Intruder alert, DeeDee in the lab. Again!",
+		Instruction_type: "publish",
+		Instruction:      "Intruder alert, DeeDee in the lab. Again!",
 	}
 	new_block, _ := Instantiate(junk_pub_key, dexters_instruction_2, junk_pri_key)
 	return new_block
@@ -13,8 +13,8 @@ func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedt
 
 func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 	dexters_instruction_1 := tt_body{
-		instruction_type: "publish",
-		instruction:      "Intruder alert, DeeDee in the lab",
+		Instruction_type: "publish",
+		Instruction:      "Intruder alert, DeeDee in the lab",
 	}
 	test_ttc, _ := Genesis(
 		junk_pub_key,

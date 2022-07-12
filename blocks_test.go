@@ -6,8 +6,8 @@ import (
 
 func generate_standard_test_block() (trustedtext_s, error) {
 	dexters_instruction_1 := tt_body{
-		instruction_type: "publish",
-		instruction:      "DeeDee Better not interfere with this one",
+		Instruction_type: "publish",
+		Instruction:      "DeeDee Better not interfere with this one",
 	}
 	return Instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
 }
@@ -32,8 +32,8 @@ func Test_Signed_instantiation(t *testing.T) {
 func Test_Instantiate_input_validation(t *testing.T) {
 	var err error
 	dexters_instruction_1 := tt_body{
-		instruction_type: "publish",
-		instruction:      "DeeDee Better not interfere with this one",
+		Instruction_type: "publish",
+		Instruction:      "DeeDee Better not interfere with this one",
 	}
 	_, err = Instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
 	if err != nil {
@@ -74,8 +74,8 @@ func Test_Signing_adds_hash(t *testing.T) {
 func Test_that_all_authors_are_valid_pub_keys(t *testing.T) {
 	var err error
 	dexters_instruction_1 := tt_body{
-		instruction_type: "publish",
-		instruction:      "DeeDee Better not interfere with this one",
+		Instruction_type: "publish",
+		Instruction:      "DeeDee Better not interfere with this one",
 	}
 	_, err = Instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
 	if err != nil {

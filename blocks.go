@@ -15,8 +15,8 @@ type trustedtext_s struct {
 }
 
 type tt_body struct {
-	instruction_type string
-	instruction      string
+	Instruction_type string
+	Instruction      string
 }
 
 // This function is called to generate a base instance of the trustedtext block, based
@@ -27,10 +27,10 @@ func Instantiate(_author string, _body tt_body, _private_key string) (trustedtex
 		return trustedtext_s{}, errors.New("cannot have a missing author")
 	}
 
-	if len(_body.instruction_type) == 0 {
+	if len(_body.Instruction_type) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing instruction type")
 	}
-	if len(_body.instruction) == 0 {
+	if len(_body.Instruction) == 0 {
 		return trustedtext_s{}, errors.New("cannot have an empty instruction")
 	}
 	valid_signature_pairs, err := encoded_key_pair_is_valid(_author, _private_key)
@@ -73,8 +73,8 @@ func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 // change to it will almost certainly invalidate all the hashing chains
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	elements := _trusted_text_element.Author +
-		_trusted_text_element.Body.instruction_type +
-		_trusted_text_element.Body.instruction +
+		_trusted_text_element.Body.Instruction_type +
+		_trusted_text_element.Body.Instruction +
 		_trusted_text_element.Head_hash_at_creation
 
 	hasher := sha1.New()

@@ -29,8 +29,8 @@ type trustedtext_chain_s struct {
 // text data is held in blocks with both sides of the chain.
 func Genesis(_author string, _tags []string, _private_key string) (trustedtext_chain_s, error) {
 	original_instruction := tt_body{
-		instruction_type: "publish",
-		instruction:      "This is the origin message of a trusted text chain",
+		Instruction_type: "publish",
+		Instruction:      "This is the origin message of a trusted text chain",
 	}
 
 	first_element, err := Instantiate(
@@ -125,7 +125,7 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 }
 
 func Dispatch_instruction_processor(_block trustedtext_s) func(trustedtext_chain_s) (trustedtext_chain_s, error) {
-	if _block.Body.instruction_type == "head_change" {
+	if _block.Body.Instruction_type == "head_change" {
 		return func(_input_ttc trustedtext_chain_s) (trustedtext_chain_s, error) {
 			return Action_head_move_block(_input_ttc, _block)
 		}

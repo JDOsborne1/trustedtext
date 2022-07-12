@@ -36,8 +36,8 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 	serialised_change, err := Serialise_head_change(change_instruction)
 
 	instruction_body := tt_body{
-		instruction_type: "head_change",
-		instruction:      serialised_change,
+		Instruction_type: "head_change",
+		Instruction:      serialised_change,
 	}
 
 	if err != nil {
@@ -67,7 +67,7 @@ func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block 
 		return trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
 	}
 
-	head_change_value, err := Deserialise_head_change(_head_move_block.Body.instruction)
+	head_change_value, err := Deserialise_head_change(_head_move_block.Body.Instruction)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}

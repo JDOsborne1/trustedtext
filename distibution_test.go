@@ -14,8 +14,8 @@ func Test_fork_keeps_core_tree(t *testing.T) {
 		t.Fail()
 	}
 	deedees_instruction := tt_body{
-		instruction_type: "publish",
-		instruction:      "Haha, look at all the fun dials to turn",
+		Instruction_type: "publish",
+		Instruction:      "Haha, look at all the fun dials to turn",
 	}
 	new_block, _ := Instantiate("DeeDee", deedees_instruction, junk_pri_key)
 	lab_chain_3, _ := Amend(lab_chain_2, new_block)
