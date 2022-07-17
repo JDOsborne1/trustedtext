@@ -1,13 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	// "html"
 	"log"
 	"net/http"
-
-	"golang.org/x/exp/maps"
 )
 
 var test_chain trustedtext_chain_s
@@ -16,33 +14,17 @@ const test_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5
 
 
 
-func give_block(w http.ResponseWriter, r *http.Request) {
-	parsed_q := r.URL.Query()
-	requested_hash := parsed_q["block_hash"][0]
-	requested_block := test_chain.tt_chain[requested_hash]
-	text_block, _ := json.Marshal(requested_block)
-	fmt.Fprint(w, string(text_block))
-}
 
-func give_known_blocks(w http.ResponseWriter, r *http.Request) {
-	output_encoder := json.NewEncoder(w)
-	output_encoder.Encode(maps.Keys(test_chain.tt_chain))
-}
 
 
 func test_handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
 	}
 	var post_deposit []byte
 	var err error
-	var n int
-	n, err = r.Body.Read(post_deposit)
-	if n == 0 {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "r.Body: %v\n", r.Body)
-		fmt.Fprint(w, "No bytes read")
-	}
+	post_deposit, err = ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -53,6 +35,7 @@ func test_handle(w http.ResponseWriter, r *http.Request) {
 	// 	w.WriteHeader(http.StatusInternalServerError)
 	// 	fmt.Fprint(w, err)
 	// }
+	
 	
 	// text_block, err := json.Marshal(resultant_block)
 	// if err != nil {
