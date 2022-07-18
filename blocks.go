@@ -74,8 +74,7 @@ func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 	elements := _trusted_text_element.Author +
 		_trusted_text_element.Body.Instruction_type +
-		_trusted_text_element.Body.Instruction +
-		_trusted_text_element.Head_hash_at_creation
+		_trusted_text_element.Body.Instruction
 
 	hasher := sha1.New()
 

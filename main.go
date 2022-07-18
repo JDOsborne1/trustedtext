@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -23,6 +22,7 @@ func test_handle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
+		return
 	}
 	
 	hash_already_in_chain := Is_hash_in_chain(test_chain, resultant_block.Hash)
@@ -44,15 +44,10 @@ func test_handle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
+		return
 	}
 
-	text_block, err := json.Marshal(resultant_block)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-	}
-	fmt.Fprint(w, string(text_block))
-	
+	w.WriteHeader(http.StatusCreated)
 }
 
 
@@ -72,15 +67,15 @@ func main() {
 		test_pri_key,
 	)
 	test_chain, _ = Process_incoming_block(test_chain, test_block_1)
-	// test_block_2, _ := Instantiate(
-	// 	test_pub_key,
-	// 	tt_body{
-	// 		Instruction_type: "publish",
-	// 		Instruction: "My Second ever message",
-	// 	},
-	// 	test_pri_key,
-	// )
-	// test_chain, _ = Process_incoming_block(test_chain, test_block_2)
+	test_block_2, _ := Instantiate(
+		test_pub_key,
+		tt_body{
+			Instruction_type: "publish",
+			Instruction: "My Second ever message",
+		},
+		test_pri_key,
+	)
+	test_chain, _ = Process_incoming_block(test_chain, test_block_2)
 
 	http.HandleFunc("/block", give_block)
 	http.HandleFunc("/known_blocks", give_known_blocks)
