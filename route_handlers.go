@@ -36,3 +36,40 @@ func extract_submitted_block(r *http.Request) (trustedtext_s, error) {
 	}
 	return *resultant_block, nil
 }
+
+func submit_block_handler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	resultant_block, err := extract_submitted_block(r)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	
+	hash_already_in_chain := Is_hash_in_chain(test_chain, resultant_block.Hash)
+
+	if hash_already_in_chain {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "Hash already in chain")
+		return
+	}
+
+	hash_is_valid, err := Verify_block_is_valid(resultant_block)
+	if !hash_is_valid {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "Block cannot be verified, with error: ", err)
+		return
+	}
+
+	test_chain, err = Process_incoming_block(test_chain, resultant_block)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}
