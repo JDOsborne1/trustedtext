@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"golang.org/x/exp/maps"
@@ -19,4 +20,19 @@ func give_block(w http.ResponseWriter, r *http.Request) {
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
 	output_encoder := json.NewEncoder(w)
 	output_encoder.Encode(maps.Keys(test_chain.tt_chain))
+}
+
+func extract_submitted_block(r *http.Request) (trustedtext_s, error) {
+	var post_deposit []byte
+	var err error
+	post_deposit, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+	resultant_block := &trustedtext_s{}
+	err = json.Unmarshal(post_deposit, resultant_block)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+	return *resultant_block, nil
 }

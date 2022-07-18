@@ -89,3 +89,12 @@ func Test_that_all_authors_are_valid_pub_keys(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func Test_that_subsequent_hashing_works(t *testing.T) {
+	tb, _ := generate_standard_test_block()
+	initial_hash := tb.Hash
+	new_hash,_ := return_hash(tb)
+	if initial_hash != new_hash {
+		t.Log("Rehashing the same block produces changing results")
+	}
+}
