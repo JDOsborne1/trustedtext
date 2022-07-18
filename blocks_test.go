@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"encoding/json"
 	"testing"
 )
 
@@ -11,6 +12,13 @@ func generate_standard_test_block() (trustedtext_s, error) {
 	}
 	return Instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
 }
+
+// func Test_return_standard_block(t *testing.T) {
+// 	test_block, _ := generate_standard_test_block()
+// 	text_block, _ := json.Marshal(test_block)
+// 	t.Log(string(text_block))
+// 	t.Fail()
+// }
 
 func Test_Basic_instantiation_works(t *testing.T) {
 	_, err := generate_standard_test_block()
