@@ -21,3 +21,9 @@ func Fork_chain_essentials(_trusted_text_chain trustedtext_chain_s) trustedtext_
 	return maps.Keys(anti_set_map)
  }
 
+func Is_hash_in_chain(_trusted_text_chain trustedtext_chain_s, _comparison_hash string) bool {
+	all_hashes := maps.Keys(_trusted_text_chain.tt_chain)
+	check_map := util_make_boolean_map_from_slice(all_hashes)
+	return check_map[_comparison_hash]
+}
+

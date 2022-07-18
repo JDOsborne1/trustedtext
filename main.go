@@ -43,7 +43,12 @@ func test_handle(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 	}
 	
+	hash_already_in_chain := Is_hash_in_chain(test_chain, resultant_block.Hash)
 
+	if hash_already_in_chain {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "Hash already in chain")
+	}
 	
 	text_block, err := json.Marshal(resultant_block)
 	if err != nil {
