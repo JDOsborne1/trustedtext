@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 
@@ -30,6 +31,23 @@ func extract_submitted_block(r *http.Request) (trustedtext_s, error) {
 	return *resultant_block, nil
 }
 
+func Verify_block_is_valid(_input_block trustedtext_s) (bool, error) {
+	rehash_of_body, err := return_hash(_input_block)
+	if err != nil {
+		return false, err
+	} 
+	if rehash_of_body != _input_block.Hash {
+		return false, errors.New("body content doesn't match body hash")
+	}
+	signature_is_valid, err := Verify_hex_encoded_values(_input_block.Author, _input_block.Hash, _input_block.Hash_signature)
+	if err != nil {
+		return false, err
+	} 
+	if !signature_is_valid {
+		return false, errors.New("hash signature not verified")
+	}
+	return true, nil
+}
  
 
 func test_handle(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +66,16 @@ func test_handle(w http.ResponseWriter, r *http.Request) {
 	if hash_already_in_chain {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, "Hash already in chain")
+		return
 	}
+
+	hash_is_valid, err := Verify_block_is_valid(resultant_block)
+	if !hash_is_valid {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "Block cannot be verified, with error: ", err)
+		return
+	}
+
 	
 	text_block, err := json.Marshal(resultant_block)
 	if err != nil {
