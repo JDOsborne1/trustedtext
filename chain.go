@@ -2,6 +2,8 @@ package main
 
 import (
 	"errors"
+
+	"golang.org/x/exp/maps"
 )
 
 type Trustedtext_chain_i interface {
@@ -105,6 +107,15 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 	if !block_has_valid_signature {
 		return trustedtext_chain_s{}, errors.New("incoming block has invalid signature")
 	}
+
+	// Check if block is already added
+	hashes_in_chain := maps.Keys(_existing_ttc.tt_chain)
+	in_chain_map := util_make_boolean_map_from_slice(hashes_in_chain)
+	hash_already_in_chain := in_chain_map[_incoming_block.Hash]
+	if hash_already_in_chain {
+		return trustedtext_chain_s{}, errors.New("incoming block already in chain")
+	}
+
 	// Process block instruction
 	processor := Dispatch_instruction_processor(_incoming_block)
 

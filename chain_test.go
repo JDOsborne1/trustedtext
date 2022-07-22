@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"golang.org/x/exp/maps"
+)
 
 func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedtext_s {
 	dexters_instruction_2 := tt_body{
@@ -118,4 +122,26 @@ func Test_return_head_hash_functionality(t *testing.T) {
 		t.Fail()
 	}
 
+}
+
+func Test_distribute_validation(t *testing.T) {
+	lab_chain_1 := generate_standard_test_chain(false)
+
+	new_block := generate_additonal_test_block(lab_chain_1)
+	existing_hash := maps.Keys(lab_chain_1.tt_chain)[1]
+	existing_block := lab_chain_1.tt_chain[existing_hash]
+
+	var err error
+
+	_, err = Process_incoming_block(lab_chain_1, existing_block)
+	if err == nil {
+		t.Log("Validation doesn't catch existing block")
+		t.Fail()
+	}
+
+	_, err = Process_incoming_block(lab_chain_1, new_block)
+	if err != nil {
+		t.Log("Validation fails on valid blocks")
+		t.Fail()
+	}
 }
