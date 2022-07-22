@@ -1,11 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-
-	// "html"
 	"log"
 	"net/http"
 )
@@ -20,43 +15,7 @@ const test_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5
 
 
 func test_handle(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-	var post_deposit []byte
-	var err error
-	post_deposit, err = ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
-	resultant_block := &trustedtext_s{}
-	err = json.Unmarshal(post_deposit, resultant_block)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
 	
-	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
-	if err != nil {
-		test_chain = new_chain
-	}
-	
-	text_block, err := json.Marshal(test_chain.tt_chain[resultant_block.Hash])
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
-	fmt.Fprint(w, string(text_block))
 	
 }
 
@@ -89,6 +48,7 @@ func main() {
 
 	http.HandleFunc("/block", give_block)
 	http.HandleFunc("/known_blocks", give_known_blocks)
+	http.HandleFunc("/submit_block", submit_block)
 	http.HandleFunc("/test", test_handle)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

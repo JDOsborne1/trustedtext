@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
-
 	"golang.org/x/exp/maps"
 )
 
@@ -19,4 +19,38 @@ func give_block(w http.ResponseWriter, r *http.Request) {
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
 	output_encoder := json.NewEncoder(w)
 	output_encoder.Encode(maps.Keys(test_chain.tt_chain))
+}
+
+func submit_block(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	var post_deposit []byte
+	var err error
+	post_deposit, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	resultant_block := &trustedtext_s{}
+	err = json.Unmarshal(post_deposit, resultant_block)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	
+	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	if err != nil {
+		test_chain = new_chain
+	}
+	
+	w.WriteHeader(http.StatusCreated)
 }
