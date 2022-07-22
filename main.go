@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
+
 	// "html"
 	"log"
 	"net/http"
@@ -28,21 +30,33 @@ func test_handle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
+		return
 	}
-	// resultant_block := &trustedtext_s{}
-	// err = json.Unmarshal(post_deposit, resultant_block)
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	fmt.Fprint(w, err)
-	// }
+	resultant_block := &trustedtext_s{}
+	err = json.Unmarshal(post_deposit, resultant_block)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
 	
+	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	if err != nil {
+		test_chain = new_chain
+	}
 	
-	// text_block, err := json.Marshal(resultant_block)
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	fmt.Fprint(w, err)
-	// }
-	fmt.Fprint(w, string(post_deposit))
+	text_block, err := json.Marshal(test_chain.tt_chain[resultant_block.Hash])
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	fmt.Fprint(w, string(text_block))
 	
 }
 
