@@ -19,22 +19,67 @@ func check_with_peers() error{
 	if len(peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
 	}
+	missing_blocks := []string{}
+	for _, peer := range peerlist {
+		peers_missing_blocks, err := check_with_a_peer(peer)
+		if err != nil {
+			return err
+		}
+		for _, block := range peers_missing_blocks {
+			retrieve_from_a_peer(peer, block)
+		}
+		missing_blocks = append(missing_blocks, peers_missing_blocks...)
+	}
+
+	if len(missing_blocks) != 0 {
+		fmt.Println("Missing items on the web")
+	}
+	return nil
+}
+
+func check_with_a_peer(peer peer_detail) ([]string, error) {
+	// Logging step
+	fmt.Println("Checking the blocks held by", peer.Claimed_name)
+
+	// Get and decode known blocks
 	resp, err := http.Get("http://" + peerlist[0].Path + "/known_blocks")
 	if err != nil {
-		return err
+		return []string{}, err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
 	known_blocks_of_peer := &[]string{}
 	response_decoder.Decode(known_blocks_of_peer)
+
+	// Determine missing elements
 	peer_blocks_map := util_make_boolean_map_from_slice(*known_blocks_of_peer)
 	my_blocks := maps.Keys(test_chain.tt_chain)
 
 	new_keys_of_peer := util_anti_set_map(peer_blocks_map, my_blocks)
 
-	if len(new_keys_of_peer) != 0 {
-		fmt.Println("Missing items on the web")
+	return maps.Keys(new_keys_of_peer), nil
+}
+
+func retrieve_from_a_peer(peer peer_detail, block_hash string) error {
+	fmt.Println("Retrieving", block_hash, "from", peer.Claimed_name)
+	resp, err := http.Get("http://" + peer.Path + "/block" + "?block_hash=" + block_hash)
+	if err != nil {
+		return err
 	}
+	response_decoder := json.NewDecoder(resp.Body) 
+	returned_block := &trustedtext_s{}
+
+	err = response_decoder.Decode(returned_block)
+	if err != nil {
+		return err
+	}
+
+	test_chain, err = Process_incoming_block(test_chain, *returned_block)
+	if err != nil {
+		return nil
+	}
+
 	return nil
+
 }
 
 func test_handler(w http.ResponseWriter, r *http.Request) {
