@@ -8,6 +8,11 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+type peer_detail struct {
+	Claimed_name string
+	Path string
+}
+
 func give_block(w http.ResponseWriter, r *http.Request) {
 	parsed_q := r.URL.Query()
 	requested_hash := parsed_q["block_hash"][0]
@@ -53,4 +58,40 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	w.WriteHeader(http.StatusCreated)
+}
+
+func share_peerlist(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	marshalled_peerlist, err := json.Marshal(peerlist)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	fmt.Fprint(w, string(marshalled_peerlist))
+}
+
+func add_peer(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "PUT" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+	var post_deposit []byte
+	var err error
+	post_deposit, err = ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	resultant_peer := &peer_detail{}
+	err = json.Unmarshal(post_deposit, resultant_peer)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	peerlist = append(peerlist, *resultant_peer)
 }

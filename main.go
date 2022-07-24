@@ -11,16 +11,15 @@ const test_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5
 
 
 
-
-
-
-func test_handle(w http.ResponseWriter, r *http.Request) {
-	
-	
-}
-
+var peerlist []peer_detail
 
 func main() {
+
+	new_peer := peer_detail{
+		Claimed_name: "self",
+		Path: "localhost:8080",
+	}
+	peerlist = append(peerlist, new_peer)
 
 	test_chain, _ = Genesis(
 		test_pub_key,
@@ -49,6 +48,9 @@ func main() {
 	http.HandleFunc("/block", give_block)
 	http.HandleFunc("/known_blocks", give_known_blocks)
 	http.HandleFunc("/submit_block", submit_block)
-	http.HandleFunc("/test", test_handle)
+	http.HandleFunc("/share_peerlist", share_peerlist)
+	http.HandleFunc("/add_peer", add_peer)
+	
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
