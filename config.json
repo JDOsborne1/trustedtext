@@ -1,3 +1,4 @@
 {
-  "Peerlist_path": "peerlist.json"
+  "Peerlist_path": "peerlist.json",
+  "Chain_path": "chain.json" 
 }
