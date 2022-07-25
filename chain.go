@@ -16,11 +16,11 @@ type Trustedtext_chain_i interface {
 }
 
 type trustedtext_chain_s struct {
-	original_author string
-	tt_chain        map[string]trustedtext_s
-	tags            []string
-	head_hash       string
-	head_hash_tree  map[string]bool
+	Original_author string
+	Tt_chain        map[string]trustedtext_s
+	Tags            []string
+	Head_hash       string
+	Head_hash_tree  map[string]bool
 }
 
 // Genesis is the function called to create a new trusted text chain.
@@ -51,11 +51,11 @@ func Genesis(_author string, _tags []string, _private_key string) (trustedtext_c
 	inital_head_tree[first_element.Hash] = true
 
 	new_chain := trustedtext_chain_s{
-		original_author: _author,
-		tt_chain:        inital_block_map,
-		tags:            _tags,
-		head_hash:       first_element.Hash,
-		head_hash_tree:  inital_head_tree,
+		Original_author: _author,
+		Tt_chain:        inital_block_map,
+		Tags:            _tags,
+		Head_hash:       first_element.Hash,
+		Head_hash_tree:  inital_head_tree,
 	}
 	return new_chain, nil
 }
@@ -64,14 +64,14 @@ func Genesis(_author string, _tags []string, _private_key string) (trustedtext_c
 // such that it creates a new chain, which is a copy of the previous, but for the inclusion of
 // a new block at the end.
 func Amend(_existing_ttc trustedtext_chain_s, _new_block trustedtext_s) (trustedtext_chain_s, error) {
-	if len(_existing_ttc.tt_chain) == 0 {
+	if len(_existing_ttc.Tt_chain) == 0 {
 		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
 	}
 	current_head_hash := Head_hash(_existing_ttc)
 
 	_new_block.Head_hash_at_creation = current_head_hash
 
-	_existing_ttc.tt_chain[_new_block.Hash] = _new_block
+	_existing_ttc.Tt_chain[_new_block.Hash] = _new_block
 	return _existing_ttc, nil
 }
 
@@ -79,7 +79,7 @@ func Amend(_existing_ttc trustedtext_chain_s, _new_block trustedtext_s) (trusted
 // This header block may be moved over time, and points to the block which contains the current definitive
 // record of the trusted text element.
 func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
-	return _existing_trustedtext.head_hash
+	return _existing_trustedtext.Head_hash
 }
 
 // Return_head_block gives back the block object which is currently pointed to by the head hash.
@@ -90,11 +90,11 @@ func Return_head_block(_existing_ttc trustedtext_chain_s) (trustedtext_s, error)
 
 // Return_specified_hash returns a specific block in the chain
 func Return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash string) (trustedtext_s, error) {
-	hash_found := _existing_ttc.tt_chain[_specified_hash].Body != tt_body{}
+	hash_found := _existing_ttc.Tt_chain[_specified_hash].Body != tt_body{}
 	if !hash_found {
 		return trustedtext_s{}, errors.New("head block not found in chain")
 	}
-	return _existing_ttc.tt_chain[_specified_hash], nil
+	return _existing_ttc.Tt_chain[_specified_hash], nil
 }
 
 func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block trustedtext_s) (trustedtext_chain_s, error) {
@@ -109,7 +109,7 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 	}
 
 	// Check if block is already added
-	hashes_in_chain := maps.Keys(_existing_ttc.tt_chain)
+	hashes_in_chain := maps.Keys(_existing_ttc.Tt_chain)
 	in_chain_map := util_make_boolean_map_from_slice(hashes_in_chain)
 	hash_already_in_chain := in_chain_map[_incoming_block.Hash]
 	if hash_already_in_chain {

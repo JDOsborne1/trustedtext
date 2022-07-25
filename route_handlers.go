@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
 	"golang.org/x/exp/maps"
 )
 
 type peer_detail struct {
 	Claimed_name string
-	Path string
+	Path         string
 }
 
 func give_block(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +24,7 @@ func give_block(w http.ResponseWriter, r *http.Request) {
 
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
 	output_encoder := json.NewEncoder(w)
-	output_encoder.Encode(maps.Keys(test_chain.tt_chain))
+	output_encoder.Encode(maps.Keys(test_chain.Tt_chain))
 }
 
 func submit_block(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +47,7 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
-	
+
 	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -56,7 +57,7 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		test_chain = new_chain
 	}
-	
+
 	w.WriteHeader(http.StatusCreated)
 }
 

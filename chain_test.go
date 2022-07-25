@@ -80,21 +80,21 @@ func Test_basic_amend(t *testing.T) {
 
 func Test_amend_functionality(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(false)
-	existing_head_hash := lab_chain_1.head_hash
-	existing_chain_length := len(lab_chain_1.tt_chain)
+	existing_head_hash := lab_chain_1.Head_hash
+	existing_chain_length := len(lab_chain_1.Tt_chain)
 
 	new_block := generate_additonal_test_block(lab_chain_1)
 
 	lab_chain_2, _ := Amend(lab_chain_1, new_block)
 
-	if lab_chain_2.head_hash != existing_head_hash {
+	if lab_chain_2.Head_hash != existing_head_hash {
 		t.Log("Amend interferes with head_hash")
 		t.Fail()
 	}
 
-	if len(lab_chain_2.tt_chain)-existing_chain_length != 1 {
+	if len(lab_chain_2.Tt_chain)-existing_chain_length != 1 {
 		t.Log("Amend increments chain length inappropriately")
-		t.Log("Initial chain length is:", existing_chain_length, "new chain length is:", len(lab_chain_2.tt_chain))
+		t.Log("Initial chain length is:", existing_chain_length, "new chain length is:", len(lab_chain_2.Tt_chain))
 		t.Fail()
 	}
 }
@@ -106,18 +106,18 @@ func Test_return_head_hash_functionality(t *testing.T) {
 		t.Log("Head block doesn't return appropriately", "Error:", err)
 		t.Fail()
 	}
-	if head_block.Body != lab_chain_1.tt_chain[first_standard_message].Body {
+	if head_block.Body != lab_chain_1.Tt_chain[first_standard_message].Body {
 		t.Log("Head block doesn't return appropriately")
 		t.Fail()
 	}
 
-	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.tt_chain[second_standard_message].Hash)
+	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.Tt_chain[second_standard_message].Hash)
 	new_head_block, err := Return_head_block(lab_chain_1)
 	if err != nil {
 		t.Log("Head block doesn't return properly after moving", "Error:", err)
 		t.Fail()
 	}
-	if new_head_block.Body != lab_chain_1.tt_chain[second_standard_message].Body {
+	if new_head_block.Body != lab_chain_1.Tt_chain[second_standard_message].Body {
 		t.Log("Head block doesn't return properly after moving")
 		t.Fail()
 	}
@@ -128,8 +128,8 @@ func Test_distribute_validation(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(false)
 
 	new_block := generate_additonal_test_block(lab_chain_1)
-	existing_hash := maps.Keys(lab_chain_1.tt_chain)[1]
-	existing_block := lab_chain_1.tt_chain[existing_hash]
+	existing_hash := maps.Keys(lab_chain_1.Tt_chain)[1]
+	existing_block := lab_chain_1.Tt_chain[existing_hash]
 
 	var err error
 

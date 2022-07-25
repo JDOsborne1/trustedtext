@@ -58,7 +58,7 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 // Action_head_move_block first validates that the instruction was from the original author.
 // It then moves the head hash.
 func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
-	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
+	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.Original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
@@ -83,11 +83,11 @@ func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block 
 // Move_head_hash is the function which executes the change of the head hash. At present this only validates
 // that the suggested hash is actually in the chain
 func Move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (trustedtext_chain_s, error) {
-	hash_found := _existing_ttc.tt_chain[_new_head_hash].Body != tt_body{}
+	hash_found := _existing_ttc.Tt_chain[_new_head_hash].Body != tt_body{}
 	if !hash_found {
 		return trustedtext_chain_s{}, errors.New("suggested new hash not in chain")
 	}
-	_existing_ttc.head_hash = _new_head_hash
-	_existing_ttc.head_hash_tree[_new_head_hash] = true
+	_existing_ttc.Head_hash = _new_head_hash
+	_existing_ttc.Head_hash_tree[_new_head_hash] = true
 	return _existing_ttc, nil
 }
