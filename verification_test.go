@@ -70,3 +70,17 @@ func Test_that_pairs_are_properly_checked(t *testing.T) {
 	}
 
 }
+
+
+func Test_that_validate_function_works_basic(t *testing.T) {
+	tb, _ := generate_standard_test_block()
+
+	valid, err := Verify_block_is_valid(tb)
+	if err != nil {
+		t.Log("Cannot run verify function on standard block", "Error:", err)
+		t.Fail()
+	}
+	if !valid {
+		t.Log("Validate function fails valid input")
+	}
+}

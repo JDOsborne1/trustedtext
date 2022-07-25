@@ -113,6 +113,7 @@ func main() {
 		},
 		test_pri_key,
 	)
+	test_chain, _ = Process_incoming_block(test_chain, test_block_1)
 	test_block_2, _ := Instantiate(
 		test_pub_key,
 		tt_body{
@@ -121,7 +122,6 @@ func main() {
 		},
 		test_pri_key,
 	)
-	test_chain, _ = Process_incoming_block(test_chain, test_block_1)
 	test_chain, _ = Process_incoming_block(test_chain, test_block_2)
 
 	http.HandleFunc("/block", give_block)
