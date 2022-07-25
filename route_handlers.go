@@ -65,6 +65,12 @@ func share_peerlist(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
+	peerlist, err := read_peerlist(test_config)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
 	marshalled_peerlist, err := json.Marshal(peerlist)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -93,5 +99,13 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
-	peerlist = append(peerlist, *resultant_peer)
+	existing_peerlist, err := read_peerlist(test_config)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	new_peerlist := append(existing_peerlist, *resultant_peer)
+
+	write_peerlist(new_peerlist, test_config)
 }

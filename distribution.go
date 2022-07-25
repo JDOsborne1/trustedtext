@@ -34,7 +34,7 @@ func Is_hash_in_chain(_trusted_text_chain trustedtext_chain_s, _comparison_hash 
 }
 
 
-func check_with_peers() error{
+func check_with_peers(peerlist []peer_detail) error{
 	if len(peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
 	}
@@ -57,9 +57,9 @@ func check_with_peers() error{
 }
 
 func check_with_a_peer(peer peer_detail) ([]string, error) {
-
+	
 	// Get and decode known blocks
-	resp, err := http.Get("http://" + peerlist[0].Path + "/known_blocks")
+	resp, err := http.Get("http://" + peer.Path + "/known_blocks")
 	if err != nil {
 		return []string{}, err
 	}
