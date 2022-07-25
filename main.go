@@ -12,10 +12,12 @@ import (
 var test_chain trustedtext_chain_s
 const test_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 const test_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
-
+const default_config_path = "config.json"
 
 func test_handler(w http.ResponseWriter, r *http.Request) {
-	peerlist, _ := read_peerlist(test_config)
+
+	used_config, _ := read_config(default_config_path)
+	peerlist, _ := read_peerlist(used_config)
 	err := check_with_peers(peerlist)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -56,13 +58,41 @@ func write_peerlist(peerlist []peer_detail, config config_struct) error {
 	return nil 
 }
 
-var test_config = config_struct{
-	Peerlist_path:  "peerlist.json",
+func write_config(_config config_struct) error {
+	marshalled_config, err := json.MarshalIndent(
+		_config,
+		"",
+		"  ",
+	)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(
+		"config.json",
+		marshalled_config,
+		0644,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+} 
+
+func read_config(_config_path string) (config_struct, error) {
+	bytefile, err := ioutil.ReadFile(_config_path)
+	if err != nil {
+		return config_struct{}, err
+	}
+	config := &config_struct{}
+	err = json.Unmarshal(bytefile, config)
+	if err != nil {
+		return config_struct{}, err
+	}
+
+	return *config, nil
 }
 
 func main() {
-
-	
 
 	test_chain, _ = Genesis(
 		test_pub_key,

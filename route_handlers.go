@@ -65,7 +65,13 @@ func share_peerlist(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	peerlist, err := read_peerlist(test_config)
+	used_config, err := read_config(default_config_path)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	peerlist, err := read_peerlist(used_config)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -99,7 +105,13 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, err)
 		return
 	}
-	existing_peerlist, err := read_peerlist(test_config)
+	used_config, err := read_config(default_config_path)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+	existing_peerlist, err := read_peerlist(used_config)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprint(w, err)
@@ -107,5 +119,5 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	}
 	new_peerlist := append(existing_peerlist, *resultant_peer)
 
-	write_peerlist(new_peerlist, test_config)
+	write_peerlist(new_peerlist, used_config)
 }
