@@ -17,17 +17,10 @@ type config_struct struct {
 	Chain_path string
 }
 
-
-
-
 func main() {
 
 	used_config, _ := read_config(default_config_path)
 	test_chain, _ = read_chain(used_config)
-
-	http.HandleFunc("/share_peerlist", share_peerlist)
-	http.HandleFunc("/add_peer", add_peer)
-	http.HandleFunc("/check_with_peers", peer_check_handler)
 	
 	test_handler := new(generic_handler)
 

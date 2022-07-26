@@ -30,6 +30,15 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if head == "all_blocks" {
 		give_known_blocks(w, r)
 	}
+	if head == "peer" {
+		peer_handler(w, r)
+	}
+	if head == "all_peers" {
+		share_peerlist(w, r)
+	}
+	if head == "check" {
+		peer_check_handler(w, r)
+	}
 
 }
 
@@ -42,4 +51,11 @@ func block_handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		submit_block(w, r)
 	}
+}
+
+func peer_handler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		add_peer(w, r)
+	}
+	http.Error(w, "Only post handling for peers", http.StatusMethodNotAllowed)
 }
