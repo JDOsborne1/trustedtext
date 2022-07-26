@@ -43,6 +43,10 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if head == "block" {
 		block_handler(w, r)
 	}
+	if head == "all_blocks" {
+		give_known_blocks(w, r)
+	}
+
 }
 
 func block_handler(w http.ResponseWriter, r *http.Request) {
@@ -98,7 +102,6 @@ func main() {
 	used_config, _ := read_config(default_config_path)
 	test_chain, _ = read_chain(used_config)
 
-	http.HandleFunc("/known_blocks", give_known_blocks)
 	http.HandleFunc("/share_peerlist", share_peerlist)
 	http.HandleFunc("/add_peer", add_peer)
 	http.HandleFunc("/check_with_peers", peer_check_handler)
