@@ -122,3 +122,17 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 
 	write_peerlist(new_peerlist, used_config)
 }
+
+
+
+func peer_check_handler(w http.ResponseWriter, r *http.Request) {
+
+	used_config, _ := read_config(default_config_path)
+	peerlist, _ := read_peerlist(used_config)
+	err := check_with_peers(peerlist)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, err)
+		return
+	}
+}
