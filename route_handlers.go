@@ -26,15 +26,13 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	post_deposit, err = ioutil.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
-
 	resultant_block := &trustedtext_s{}
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
 
-
 	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
 	util_error_wrapper(w, err)
-	
+
 	if err != nil {
 		test_chain = new_chain
 	}
@@ -73,7 +71,6 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	post_deposit, err = ioutil.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
-
 	resultant_peer := &peer_detail{}
 	err = json.Unmarshal(post_deposit, resultant_peer)
 	util_error_wrapper(w, err)
@@ -81,18 +78,14 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	used_config, err := read_config(default_config_path)
 	util_error_wrapper(w, err)
 
-
 	existing_peerlist, err := read_peerlist(used_config)
 	util_error_wrapper(w, err)
-
 
 	new_peerlist := append(existing_peerlist, *resultant_peer)
 
 	write_peerlist(new_peerlist, used_config)
 	w.WriteHeader(http.StatusCreated)
 }
-
-
 
 func peer_check_handler(w http.ResponseWriter, r *http.Request) {
 
@@ -102,7 +95,7 @@ func peer_check_handler(w http.ResponseWriter, r *http.Request) {
 	peerlist, err := read_peerlist(used_config)
 	util_error_wrapper(w, err)
 
-	err = check_with_peers(peerlist)
+	err = synchronise_with_peers(peerlist, used_config)
 	util_error_wrapper(w, err)
 	w.WriteHeader(http.StatusAccepted)
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"golang.org/x/exp/maps"
@@ -33,29 +32,75 @@ func Is_hash_in_chain(_trusted_text_chain trustedtext_chain_s, _comparison_hash 
 	return check_map[_comparison_hash]
 }
 
-func check_with_peers(peerlist []peer_detail) error {
-	if len(peerlist) == 0 {
+func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) error {
+	if len(_peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
 	}
-	missing_blocks := []string{}
-	for _, peer := range peerlist {
-		peers_missing_blocks, err := check_with_a_peer(peer)
+
+	var err error
+
+	for _, peer := range _peerlist {
+		err = synchronise_with_peer(_config, peer)
 		if err != nil {
 			return err
 		}
-		for _, block := range peers_missing_blocks {
-			err = retrieve_from_a_peer(peer, block)
-			if err != nil {
-				return err
-			}
-		}
-		missing_blocks = append(missing_blocks, peers_missing_blocks...)
 	}
 
-	if len(missing_blocks) != 0 {
-		fmt.Println("Missing items on the web")
-	}
 	return nil
+}
+
+func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
+	peers_missing_blocks, err := check_with_a_peer(_peer)
+	if err != nil {
+		return err
+	}
+
+	returned_blocks, err := retrieve_blocklist_from_peer(peers_missing_blocks, _peer)
+	if err != nil {
+		return err
+	}
+
+	existing_chain, err := read_chain(_config)
+	if err != nil {
+		return err
+	}
+
+	new_chain, err := process_multiple_blocks(existing_chain, returned_blocks)
+	if err != nil {
+		return err
+	}
+
+	err = write_chain(new_chain, _config)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func process_multiple_blocks(_incoming_chain trustedtext_chain_s, _incoming_list_of_blocks []trustedtext_s) (trustedtext_chain_s, error) {
+	var err error
+
+	for _, block := range _incoming_list_of_blocks {
+		_incoming_chain, err = Process_incoming_block(_incoming_chain, block)
+		if err != nil {
+			return trustedtext_chain_s{}, err
+		}
+	}
+
+	return _incoming_chain, nil
+}
+
+func retrieve_blocklist_from_peer(_blocklist []string, _peer peer_detail) ([]trustedtext_s, error) {
+	returned_blocklist := []trustedtext_s{}
+	for _, block := range _blocklist {
+		retrieved_block, err := retrieve_from_a_peer(_peer, block)
+		if err != nil {
+			return []trustedtext_s{}, err
+		}
+		returned_blocklist = append(returned_blocklist, retrieved_block)
+	}
+	return returned_blocklist, nil
 }
 
 func check_with_a_peer(peer peer_detail) ([]string, error) {
@@ -78,24 +123,19 @@ func check_with_a_peer(peer peer_detail) ([]string, error) {
 	return maps.Keys(new_keys_of_peer), nil
 }
 
-func retrieve_from_a_peer(peer peer_detail, block_hash string) error {
+func retrieve_from_a_peer(peer peer_detail, block_hash string) (trustedtext_s, error) {
 	resp, err := http.Get("http://" + peer.Path + "/block" + "?block_hash=" + block_hash)
 	if err != nil {
-		return err
+		return trustedtext_s{}, err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
 	returned_block := &trustedtext_s{}
 
 	err = response_decoder.Decode(returned_block)
 	if err != nil {
-		return err
+		return trustedtext_s{}, err
 	}
 
-	test_chain, err = Process_incoming_block(test_chain, *returned_block)
-	if err != nil {
-		return nil
-	}
-
-	return nil
+	return *returned_block, nil
 
 }
