@@ -24,25 +24,17 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	var post_deposit []byte
 	var err error
 	post_deposit, err = ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
+
 	resultant_block := &trustedtext_s{}
 	err = json.Unmarshal(post_deposit, resultant_block)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
 
 	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+	
 	if err != nil {
 		test_chain = new_chain
 	}
@@ -61,23 +53,14 @@ func share_peerlist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	used_config, err := read_config(default_config_path)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
 	peerlist, err := read_peerlist(used_config)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
 	marshalled_peerlist, err := json.Marshal(peerlist)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
 	fmt.Fprint(w, string(marshalled_peerlist))
 }
 
@@ -88,45 +71,37 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	var post_deposit []byte
 	var err error
 	post_deposit, err = ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
+
 	resultant_peer := &peer_detail{}
 	err = json.Unmarshal(post_deposit, resultant_peer)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
 	used_config, err := read_config(default_config_path)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
+
 	existing_peerlist, err := read_peerlist(used_config)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	util_error_wrapper(w, err)
+
+
 	new_peerlist := append(existing_peerlist, *resultant_peer)
 
 	write_peerlist(new_peerlist, used_config)
+	w.WriteHeader(http.StatusCreated)
 }
 
 
 
 func peer_check_handler(w http.ResponseWriter, r *http.Request) {
 
-	used_config, _ := read_config(default_config_path)
-	peerlist, _ := read_peerlist(used_config)
-	err := check_with_peers(peerlist)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, err)
-		return
-	}
+	used_config, err := read_config(default_config_path)
+	util_error_wrapper(w, err)
+
+	peerlist, err := read_peerlist(used_config)
+	util_error_wrapper(w, err)
+
+	err = check_with_peers(peerlist)
+	util_error_wrapper(w, err)
 }

@@ -1,6 +1,11 @@
-package main 
+package main
 
-// util_make_boolean_map_from_slice is a function which takes a slice of strings, and turns it into 
+import (
+	"fmt"
+	"net/http"
+)
+
+// util_make_boolean_map_from_slice is a function which takes a slice of strings, and turns it into
 // a convenient shape for easy checking
 func util_make_boolean_map_from_slice(input_slice_of_keys []string) map[string]bool {
 	mapped_keys_to_keep := make(map[string]bool)
@@ -37,4 +42,11 @@ func util_anti_set_map[Res trustedtext_s | bool](_original_map map[string]Res, _
 	} 
 
 	return new_map
+}
+
+func util_error_wrapper(_response_writer http.ResponseWriter, _possible_error error) {
+	if _possible_error != nil {
+		_response_writer.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(_response_writer, _possible_error)
+	}
 }
