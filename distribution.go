@@ -44,7 +44,10 @@ func check_with_peers(peerlist []peer_detail) error {
 			return err
 		}
 		for _, block := range peers_missing_blocks {
-			retrieve_from_a_peer(peer, block)
+			err = retrieve_from_a_peer(peer, block)
+			if err != nil {
+				return err
+			}
 		}
 		missing_blocks = append(missing_blocks, peers_missing_blocks...)
 	}
