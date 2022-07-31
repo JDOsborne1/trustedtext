@@ -34,7 +34,7 @@ func Test_key_pair(t *testing.T) {
 func Test_that_hashes_can_be_validated(t *testing.T) {
 	test_block, _ := generate_standard_test_block()
 
-	valid_signature, err := Verify_hex_encoded_values(test_block.Author, test_block.Hash, test_block.Hash_signature)
+	valid_signature, err := verify_hex_encoded_values(test_block.Author, test_block.Hash, test_block.Hash_signature)
 	if err != nil {
 		t.Log("Cannot verify valid hex encoded values", "Error:", err)
 		t.Fail()
@@ -71,11 +71,10 @@ func Test_that_pairs_are_properly_checked(t *testing.T) {
 
 }
 
-
 func Test_that_validate_function_works_basic(t *testing.T) {
 	tb, _ := generate_standard_test_block()
 
-	valid, err := Verify_block_is_valid(tb)
+	valid, err := verify_block_is_valid(tb)
 	if err != nil {
 		t.Log("Cannot run verify function on standard block", "Error:", err)
 		t.Fail()

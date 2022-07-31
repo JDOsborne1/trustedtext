@@ -22,7 +22,7 @@ type tt_body struct {
 // This function is called to generate a base instance of the trustedtext block, based
 // on its arguments, and then sign it. A block can be valid without tags, as it remains
 // globally unique to the original author, however it must have both an author and body.
-func Instantiate(_author string, _body tt_body, _private_key string) (trustedtext_s, error) {
+func instantiate(_author string, _body tt_body, _private_key string) (trustedtext_s, error) {
 	if len(_author) == 0 {
 		return trustedtext_s{}, errors.New("cannot have a missing author")
 	}

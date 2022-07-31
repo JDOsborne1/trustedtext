@@ -23,19 +23,19 @@ type trustedtext_chain_s struct {
 	Head_hash_tree  map[string]bool
 }
 
-// Genesis is the function called to create a new trusted text chain.
+// genesis is the function called to create a new trusted text chain.
 // This is always initiated with the same first message. Partly because
 // the first element lacks a 'previous hash' which makes it harder to
 // consider all the text bodies 'validated'. By defering the first real
 // message to actually be the second message, we can ensure that all real
 // text data is held in blocks with both sides of the chain.
-func Genesis(_author string, _tags []string, _private_key string) (trustedtext_chain_s, error) {
+func genesis(_author string, _tags []string, _private_key string) (trustedtext_chain_s, error) {
 	original_instruction := tt_body{
 		Instruction_type: "publish",
 		Instruction:      "This is the origin message of a trusted text chain",
 	}
 
-	first_element, err := Instantiate(
+	first_element, err := instantiate(
 		_author,
 		original_instruction,
 		_private_key,
@@ -60,14 +60,14 @@ func Genesis(_author string, _tags []string, _private_key string) (trustedtext_c
 	return new_chain, nil
 }
 
-// Amend is the function called to increment a chain with a new tt block. This is 'stateless'
+// amend is the function called to increment a chain with a new tt block. This is 'stateless'
 // such that it creates a new chain, which is a copy of the previous, but for the inclusion of
 // a new block at the end.
-func Amend(_existing_ttc trustedtext_chain_s, _new_block trustedtext_s) (trustedtext_chain_s, error) {
+func amend(_existing_ttc trustedtext_chain_s, _new_block trustedtext_s) (trustedtext_chain_s, error) {
 	if len(_existing_ttc.Tt_chain) == 0 {
 		return trustedtext_chain_s{}, errors.New("cannot amend an empty chain")
 	}
-	current_head_hash := Head_hash(_existing_ttc)
+	current_head_hash := head_hash(_existing_ttc)
 
 	_new_block.Head_hash_at_creation = current_head_hash
 
@@ -75,21 +75,21 @@ func Amend(_existing_ttc trustedtext_chain_s, _new_block trustedtext_s) (trusted
 	return _existing_ttc, nil
 }
 
-// Head_hash is a function called to find a core chain identifier. This is the hash of the header block.
+// head_hash is a function called to find a core chain identifier. This is the hash of the header block.
 // This header block may be moved over time, and points to the block which contains the current definitive
 // record of the trusted text element.
-func Head_hash(_existing_trustedtext trustedtext_chain_s) string {
+func head_hash(_existing_trustedtext trustedtext_chain_s) string {
 	return _existing_trustedtext.Head_hash
 }
 
-// Return_head_block gives back the block object which is currently pointed to by the head hash.
-func Return_head_block(_existing_ttc trustedtext_chain_s) (trustedtext_s, error) {
-	current_head_hash := Head_hash(_existing_ttc)
-	return Return_specified_hash(_existing_ttc, current_head_hash)
+// return_head_block gives back the block object which is currently pointed to by the head hash.
+func return_head_block(_existing_ttc trustedtext_chain_s) (trustedtext_s, error) {
+	current_head_hash := head_hash(_existing_ttc)
+	return return_specified_hash(_existing_ttc, current_head_hash)
 }
 
-// Return_specified_hash returns a specific block in the chain
-func Return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash string) (trustedtext_s, error) {
+// return_specified_hash returns a specific block in the chain
+func return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash string) (trustedtext_s, error) {
 	hash_found := _existing_ttc.Tt_chain[_specified_hash].Body != tt_body{}
 	if !hash_found {
 		return trustedtext_s{}, errors.New("head block not found in chain")
@@ -97,10 +97,10 @@ func Return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash st
 	return _existing_ttc.Tt_chain[_specified_hash], nil
 }
 
-func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block trustedtext_s) (trustedtext_chain_s, error) {
+func process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block trustedtext_s) (trustedtext_chain_s, error) {
 
 	// Validate Block
-	block_has_valid_signature, err := Verify_hex_encoded_values(_incoming_block.Author, _incoming_block.Hash, _incoming_block.Hash_signature)
+	block_has_valid_signature, err := verify_hex_encoded_values(_incoming_block.Author, _incoming_block.Hash, _incoming_block.Hash_signature)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
@@ -117,7 +117,7 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 	}
 
 	// Process block instruction
-	processor := Dispatch_instruction_processor(_incoming_block)
+	processor := dispatch_instruction_processor(_incoming_block)
 
 	_existing_ttc, err = processor(_existing_ttc)
 	if err != nil {
@@ -126,7 +126,7 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 
 	// Append block
 
-	_existing_ttc, err = Amend(_existing_ttc, _incoming_block)
+	_existing_ttc, err = amend(_existing_ttc, _incoming_block)
 
 	if err != nil {
 		return trustedtext_chain_s{}, err
@@ -135,10 +135,10 @@ func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block t
 	return _existing_ttc, nil
 }
 
-func Dispatch_instruction_processor(_block trustedtext_s) func(trustedtext_chain_s) (trustedtext_chain_s, error) {
+func dispatch_instruction_processor(_block trustedtext_s) func(trustedtext_chain_s) (trustedtext_chain_s, error) {
 	if _block.Body.Instruction_type == "head_change" {
 		return func(_input_ttc trustedtext_chain_s) (trustedtext_chain_s, error) {
-			return Action_head_move_block(_input_ttc, _block)
+			return action_head_move_block(_input_ttc, _block)
 		}
 	}
 	return func(_input_ttc trustedtext_chain_s) (trustedtext_chain_s, error) {

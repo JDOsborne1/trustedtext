@@ -9,9 +9,9 @@ type head_change_instruction struct {
 	New_head string
 }
 
-// Serialise_head_change takes an instruction for a changed head hash, and serialises it into a JSON string.
+// serialise_head_change takes an instruction for a changed head hash, and serialises it into a JSON string.
 // This string is then used as the body of an instruction block.
-func Serialise_head_change(_change_to_serialise head_change_instruction) (string, error) {
+func serialise_head_change(_change_to_serialise head_change_instruction) (string, error) {
 	json_change, err := json.Marshal(_change_to_serialise)
 	if err != nil {
 		return "", err
@@ -19,8 +19,8 @@ func Serialise_head_change(_change_to_serialise head_change_instruction) (string
 	return string(json_change), nil
 }
 
-// Deserialise_head_change inverts the serialisation of an instruction string, and turns it back into an instruction object.
-func Deserialise_head_change(instruction_body_to_deserialise string) (head_change_instruction, error) {
+// deserialise_head_change inverts the serialisation of an instruction string, and turns it back into an instruction object.
+func deserialise_head_change(instruction_body_to_deserialise string) (head_change_instruction, error) {
 	instruction := &head_change_instruction{}
 	err := json.Unmarshal([]byte(instruction_body_to_deserialise), instruction)
 	if err != nil {
@@ -29,11 +29,11 @@ func Deserialise_head_change(instruction_body_to_deserialise string) (head_chang
 	return *instruction, nil
 }
 
-// Generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
-func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
+// generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
+func generate_head_move_block(_author string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
-	serialised_change, err := Serialise_head_change(change_instruction)
+	serialised_change, err := serialise_head_change(change_instruction)
 
 	instruction_body := tt_body{
 		Instruction_type: "head_change",
@@ -44,7 +44,7 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 		return trustedtext_s{}, err
 	}
 
-	new_element, err := Instantiate(
+	new_element, err := instantiate(
 		_author,
 		instruction_body,
 		_private_key,
@@ -55,10 +55,10 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 	return new_element, nil
 }
 
-// Action_head_move_block first validates that the instruction was from the original author.
+// action_head_move_block first validates that the instruction was from the original author.
 // It then moves the head hash.
-func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
-	head_change_by_original_author, err := Verify_hex_encoded_values(_existing_ttc.Original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
+func action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
+	head_change_by_original_author, err := verify_hex_encoded_values(_existing_ttc.Original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
@@ -67,12 +67,12 @@ func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block 
 		return trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
 	}
 
-	head_change_value, err := Deserialise_head_change(_head_move_block.Body.Instruction)
+	head_change_value, err := deserialise_head_change(_head_move_block.Body.Instruction)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
 
-	_existing_ttc, err = Move_head_hash(_existing_ttc, head_change_value.New_head)
+	_existing_ttc, err = move_head_hash(_existing_ttc, head_change_value.New_head)
 	if err != nil {
 		return trustedtext_chain_s{}, err
 	}
@@ -80,9 +80,9 @@ func Action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block 
 	return _existing_ttc, nil
 }
 
-// Move_head_hash is the function which executes the change of the head hash. At present this only validates
+// move_head_hash is the function which executes the change of the head hash. At present this only validates
 // that the suggested hash is actually in the chain
-func Move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (trustedtext_chain_s, error) {
+func move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (trustedtext_chain_s, error) {
 	hash_found := _existing_ttc.Tt_chain[_new_head_hash].Body != tt_body{}
 	if !hash_found {
 		return trustedtext_chain_s{}, errors.New("suggested new hash not in chain")

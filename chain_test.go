@@ -11,7 +11,7 @@ func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedt
 		Instruction_type: "publish",
 		Instruction:      "Intruder alert, DeeDee in the lab. Again!",
 	}
-	new_block, _ := Instantiate(junk_pub_key, dexters_instruction_2, junk_pri_key)
+	new_block, _ := instantiate(junk_pub_key, dexters_instruction_2, junk_pri_key)
 	return new_block
 }
 
@@ -20,7 +20,7 @@ func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 		Instruction_type: "publish",
 		Instruction:      "Intruder alert, DeeDee in the lab",
 	}
-	test_ttc, _ := Genesis(
+	test_ttc, _ := genesis(
 		junk_pub_key,
 		[]string{"lab"},
 		junk_pri_key,
@@ -29,9 +29,9 @@ func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
 		return test_ttc
 	}
 
-	new_block, _ := Instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
+	new_block, _ := instantiate(junk_pub_key, dexters_instruction_1, junk_pri_key)
 
-	test_ttc, _ = Amend(
+	test_ttc, _ = amend(
 		test_ttc,
 		new_block,
 	)
@@ -48,7 +48,7 @@ const second_standard_message = "f655762bf9c727eb04a71072b26e23c13b7d765c"
 
 func Test_genesis_validation(t *testing.T) {
 	var err error
-	_, err = Genesis(
+	_, err = genesis(
 		"",
 		[]string{"lab"},
 		junk_pri_key,
@@ -58,7 +58,7 @@ func Test_genesis_validation(t *testing.T) {
 		t.Fail()
 	}
 
-	_, err = Genesis(junk_pub_key, []string{}, junk_pri_key)
+	_, err = genesis(junk_pub_key, []string{}, junk_pri_key)
 
 	if err != nil {
 		t.Log("Genesis inappropriately rejects chains with no tags", "Error:", err)
@@ -70,7 +70,7 @@ func Test_basic_amend(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(false)
 
 	new_block := generate_additonal_test_block(lab_chain_1)
-	_, err := Amend(lab_chain_1, new_block)
+	_, err := amend(lab_chain_1, new_block)
 
 	if err != nil {
 		t.Log("Amend fails on valid input", "Error:", err)
@@ -85,7 +85,7 @@ func Test_amend_functionality(t *testing.T) {
 
 	new_block := generate_additonal_test_block(lab_chain_1)
 
-	lab_chain_2, _ := Amend(lab_chain_1, new_block)
+	lab_chain_2, _ := amend(lab_chain_1, new_block)
 
 	if lab_chain_2.Head_hash != existing_head_hash {
 		t.Log("Amend interferes with head_hash")
@@ -101,7 +101,7 @@ func Test_amend_functionality(t *testing.T) {
 
 func Test_return_head_hash_functionality(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(false)
-	head_block, err := Return_head_block(lab_chain_1)
+	head_block, err := return_head_block(lab_chain_1)
 	if err != nil {
 		t.Log("Head block doesn't return appropriately", "Error:", err)
 		t.Fail()
@@ -111,8 +111,8 @@ func Test_return_head_hash_functionality(t *testing.T) {
 		t.Fail()
 	}
 
-	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.Tt_chain[second_standard_message].Hash)
-	new_head_block, err := Return_head_block(lab_chain_1)
+	lab_chain_1, _ = move_head_hash(lab_chain_1, lab_chain_1.Tt_chain[second_standard_message].Hash)
+	new_head_block, err := return_head_block(lab_chain_1)
 	if err != nil {
 		t.Log("Head block doesn't return properly after moving", "Error:", err)
 		t.Fail()
@@ -133,13 +133,13 @@ func Test_distribute_validation(t *testing.T) {
 
 	var err error
 
-	_, err = Process_incoming_block(lab_chain_1, existing_block)
+	_, err = process_incoming_block(lab_chain_1, existing_block)
 	if err == nil {
 		t.Log("Validation doesn't catch existing block")
 		t.Fail()
 	}
 
-	_, err = Process_incoming_block(lab_chain_1, new_block)
+	_, err = process_incoming_block(lab_chain_1, new_block)
 	if err != nil {
 		t.Log("Validation fails on valid blocks")
 		t.Fail()

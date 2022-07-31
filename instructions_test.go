@@ -12,13 +12,13 @@ func Test_head_hash_functionality(t *testing.T) {
 	lab_chain_2 := generate_standard_test_chain(false)
 	var err error
 
-	_, err = Move_head_hash(lab_chain_2, lab_chain_2.Tt_chain[second_standard_message].Hash)
+	_, err = move_head_hash(lab_chain_2, lab_chain_2.Tt_chain[second_standard_message].Hash)
 	if err != nil {
 		t.Log("Fails to accept a valid hash to change to")
 		t.Fail()
 	}
 
-	_, err = Move_head_hash(lab_chain_2, "randomstring")
+	_, err = move_head_hash(lab_chain_2, "randomstring")
 	if err == nil {
 		t.Log("Fails to reject an invalid hash")
 		t.Fail()
@@ -32,7 +32,7 @@ func Test_head_hash_history(t *testing.T) {
 		t.Log("Genesis block not in head hash tree")
 		t.Fail()
 	}
-	lab_chain_1, _ = Move_head_hash(lab_chain_1, lab_chain_1.Tt_chain[second_standard_message].Hash)
+	lab_chain_1, _ = move_head_hash(lab_chain_1, lab_chain_1.Tt_chain[second_standard_message].Hash)
 	if !lab_chain_1.Head_hash_tree[second_standard_message] {
 		t.Log("Subsequent head hashes not added to head hash tree")
 		t.Fail()
@@ -45,13 +45,13 @@ func Test_serialise_deserialise(t *testing.T) {
 		New_head: "blah",
 	}
 	var err error
-	serialised_instruction, err := Serialise_head_change(test_instruction)
+	serialised_instruction, err := serialise_head_change(test_instruction)
 	if err != nil {
 		t.Log("Fails to serialise valid input", "Error:", err)
 		t.Fail()
 	}
 
-	deserialised_instruction, err := Deserialise_head_change(serialised_instruction)
+	deserialised_instruction, err := deserialise_head_change(serialised_instruction)
 	if err != nil {
 		t.Log("Failed to deserialise valid input", "Error:", err)
 		t.Fail()
@@ -71,18 +71,18 @@ func Test_head_move_block(t *testing.T) {
 	lab_chain_2 := generate_standard_test_chain(false)
 	var err error
 
-	head_move_block, err := Generate_head_move_block(junk_pub_key, second_standard_message, junk_pri_key)
+	head_move_block, err := generate_head_move_block(junk_pub_key, second_standard_message, junk_pri_key)
 	if err != nil {
 		t.Log("Cannot generate a head move block", "Error:", err)
 		t.Fail()
 	}
 
-	amended_chain, err := Action_head_move_block(lab_chain_2, head_move_block)
+	amended_chain, err := action_head_move_block(lab_chain_2, head_move_block)
 	if err != nil {
 		t.Log("Cannot action the head move block", "Error:", err)
 		t.Fail()
 	}
-	amended_chain, err = Amend(amended_chain, head_move_block)
+	amended_chain, err = amend(amended_chain, head_move_block)
 
 	if err != nil {
 		t.Log("Cannot generate an amended chain", "Error:", err)

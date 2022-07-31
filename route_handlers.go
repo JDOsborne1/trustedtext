@@ -15,7 +15,7 @@ type peer_detail struct {
 }
 
 func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
-	requested_block, _ := Return_specified_hash(test_chain, _block_hash)
+	requested_block, _ := return_specified_hash(test_chain, _block_hash)
 	text_block, _ := json.Marshal(requested_block)
 	fmt.Fprint(w, string(text_block))
 }
@@ -30,7 +30,7 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
 
-	new_chain, err := Process_incoming_block(test_chain, *resultant_block)
+	new_chain, err := process_incoming_block(test_chain, *resultant_block)
 	util_error_wrapper(w, err)
 
 	if err != nil {
