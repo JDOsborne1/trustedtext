@@ -104,4 +104,5 @@ func peer_check_handler(w http.ResponseWriter, r *http.Request) {
 
 	err = check_with_peers(peerlist)
 	util_error_wrapper(w, err)
+	w.WriteHeader(http.StatusAccepted)
 }
