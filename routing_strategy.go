@@ -39,6 +39,9 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if head == "check" {
 		peer_check_handler(w, r)
 	}
+	
+	w.WriteHeader(http.StatusServiceUnavailable)
+
 
 }
 
