@@ -17,12 +17,18 @@ type config_struct struct {
 	Chain_path string
 }
 
-func main() {
-
-	used_config, _ := read_config(default_config_path)
-	test_chain, _ = read_chain(used_config)
+func webservice_main() {
 	
-	test_handler := new(generic_handler)
-
-	log.Fatal(http.ListenAndServe(":8080", test_handler))
+		used_config, _ := read_config(default_config_path)
+		test_chain, _ = read_chain(used_config)
+		
+		test_handler := new(generic_handler)
+	
+		log.Fatal(http.ListenAndServe(":8080", test_handler))
+	}
+	
+	
+	
+func main() {
+	webservice_main()
 }
