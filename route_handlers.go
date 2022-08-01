@@ -15,11 +15,15 @@ type peer_detail struct {
 }
 
 func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
-	config, _ := read_config(default_config_path)
-	existing_chain, _ := read_chain(config)
+	config, err := read_config(default_config_path)
+	util_error_wrapper(w, err)
+	existing_chain, err := read_chain(config)
+	util_error_wrapper(w, err)
 
-	requested_block, _ := return_specified_hash(existing_chain, _block_hash)
-	text_block, _ := json.Marshal(requested_block)
+	requested_block, err := return_specified_hash(existing_chain, _block_hash)
+	util_error_wrapper(w, err)
+	text_block, err := json.Marshal(requested_block)
+	util_error_wrapper(w, err)
 
 	fmt.Fprint(w, string(text_block))
 }
@@ -34,8 +38,10 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
 
-	config, _ := read_config(default_config_path)
-	existing_chain, _ := read_chain(config)
+	config, err := read_config(default_config_path)
+	util_error_wrapper(w, err)
+	existing_chain, err := read_chain(config)
+	util_error_wrapper(w, err)
 
 
 	new_chain, err := process_incoming_block(existing_chain, *resultant_block)
@@ -49,12 +55,15 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 }
 
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
-	config, _ := read_config(default_config_path)
-	existing_chain, _ := read_chain(config)
+	config, err := read_config(default_config_path)
+	util_error_wrapper(w, err)
 
+	existing_chain, err := read_chain(config)
+	util_error_wrapper(w, err)
 	
 	output_encoder := json.NewEncoder(w)
-	output_encoder.Encode(maps.Keys(existing_chain.Tt_chain))
+	err = output_encoder.Encode(maps.Keys(existing_chain.Tt_chain))
+	util_error_wrapper(w, err)
 }
 
 func share_peerlist(w http.ResponseWriter, r *http.Request) {
