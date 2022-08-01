@@ -1,10 +1,8 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"net/http"
-
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -33,33 +31,6 @@ func webservice_main() {
 	}
 
 
-func generate_tt_body(_instruction_type string, _instruction_body string) (tt_body, error) {
-	if _instruction_type != "publish" && _instruction_type != "head_change" {
-		return tt_body{}, errors.New("invalid instruction type, cannot generate an instruction for: " + _instruction_type)
-	}
-	new_instruction :=  tt_body{
-		Instruction_type: _instruction_type,
-		Instruction: _instruction_body,
-	}
-
-	return new_instruction, nil
-}
-
-func generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (trustedtext_s, error) {
-	new_instruction, err := generate_tt_body(_instruction_type, _instruction_body)
-	if err != nil {
-		return trustedtext_s{}, err
-	}
-
-	new_block, err := instantiate(_public_key, new_instruction, _private_key)
-	if err != nil {
-		return trustedtext_s{}, err
-	}
-
-	return new_block, nil
-
-}
-
 func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string)  {
 	block, err := generate_block(_instruction_type, _instruction_body, _public_key, _private_key)
 	if err != nil {
@@ -69,13 +40,14 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 	log.Println("Successfully created block, with hash:", block.Hash)
 }
 	
+
 	
 	
 func main() {
 	// webservice_main()
 
 	tt_app := app.New()
-	main_window := tt_app.NewWindow("Hello World Window!")
+	main_window := tt_app.NewWindow("Block Generator window")
 	main_window.SetFullScreen(true)
 
 	body_input := widget.NewMultiLineEntry()
