@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"testing"
@@ -49,7 +49,7 @@ func Test_that_hash_membership_checks(t *testing.T) {
 	}
 
 	new_block := generate_additonal_test_block(lab_chain_2)
-	lab_chain_3, _ := process_incoming_block(lab_chain_2, new_block)
+	lab_chain_3, _ := Process_incoming_block(lab_chain_2, new_block)
 	hash_1_included_in_chain_3 := is_hash_in_chain(lab_chain_3, "b83030a13322e34fe61ef7dfe6d4750cab4d7429")
 	hash_2_included_in_chain_3 := is_hash_in_chain(lab_chain_3, "f655762bf9c727eb04a71072b26e23c13b7d765c")
 	hash_3_included_in_chain_3 := is_hash_in_chain(lab_chain_3, "d519546909952540c4fdaed62481ac6c8cef071e")

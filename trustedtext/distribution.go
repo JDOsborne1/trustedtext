@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"encoding/json"
@@ -50,14 +50,13 @@ func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) erro
 }
 
 func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
-	existing_chain, err := read_chain(_config)
+	existing_chain, err := Read_chain(_config)
 	if err != nil {
 		return err
 	}
 
 	current_blocks := maps.Keys(existing_chain.Tt_chain)
-	
-	
+
 	peers_missing_blocks, err := check_with_a_peer(_peer, current_blocks)
 	if err != nil {
 		return err
@@ -73,7 +72,7 @@ func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
 		return err
 	}
 
-	err = write_chain(new_chain, _config)
+	err = Write_chain(new_chain, _config)
 	if err != nil {
 		return err
 	}
@@ -85,7 +84,7 @@ func process_multiple_blocks(_incoming_chain trustedtext_chain_s, _incoming_list
 	var err error
 
 	for _, block := range _incoming_list_of_blocks {
-		_incoming_chain, err = process_incoming_block(_incoming_chain, block)
+		_incoming_chain, err = Process_incoming_block(_incoming_chain, block)
 		if err != nil {
 			return trustedtext_chain_s{}, err
 		}
@@ -119,7 +118,7 @@ func check_with_a_peer(_peer peer_detail, _existing_blocks []string) ([]string, 
 
 	// Determine missing elements
 	peer_blocks_map := util_make_boolean_map_from_slice(*known_blocks_of_peer)
-	
+
 	new_keys_of_peer := util_anti_set_map(peer_blocks_map, _existing_blocks)
 
 	return maps.Keys(new_keys_of_peer), nil

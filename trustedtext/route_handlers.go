@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"encoding/json"
@@ -15,9 +15,9 @@ type peer_detail struct {
 }
 
 func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
-	config, err := read_config(default_config_path)
+	config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)
-	existing_chain, err := read_chain(config)
+	existing_chain, err := Read_chain(config)
 	util_error_wrapper(w, err)
 
 	requested_block, err := return_specified_hash(existing_chain, _block_hash)
@@ -38,29 +38,28 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
 
-	config, err := read_config(default_config_path)
+	config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)
-	existing_chain, err := read_chain(config)
+	existing_chain, err := Read_chain(config)
 	util_error_wrapper(w, err)
 
-
-	new_chain, err := process_incoming_block(existing_chain, *resultant_block)
+	new_chain, err := Process_incoming_block(existing_chain, *resultant_block)
 	util_error_wrapper(w, err)
 
 	if err != nil {
-		write_chain(new_chain, config)
+		Write_chain(new_chain, config)
 	}
 
 	w.WriteHeader(http.StatusCreated)
 }
 
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
-	config, err := read_config(default_config_path)
+	config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)
 
-	existing_chain, err := read_chain(config)
+	existing_chain, err := Read_chain(config)
 	util_error_wrapper(w, err)
-	
+
 	output_encoder := json.NewEncoder(w)
 	err = output_encoder.Encode(maps.Keys(existing_chain.Tt_chain))
 	util_error_wrapper(w, err)
@@ -71,7 +70,7 @@ func share_peerlist(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	used_config, err := read_config(default_config_path)
+	used_config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)
 
 	peerlist, err := read_peerlist(used_config)
@@ -96,7 +95,7 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(post_deposit, resultant_peer)
 	util_error_wrapper(w, err)
 
-	used_config, err := read_config(default_config_path)
+	used_config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)
 
 	existing_peerlist, err := read_peerlist(used_config)
@@ -110,7 +109,7 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 
 func peer_check_handler(w http.ResponseWriter, r *http.Request) {
 
-	used_config, err := read_config(default_config_path)
+	used_config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)
 
 	peerlist, err := read_peerlist(used_config)

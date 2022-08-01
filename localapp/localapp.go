@@ -1,39 +1,43 @@
-package main
-
+package localapp
 
 import (
 	"log"
+	"trustedtext/trustedtext"
+
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
+const default_config_path = "config.json"
+
 
 func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string)  {
-	block, err := generate_block(_instruction_type, _instruction_body, _public_key, _private_key)
+	block, err := trustedtext.Generate_block(_instruction_type, _instruction_body, _public_key, _private_key)
 	if err != nil {
 		log.Println("Failed to initiate block, with error:", err)
 		return
 	}
 	log.Println("Successfully created block, with hash:", block.Hash)
-	config, err := read_config(default_config_path)
+	config, err := trustedtext.Read_config(default_config_path)
 	if err != nil {
 		log.Println("Failed to read config, with error:", err)
 		return
 	}
 	
-	existing_chain, err := read_chain(config)
+	existing_chain, err := trustedtext.Read_chain(config)
 	if err != nil {
 		log.Println("Failed to load chain, with error:", err)
 		return
 	}
 	
-	new_chain, err := process_incoming_block(existing_chain, block)
+	new_chain, err := trustedtext.Process_incoming_block(existing_chain, block)
 	if err != nil {
 		log.Println("Failed to process new block, with error:", err)
 		return
 	}
 	
-	err = write_chain(new_chain, config)
+	err = trustedtext.Write_chain(new_chain, config)
 	if err != nil {
 		log.Println("Failed to write chain, with error:", err)
 		return
@@ -60,4 +64,13 @@ func block_generator_window(_app_to_launch_in fyne.App) fyne.Window {
 	main_window.SetContent(content)
 
 	return main_window
+}
+
+
+func localapp() {
+	tt_app := app.New()
+	
+	main_window := block_generator_window(tt_app)
+	main_window.ShowAndRun()
+
 }

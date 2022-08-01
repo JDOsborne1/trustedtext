@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"testing"
@@ -133,13 +133,13 @@ func Test_distribute_validation(t *testing.T) {
 
 	var err error
 
-	_, err = process_incoming_block(lab_chain_1, existing_block)
+	_, err = Process_incoming_block(lab_chain_1, existing_block)
 	if err == nil {
 		t.Log("Validation doesn't catch existing block")
 		t.Fail()
 	}
 
-	_, err = process_incoming_block(lab_chain_1, new_block)
+	_, err = Process_incoming_block(lab_chain_1, new_block)
 	if err != nil {
 		t.Log("Validation fails on valid blocks")
 		t.Fail()

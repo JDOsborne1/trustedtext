@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"errors"
@@ -97,7 +97,7 @@ func return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash st
 	return _existing_ttc.Tt_chain[_specified_hash], nil
 }
 
-func process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block trustedtext_s) (trustedtext_chain_s, error) {
+func Process_incoming_block(_existing_ttc trustedtext_chain_s, _incoming_block trustedtext_s) (trustedtext_chain_s, error) {
 
 	// Validate Block
 	block_has_valid_signature, err := verify_hex_encoded_values(_incoming_block.Author, _incoming_block.Hash, _incoming_block.Hash_signature)
@@ -144,32 +144,4 @@ func dispatch_instruction_processor(_block trustedtext_s) func(trustedtext_chain
 	return func(_input_ttc trustedtext_chain_s) (trustedtext_chain_s, error) {
 		return _input_ttc, nil
 	}
-}
-
-
-func generate_tt_body(_instruction_type string, _instruction_body string) (tt_body, error) {
-	if _instruction_type != "publish" && _instruction_type != "head_change" {
-		return tt_body{}, errors.New("invalid instruction type, cannot generate an instruction for: " + _instruction_type)
-	}
-	new_instruction :=  tt_body{
-		Instruction_type: _instruction_type,
-		Instruction: _instruction_body,
-	}
-
-	return new_instruction, nil
-}
-
-func generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (trustedtext_s, error) {
-	new_instruction, err := generate_tt_body(_instruction_type, _instruction_body)
-	if err != nil {
-		return trustedtext_s{}, err
-	}
-
-	new_block, err := instantiate(_public_key, new_instruction, _private_key)
-	if err != nil {
-		return trustedtext_s{}, err
-	}
-
-	return new_block, nil
-
 }

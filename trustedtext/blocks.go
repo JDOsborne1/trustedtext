@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"crypto/sha1"
@@ -86,4 +86,31 @@ func return_hash(_trusted_text_element trustedtext_s) (string, error) {
 
 	bytestring_hash := hasher.Sum(nil)
 	return hex.EncodeToString(bytestring_hash), nil
+}
+
+func generate_tt_body(_instruction_type string, _instruction_body string) (tt_body, error) {
+	if _instruction_type != "publish" && _instruction_type != "head_change" {
+		return tt_body{}, errors.New("invalid instruction type, cannot generate an instruction for: " + _instruction_type)
+	}
+	new_instruction := tt_body{
+		Instruction_type: _instruction_type,
+		Instruction:      _instruction_body,
+	}
+
+	return new_instruction, nil
+}
+
+func Generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (trustedtext_s, error) {
+	new_instruction, err := generate_tt_body(_instruction_type, _instruction_body)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+
+	new_block, err := instantiate(_public_key, new_instruction, _private_key)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+
+	return new_block, nil
+
 }
