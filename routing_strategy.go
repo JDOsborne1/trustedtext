@@ -26,23 +26,17 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	head, r.URL.Path = shift_path(r.URL.Path)
 	if head == "block" {
 		block_handler(w, r)
-	}
-	if head == "all_blocks" {
+	} else if head == "all_blocks" {
 		give_known_blocks(w, r)
-	}
-	if head == "peer" {
+	} else if head == "peer" {
 		peer_handler(w, r)
-	}
-	if head == "all_peers" {
+	} else if head == "all_peers" {
 		share_peerlist(w, r)
-	}
-	if head == "check" {
+	} else if head == "check" {
 		peer_check_handler(w, r)
+	} else {
+		w.WriteHeader(http.StatusServiceUnavailable)
 	}
-	
-	w.WriteHeader(http.StatusServiceUnavailable)
-
-
 }
 
 func block_handler(w http.ResponseWriter, r *http.Request) {
