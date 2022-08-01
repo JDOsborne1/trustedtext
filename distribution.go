@@ -50,17 +50,20 @@ func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) erro
 }
 
 func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
-	peers_missing_blocks, err := check_with_a_peer(_peer)
+	existing_chain, err := read_chain(_config)
+	if err != nil {
+		return err
+	}
+
+	current_blocks := maps.Keys(existing_chain.Tt_chain)
+	
+	
+	peers_missing_blocks, err := check_with_a_peer(_peer, current_blocks)
 	if err != nil {
 		return err
 	}
 
 	returned_blocks, err := retrieve_blocklist_from_peer(peers_missing_blocks, _peer)
-	if err != nil {
-		return err
-	}
-
-	existing_chain, err := read_chain(_config)
 	if err != nil {
 		return err
 	}
@@ -103,10 +106,10 @@ func retrieve_blocklist_from_peer(_blocklist []string, _peer peer_detail) ([]tru
 	return returned_blocklist, nil
 }
 
-func check_with_a_peer(peer peer_detail) ([]string, error) {
+func check_with_a_peer(_peer peer_detail, _existing_blocks []string) ([]string, error) {
 
 	// Get and decode known blocks
-	resp, err := http.Get("http://" + peer.Path + "/known_blocks")
+	resp, err := http.Get("http://" + _peer.Path + "/known_blocks")
 	if err != nil {
 		return []string{}, err
 	}
@@ -116,9 +119,8 @@ func check_with_a_peer(peer peer_detail) ([]string, error) {
 
 	// Determine missing elements
 	peer_blocks_map := util_make_boolean_map_from_slice(*known_blocks_of_peer)
-	my_blocks := maps.Keys(test_chain.Tt_chain)
-
-	new_keys_of_peer := util_anti_set_map(peer_blocks_map, my_blocks)
+	
+	new_keys_of_peer := util_anti_set_map(peer_blocks_map, _existing_blocks)
 
 	return maps.Keys(new_keys_of_peer), nil
 }
