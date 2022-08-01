@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"fyne.io/fyne/v2/app"
 )
@@ -37,6 +38,10 @@ func localapp_main() {
 
 }	
 func main() {
-	go webservice_main()
-	localapp_main()
+	if os.Getenv("TT_INTERACTIVE") == "TRUE" {
+		go webservice_main()
+		localapp_main()
+	}
+
+	webservice_main()
 }
