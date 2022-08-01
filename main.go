@@ -1,7 +1,7 @@
 package main
 
 import (
-	"trustedtext/trustedtext"
+	"trustedtext/trustedtextlib"
 	"log"
 	"net/http"
 )
