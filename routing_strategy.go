@@ -1,4 +1,4 @@
-package trustedtext
+package main
 
 import (
 	"net/http"
@@ -17,10 +17,10 @@ func shift_path(p string) (head, tail string) {
 	return p[1:i], p[i:]
 }
 
-type Generic_handler struct {
+type generic_handler struct {
 }
 
-func (Generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
 	if head == "block" {

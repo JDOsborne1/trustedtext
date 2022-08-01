@@ -1,4 +1,4 @@
-package trustedtext
+package main
 
 const default_config_path = "config.json"
 

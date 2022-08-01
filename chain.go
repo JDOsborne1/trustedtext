@@ -1,4 +1,4 @@
-package trustedtext
+package main
 
 import (
 	"errors"
