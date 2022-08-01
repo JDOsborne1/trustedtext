@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/widget"
 )
 
 
@@ -30,5 +33,11 @@ func webservice_main() {
 	
 	
 func main() {
-	webservice_main()
+	// webservice_main()
+
+	a := app.New()
+	w := a.NewWindow("Hello World Window!")
+
+	w.SetContent(widget.NewLabel("Hello World Label!"))
+	w.ShowAndRun()
 }
