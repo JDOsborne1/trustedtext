@@ -34,6 +34,29 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 		return
 	}
 	log.Println("Successfully created block, with hash:", block.Hash)
+	config, err := read_config(default_config_path)
+	if err != nil {
+		log.Println("Failed to read config, with error:", err)
+		return
+	}
+	
+	existing_chain, err := read_chain(config)
+	if err != nil {
+		log.Println("Failed to load chain, with error:", err)
+		return
+	}
+	
+	new_chain, err := process_incoming_block(existing_chain, block)
+	if err != nil {
+		log.Println("Failed to process new block, with error:", err)
+		return
+	}
+	
+	err = write_chain(new_chain, config)
+	if err != nil {
+		log.Println("Failed to write chain, with error:", err)
+		return
+	}
 }
 	
 
