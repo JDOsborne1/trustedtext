@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -37,7 +39,12 @@ func main() {
 
 	a := app.New()
 	w := a.NewWindow("Hello World Window!")
+	input := widget.NewEntry()
+	input.SetPlaceHolder("placeholder text")
 
-	w.SetContent(widget.NewLabel("Hello World Label!"))
+	content := container.NewVBox(input, widget.NewButton("Save", func() {fmt.Println("content was", input.Text)}))
+
+
+	w.SetContent(content)
 	w.ShowAndRun()
 }
