@@ -44,7 +44,7 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 	
 	
 func main() {
-	// webservice_main()
+	go webservice_main()
 
 	tt_app := app.New()
 	main_window := tt_app.NewWindow("Block Generator window")
