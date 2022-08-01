@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -31,6 +30,29 @@ func webservice_main() {
 	
 		log.Fatal(http.ListenAndServe(":8080", test_handler))
 	}
+
+func generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (trustedtext_s, error) {
+	new_instruction := tt_body{
+		Instruction_type: _instruction_type,
+		Instruction: _instruction_body,
+	}
+	new_block, err := instantiate(_public_key, new_instruction, _private_key)
+	if err != nil {
+		return trustedtext_s{}, err
+	}
+
+	return new_block, nil
+
+}
+
+func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string)  {
+	block, err := generate_block(_instruction_type, _instruction_body, _public_key, _private_key)
+	if err != nil {
+		log.Println("Failed to initiate block, with error:", err)
+		return
+	}
+	log.Println("Successfully created block, with hash:", block.Hash)
+}
 	
 	
 	
@@ -39,12 +61,21 @@ func main() {
 
 	tt_app := app.New()
 	main_window := tt_app.NewWindow("Hello World Window!")
-	primary_key_input := widget.NewEntry()
-	primary_key_input.SetPlaceHolder("primary key")
+	main_window.SetFullScreen(true)
+
+	body_input := widget.NewMultiLineEntry()
+	body_input.SetMinRowsVisible(10)
+
+	private_key_input := widget.NewPasswordEntry()
+	private_key_input.SetPlaceHolder("private key")
 	public_key_input := widget.NewEntry()
 	public_key_input.SetPlaceHolder("public key")
 
-	content := container.NewVBox(primary_key_input, public_key_input, widget.NewButton("Save", func() {fmt.Println("primary key was", primary_key_input.Text, "public key was", public_key_input.Text)}))
+	save_button := widget.NewButton("Save", func() {announce_block_generation("publish", body_input.Text, public_key_input.Text, private_key_input.Text)})
+
+	
+
+	content := container.NewVBox(body_input, private_key_input, public_key_input, save_button)
 
 
 	main_window.SetContent(content)
