@@ -37,14 +37,16 @@ func webservice_main() {
 func main() {
 	// webservice_main()
 
-	a := app.New()
-	w := a.NewWindow("Hello World Window!")
-	input := widget.NewEntry()
-	input.SetPlaceHolder("placeholder text")
+	tt_app := app.New()
+	main_window := tt_app.NewWindow("Hello World Window!")
+	primary_key_input := widget.NewEntry()
+	primary_key_input.SetPlaceHolder("primary key")
+	public_key_input := widget.NewEntry()
+	public_key_input.SetPlaceHolder("public key")
 
-	content := container.NewVBox(input, widget.NewButton("Save", func() {fmt.Println("content was", input.Text)}))
+	content := container.NewVBox(primary_key_input, public_key_input, widget.NewButton("Save", func() {fmt.Println("primary key was", primary_key_input.Text, "public key was", public_key_input.Text)}))
 
 
-	w.SetContent(content)
-	w.ShowAndRun()
+	main_window.SetContent(content)
+	main_window.ShowAndRun()
 }
