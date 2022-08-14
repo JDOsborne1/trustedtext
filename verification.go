@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"crypto/ed25519"

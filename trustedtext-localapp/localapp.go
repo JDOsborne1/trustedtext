@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"trustedtext/trustedtext"
+	"trustedtext"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -48,7 +48,7 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 
 func block_generator_window(_app_to_launch_in fyne.App) fyne.Window {
 	main_window := _app_to_launch_in.NewWindow("Block Generator window")
-	main_window.SetFullScreen(true)
+	main_window.SetFullScreen(false)
 	
 	body_input := widget.NewMultiLineEntry()
 	body_input.SetMinRowsVisible(10)

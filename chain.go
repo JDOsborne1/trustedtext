@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"errors"
@@ -158,7 +158,6 @@ func process_multiple_blocks(_incoming_chain trustedtext_chain_s, _incoming_list
 
 	return _incoming_chain, nil
 }
-
 
 // is_hash_in_chain is a function to determine if a hash is a part of the the trusted text chain
 func is_hash_in_chain(_trusted_text_chain trustedtext_chain_s, _comparison_hash string) bool {

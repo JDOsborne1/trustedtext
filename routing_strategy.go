@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"net/http"

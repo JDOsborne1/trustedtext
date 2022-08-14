@@ -1,4 +1,4 @@
-package main
+package trustedtext
 
 import (
 	"encoding/json"
@@ -24,7 +24,6 @@ func get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext_chain_s, 
 	anti_set_map := util_anti_set_map(all_head_hashes, _comparison_list)
 	return maps.Keys(anti_set_map)
 }
-
 
 func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) error {
 	if len(_peerlist) == 0 {
@@ -73,8 +72,6 @@ func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
 
 	return nil
 }
-
-
 
 func retrieve_blocklist_from_peer(_blocklist []string, _peer peer_detail) ([]trustedtext_s, error) {
 	returned_blocklist := []trustedtext_s{}
