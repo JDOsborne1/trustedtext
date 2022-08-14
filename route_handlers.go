@@ -83,7 +83,7 @@ func share_peerlist(w http.ResponseWriter, r *http.Request) {
 }
 
 func add_peer(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "PUT" {
+	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
 	var post_deposit []byte
