@@ -93,7 +93,7 @@ func retrieve_blocklist_from_peer(_blocklist []string, _peer Peer_detail) ([]Tru
 func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, error) {
 
 	// Get and decode known blocks
-	resp, err := http.Get("http://" + _peer.Path + "/known_blocks")
+	resp, err := http.Get("http://" + _peer.Path + "/all_blocks")
 	if err != nil {
 		return []string{}, err
 	}
@@ -110,7 +110,7 @@ func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, 
 }
 
 func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, error) {
-	resp, err := http.Get("http://" + peer.Path + "/block" + "?block_hash=" + block_hash)
+	resp, err := http.Get("http://" + peer.Path + "/block" + "/" + block_hash)
 	if err != nil {
 		return Trustedtext_s{}, err
 	}
