@@ -57,7 +57,7 @@ func encoded_key_pair_is_valid(_encoded_public_key string, _encoded_private_key 
 	return keys_match, nil
 }
 
-func verify_block_is_valid(_input_block trustedtext_s) (bool, error) {
+func verify_block_is_valid(_input_block Trustedtext_s) (bool, error) {
 	rehash_of_body, err := return_hash(_input_block)
 	if err != nil {
 		return false, err

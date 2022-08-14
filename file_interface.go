@@ -5,20 +5,20 @@ import (
 	"io/ioutil"
 )
 
-func read_peerlist(_config config_struct) ([]peer_detail, error) {
+func Read_peerlist(_config config_struct) ([]Peer_detail, error) {
 	bytefile, err := ioutil.ReadFile(_config.Peerlist_path)
 	if err != nil {
-		return []peer_detail{}, err
+		return []Peer_detail{}, err
 	}
-	peerlist := &[]peer_detail{}
+	peerlist := &[]Peer_detail{}
 	err = json.Unmarshal(bytefile, peerlist)
 	if err != nil {
-		return []peer_detail{}, err
+		return []Peer_detail{}, err
 	}
 	return *peerlist, nil
 }
 
-func write_peerlist(_peerlist []peer_detail, _config config_struct) error {
+func Write_peerlist(_peerlist []Peer_detail, _config config_struct) error {
 	marshalled_peerlist, err := json.MarshalIndent(_peerlist, "", " ")
 	if err != nil {
 		return err

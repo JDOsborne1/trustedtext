@@ -8,6 +8,11 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+type Peer_detail struct {
+	Claimed_name string
+	Path         string
+}
+
 // fork_chain_essentials takes an existing trusted text chain, and generates a copy of it.
 // This copy of the 'essentials' only takes the elements of the head_hash_tree with it,
 // producing the effect of preserving and copying the core progression of the trusted text
@@ -25,7 +30,7 @@ func get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext_chain_s, 
 	return maps.Keys(anti_set_map)
 }
 
-func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) error {
+func Synchronise_with_peers(_peerlist []Peer_detail, _config config_struct) error {
 	if len(_peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
 	}
@@ -42,7 +47,7 @@ func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) erro
 	return nil
 }
 
-func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
+func synchronise_with_peer(_config config_struct, _peer Peer_detail) error {
 	existing_chain, err := Read_chain(_config)
 	if err != nil {
 		return err
@@ -73,19 +78,19 @@ func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
 	return nil
 }
 
-func retrieve_blocklist_from_peer(_blocklist []string, _peer peer_detail) ([]trustedtext_s, error) {
-	returned_blocklist := []trustedtext_s{}
+func retrieve_blocklist_from_peer(_blocklist []string, _peer Peer_detail) ([]Trustedtext_s, error) {
+	returned_blocklist := []Trustedtext_s{}
 	for _, block := range _blocklist {
 		retrieved_block, err := retrieve_from_a_peer(_peer, block)
 		if err != nil {
-			return []trustedtext_s{}, err
+			return []Trustedtext_s{}, err
 		}
 		returned_blocklist = append(returned_blocklist, retrieved_block)
 	}
 	return returned_blocklist, nil
 }
 
-func check_with_a_peer(_peer peer_detail, _existing_blocks []string) ([]string, error) {
+func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, error) {
 
 	// Get and decode known blocks
 	resp, err := http.Get("http://" + _peer.Path + "/known_blocks")
@@ -104,17 +109,17 @@ func check_with_a_peer(_peer peer_detail, _existing_blocks []string) ([]string, 
 	return maps.Keys(new_keys_of_peer), nil
 }
 
-func retrieve_from_a_peer(peer peer_detail, block_hash string) (trustedtext_s, error) {
+func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, error) {
 	resp, err := http.Get("http://" + peer.Path + "/block" + "?block_hash=" + block_hash)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
-	returned_block := &trustedtext_s{}
+	returned_block := &Trustedtext_s{}
 
 	err = response_decoder.Decode(returned_block)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 
 	return *returned_block, nil

@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-type trustedtext_s struct {
+type Trustedtext_s struct {
 	Author                string
 	Body                  tt_body
 	Head_hash_at_creation string
@@ -22,34 +22,34 @@ type tt_body struct {
 // This function is called to generate a base instance of the trustedtext block, based
 // on its arguments, and then sign it. A block can be valid without tags, as it remains
 // globally unique to the original author, however it must have both an author and body.
-func instantiate(_author string, _body tt_body, _private_key string) (trustedtext_s, error) {
+func instantiate(_author string, _body tt_body, _private_key string) (Trustedtext_s, error) {
 	if len(_author) == 0 {
-		return trustedtext_s{}, errors.New("cannot have a missing author")
+		return Trustedtext_s{}, errors.New("cannot have a missing author")
 	}
 
 	if len(_body.Instruction_type) == 0 {
-		return trustedtext_s{}, errors.New("cannot have a missing instruction type")
+		return Trustedtext_s{}, errors.New("cannot have a missing instruction type")
 	}
 	if len(_body.Instruction) == 0 {
-		return trustedtext_s{}, errors.New("cannot have an empty instruction")
+		return Trustedtext_s{}, errors.New("cannot have an empty instruction")
 	}
 	valid_signature_pairs, err := encoded_key_pair_is_valid(_author, _private_key)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 	if !valid_signature_pairs {
-		return trustedtext_s{}, errors.New("author and key combination don't match")
+		return Trustedtext_s{}, errors.New("author and key combination don't match")
 	}
 
-	tt_no_hash := trustedtext_s{Author: _author, Body: _body}
+	tt_no_hash := Trustedtext_s{Author: _author, Body: _body}
 	tt_with_hash, err := hash_tt(tt_no_hash)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 
 	signature, err := sign_tt(tt_with_hash.Hash, _private_key)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 	tt_with_hash.Hash_signature = signature
 
@@ -59,10 +59,10 @@ func instantiate(_author string, _body tt_body, _private_key string) (trustedtex
 // This function wraps the signing process for the trusted text blocks. It will call the
 // hashing function, and then return a version of the input with a populated hash element,
 // derived from the core content of the text element
-func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
+func hash_tt(_existing_trustedtext Trustedtext_s) (Trustedtext_s, error) {
 	content_hash, err := return_hash(_existing_trustedtext)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 	_existing_trustedtext.Hash = content_hash
 	return _existing_trustedtext, nil
@@ -71,7 +71,7 @@ func hash_tt(_existing_trustedtext trustedtext_s) (trustedtext_s, error) {
 // This function wraps the underlying hashing process, reducing it simply to
 // block in - string out. This structure should be locked in early, since any
 // change to it will almost certainly invalidate all the hashing chains
-func return_hash(_trusted_text_element trustedtext_s) (string, error) {
+func return_hash(_trusted_text_element Trustedtext_s) (string, error) {
 	elements := _trusted_text_element.Author +
 		_trusted_text_element.Body.Instruction_type +
 		_trusted_text_element.Body.Instruction
@@ -100,15 +100,15 @@ func generate_tt_body(_instruction_type string, _instruction_body string) (tt_bo
 	return new_instruction, nil
 }
 
-func Generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (trustedtext_s, error) {
+func Generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (Trustedtext_s, error) {
 	new_instruction, err := generate_tt_body(_instruction_type, _instruction_body)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 
 	new_block, err := instantiate(_public_key, new_instruction, _private_key)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 
 	return new_block, nil

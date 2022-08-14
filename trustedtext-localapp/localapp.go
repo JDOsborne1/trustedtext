@@ -9,7 +9,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 )
-const default_config_path = "config.json"
 
 
 func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string)  {

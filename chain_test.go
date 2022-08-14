@@ -6,7 +6,7 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-func generate_additonal_test_block(_existing_chain trustedtext_chain_s) trustedtext_s {
+func generate_additonal_test_block(_existing_chain trustedtext_chain_s) Trustedtext_s {
 	dexters_instruction_2 := tt_body{
 		Instruction_type: "publish",
 		Instruction:      "Intruder alert, DeeDee in the lab. Again!",

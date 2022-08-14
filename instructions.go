@@ -30,7 +30,7 @@ func deserialise_head_change(instruction_body_to_deserialise string) (head_chang
 }
 
 // generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
-func generate_head_move_block(_author string, _new_head_hash string, _private_key string) (trustedtext_s, error) {
+func generate_head_move_block(_author string, _new_head_hash string, _private_key string) (Trustedtext_s, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
 	serialised_change, err := serialise_head_change(change_instruction)
@@ -41,7 +41,7 @@ func generate_head_move_block(_author string, _new_head_hash string, _private_ke
 	}
 
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 
 	new_element, err := instantiate(
@@ -50,14 +50,14 @@ func generate_head_move_block(_author string, _new_head_hash string, _private_ke
 		_private_key,
 	)
 	if err != nil {
-		return trustedtext_s{}, err
+		return Trustedtext_s{}, err
 	}
 	return new_element, nil
 }
 
 // action_head_move_block first validates that the instruction was from the original author.
 // It then moves the head hash.
-func action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block trustedtext_s) (trustedtext_chain_s, error) {
+func action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block Trustedtext_s) (trustedtext_chain_s, error) {
 	head_change_by_original_author, err := verify_hex_encoded_values(_existing_ttc.Original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
 	if err != nil {
 		return trustedtext_chain_s{}, err

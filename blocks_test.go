@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func generate_standard_test_block() (trustedtext_s, error) {
+func generate_standard_test_block() (Trustedtext_s, error) {
 	dexters_instruction_1 := tt_body{
 		Instruction_type: "publish",
 		Instruction:      "DeeDee Better not interfere with this one",
