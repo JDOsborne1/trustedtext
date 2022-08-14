@@ -32,7 +32,7 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else if head == "all_peers" {
 		share_peerlist(w, r)
 	} else if head == "check" {
-		peer_check_handler(w, r)
+		peer_check(w, r)
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}

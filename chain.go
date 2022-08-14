@@ -145,3 +145,24 @@ func dispatch_instruction_processor(_block trustedtext_s) func(trustedtext_chain
 		return _input_ttc, nil
 	}
 }
+
+func process_multiple_blocks(_incoming_chain trustedtext_chain_s, _incoming_list_of_blocks []trustedtext_s) (trustedtext_chain_s, error) {
+	var err error
+
+	for _, block := range _incoming_list_of_blocks {
+		_incoming_chain, err = Process_incoming_block(_incoming_chain, block)
+		if err != nil {
+			return trustedtext_chain_s{}, err
+		}
+	}
+
+	return _incoming_chain, nil
+}
+
+
+// is_hash_in_chain is a function to determine if a hash is a part of the the trusted text chain
+func is_hash_in_chain(_trusted_text_chain trustedtext_chain_s, _comparison_hash string) bool {
+	all_hashes := maps.Keys(_trusted_text_chain.Tt_chain)
+	check_map := util_make_boolean_map_from_slice(all_hashes)
+	return check_map[_comparison_hash]
+}

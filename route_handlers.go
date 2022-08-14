@@ -107,7 +107,7 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-func peer_check_handler(w http.ResponseWriter, r *http.Request) {
+func peer_check(w http.ResponseWriter, r *http.Request) {
 
 	used_config, err := Read_config(default_config_path)
 	util_error_wrapper(w, err)

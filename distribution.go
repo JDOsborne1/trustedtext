@@ -25,12 +25,6 @@ func get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext_chain_s, 
 	return maps.Keys(anti_set_map)
 }
 
-// is_hash_in_chain is a function to determine if a hash is a part of the the trusted text chain
-func is_hash_in_chain(_trusted_text_chain trustedtext_chain_s, _comparison_hash string) bool {
-	all_hashes := maps.Keys(_trusted_text_chain.Tt_chain)
-	check_map := util_make_boolean_map_from_slice(all_hashes)
-	return check_map[_comparison_hash]
-}
 
 func synchronise_with_peers(_peerlist []peer_detail, _config config_struct) error {
 	if len(_peerlist) == 0 {
@@ -80,18 +74,7 @@ func synchronise_with_peer(_config config_struct, _peer peer_detail) error {
 	return nil
 }
 
-func process_multiple_blocks(_incoming_chain trustedtext_chain_s, _incoming_list_of_blocks []trustedtext_s) (trustedtext_chain_s, error) {
-	var err error
 
-	for _, block := range _incoming_list_of_blocks {
-		_incoming_chain, err = Process_incoming_block(_incoming_chain, block)
-		if err != nil {
-			return trustedtext_chain_s{}, err
-		}
-	}
-
-	return _incoming_chain, nil
-}
 
 func retrieve_blocklist_from_peer(_blocklist []string, _peer peer_detail) ([]trustedtext_s, error) {
 	returned_blocklist := []trustedtext_s{}
