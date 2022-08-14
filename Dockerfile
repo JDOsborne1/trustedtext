@@ -1,7 +1,6 @@
 FROM golang
 
 RUN mkdir /trustedtext
-
 ADD go.mod /trustedtext
 ADD go.sum /trustedtext
 
@@ -9,8 +8,11 @@ ADD go.sum /trustedtext
 WORKDIR /trustedtext
 
 RUN go mod download
-
 ADD . /trustedtext
 RUN go build . 
 
-CMD ["./trustedtext"]
+WORKDIR /trustedtext/trustedtext-webserver
+
+RUN go build .
+
+CMD ["./trustedtext-webserver"]
