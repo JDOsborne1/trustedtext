@@ -29,6 +29,19 @@ func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
 	fmt.Fprint(w, string(text_block))
 }
 
+func give_head_block(w http.ResponseWriter, r *http.Request) {
+	config, err := trustedtext.Read_config(default_config_path)
+	util_error_wrapper(w, err) 
+
+	existing_chain, err := trustedtext.Read_chain(config)
+	util_error_wrapper(w, err) 
+
+	head_hash := existing_chain.Head_hash
+	
+	give_block(w, r, head_hash)
+
+}
+
 func submit_block(w http.ResponseWriter, r *http.Request) {
 	var post_deposit []byte
 	var err error
