@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"trustedtext"
 
@@ -45,7 +45,7 @@ func give_head_block(w http.ResponseWriter, r *http.Request) {
 func submit_block(w http.ResponseWriter, r *http.Request) {
 	var post_deposit []byte
 	var err error
-	post_deposit, err = ioutil.ReadAll(r.Body)
+	post_deposit, err = io.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
 	resultant_block := &trustedtext.Trustedtext_s{}
@@ -102,7 +102,7 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	}
 	var post_deposit []byte
 	var err error
-	post_deposit, err = ioutil.ReadAll(r.Body)
+	post_deposit, err = io.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
 	resultant_peer := &trustedtext.Peer_detail{}
