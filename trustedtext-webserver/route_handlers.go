@@ -38,7 +38,13 @@ func give_head_block(w http.ResponseWriter, r *http.Request) {
 
 	head_hash := existing_chain.Head_hash
 	
-	give_block(w, r, head_hash)
+	requested_block, err := trustedtext.Return_specified_hash(existing_chain, head_hash)
+	util_error_wrapper(w, err)
+
+	text_block, err := process_md_block(requested_block.Body.Instruction)
+	util_error_wrapper(w, err)
+
+	fmt.Fprint(w, text_block)
 
 }
 
