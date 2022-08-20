@@ -1,6 +1,10 @@
 package trustedtext
 
-import "testing"
+import (
+	"crypto/ed25519"
+	"encoding/hex"
+	"testing"
+)
 
 func Test_head_hash_functionality(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(true)
@@ -101,4 +105,83 @@ func Test_head_move_block(t *testing.T) {
 		t.Fail()
 	}
 
+}
+
+
+func Test_amending_head_hash(t *testing.T) {
+	lab_chain_1 := generate_standard_test_chain(false)
+
+	head_move_block_1, err := generate_head_move_block(
+		"faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
+		"newh_hash",
+		"366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
+	)
+	if err != nil {
+		t.Log("cannot generate head move block")
+		t.Fail()
+	}
+	
+	_, err = Process_incoming_block(
+		lab_chain_1,
+		head_move_block_1,
+	)
+
+	if err == nil {
+		t.Log("Doesn't fail when trying to move to a hash which doesn't exist", err)
+		t.Fail()
+	}
+
+	diff_pub, diff_pri, _ := ed25519.GenerateKey(nil)
+
+	string_diff_pub := hex.EncodeToString(diff_pub)
+	string_diff_pri := hex.EncodeToString(diff_pri)
+
+
+	head_move_block_2, err := generate_head_move_block(
+		string_diff_pub,
+		"024c74fed7eaf14ffbb71fba7b2423d1d868b550",
+		string_diff_pri, 
+	)
+
+	if err != nil {
+		t.Log("cannot generate head move block", err)
+		t.Fail()
+	}
+
+	_, err = Process_incoming_block(
+		lab_chain_1,
+		head_move_block_2,
+	)
+
+	if err == nil {
+		t.Log("fails to reject head changes which aren't by the original author")
+		t.Fail()
+	}
+
+
+	head_move_block_3, err :=  generate_head_move_block(
+		"faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
+		second_standard_message,
+		"366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
+	)
+
+	if err != nil {
+		t.Log("fails to generate viable head move block")
+		t.Fail()
+	}
+
+	new_chain, err := Process_incoming_block(
+		lab_chain_1,
+		head_move_block_3,
+	)
+
+	if err != nil {
+		t.Log("fails to process valid head chain block with error", err)
+		t.Fail()
+	}
+
+	if new_chain.Head_hash != second_standard_message {
+		t.Log("head hash change process fails to actually change head hash")
+		t.Fail()
+	}
 }

@@ -2,7 +2,6 @@ package trustedtext
 
 import (
 	"testing"
-
 	"golang.org/x/exp/maps"
 )
 
@@ -145,3 +144,5 @@ func Test_distribute_validation(t *testing.T) {
 		t.Fail()
 	}
 }
+
+
