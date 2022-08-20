@@ -67,10 +67,12 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	util_error_wrapper(w, err)
 
 	if err != nil {
-		trustedtext.Write_chain(new_chain, config)
+		err:= trustedtext.Write_chain(new_chain, config)
+		if err != nil {
+			util_error_wrapper(w, err)
+		}
+		w.WriteHeader(http.StatusCreated)
 	}
-
-	w.WriteHeader(http.StatusCreated)
 }
 
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
