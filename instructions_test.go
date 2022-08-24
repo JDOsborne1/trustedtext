@@ -111,7 +111,7 @@ func Test_head_move_block(t *testing.T) {
 func Test_amending_head_hash(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(false)
 
-	head_move_block_1, err := generate_head_move_block(
+	head_move_block_1, err := Generate_head_move_block(
 		"faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
 		"newh_hash",
 		"366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
@@ -137,7 +137,7 @@ func Test_amending_head_hash(t *testing.T) {
 	string_diff_pri := hex.EncodeToString(diff_pri)
 
 
-	head_move_block_2, err := generate_head_move_block(
+	head_move_block_2, err := Generate_head_move_block(
 		string_diff_pub,
 		"024c74fed7eaf14ffbb71fba7b2423d1d868b550",
 		string_diff_pri, 
@@ -159,7 +159,7 @@ func Test_amending_head_hash(t *testing.T) {
 	}
 
 
-	head_move_block_3, err :=  generate_head_move_block(
+	head_move_block_3, err :=  Generate_head_move_block(
 		"faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
 		second_standard_message,
 		"366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a",
