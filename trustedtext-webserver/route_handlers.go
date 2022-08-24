@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"trustedtext"
 
@@ -29,10 +29,29 @@ func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
 	fmt.Fprint(w, string(text_block))
 }
 
+func give_head_block(w http.ResponseWriter, r *http.Request) {
+	config, err := trustedtext.Read_config(default_config_path)
+	util_error_wrapper(w, err) 
+
+	existing_chain, err := trustedtext.Read_chain(config)
+	util_error_wrapper(w, err) 
+
+	head_hash := existing_chain.Head_hash
+	
+	requested_block, err := trustedtext.Return_specified_hash(existing_chain, head_hash)
+	util_error_wrapper(w, err)
+
+	text_block, err := process_md_block(requested_block.Body.Instruction)
+	util_error_wrapper(w, err)
+
+	fmt.Fprint(w, text_block)
+
+}
+
 func submit_block(w http.ResponseWriter, r *http.Request) {
 	var post_deposit []byte
 	var err error
-	post_deposit, err = ioutil.ReadAll(r.Body)
+	post_deposit, err = io.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
 	resultant_block := &trustedtext.Trustedtext_s{}
@@ -48,10 +67,12 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	util_error_wrapper(w, err)
 
 	if err != nil {
-		trustedtext.Write_chain(new_chain, config)
+		err:= trustedtext.Write_chain(new_chain, config)
+		if err != nil {
+			util_error_wrapper(w, err)
+		}
+		w.WriteHeader(http.StatusCreated)
 	}
-
-	w.WriteHeader(http.StatusCreated)
 }
 
 func give_known_blocks(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +110,7 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	}
 	var post_deposit []byte
 	var err error
-	post_deposit, err = ioutil.ReadAll(r.Body)
+	post_deposit, err = io.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
 	resultant_peer := &trustedtext.Peer_detail{}

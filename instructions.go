@@ -29,8 +29,8 @@ func deserialise_head_change(instruction_body_to_deserialise string) (head_chang
 	return *instruction, nil
 }
 
-// generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
-func generate_head_move_block(_author string, _new_head_hash string, _private_key string) (Trustedtext_s, error) {
+// Generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
+func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (Trustedtext_s, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
 	serialised_change, err := serialise_head_change(change_instruction)

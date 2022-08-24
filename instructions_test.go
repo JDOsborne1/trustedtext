@@ -75,7 +75,7 @@ func Test_head_move_block(t *testing.T) {
 	lab_chain_2 := generate_standard_test_chain(false)
 	var err error
 
-	head_move_block, err := generate_head_move_block(junk_pub_key, second_standard_message, junk_pri_key)
+	head_move_block, err := Generate_head_move_block(junk_pub_key, second_standard_message, junk_pri_key)
 	if err != nil {
 		t.Log("Cannot generate a head move block", "Error:", err)
 		t.Fail()

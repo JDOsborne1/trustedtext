@@ -92,7 +92,7 @@ func return_head_block(_existing_ttc trustedtext_chain_s) (Trustedtext_s, error)
 func Return_specified_hash(_existing_ttc trustedtext_chain_s, _specified_hash string) (Trustedtext_s, error) {
 	hash_found := _existing_ttc.Tt_chain[_specified_hash].Body != tt_body{}
 	if !hash_found {
-		return Trustedtext_s{}, errors.New("head block not found in chain")
+		return Trustedtext_s{}, errors.New("specified block not found in chain")
 	}
 	return _existing_ttc.Tt_chain[_specified_hash], nil
 }
