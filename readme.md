@@ -63,3 +63,13 @@ The planned usage strategy would be that one would generate new blocks in a loca
 
 Once you have your new block, it can be distributed to any distribution nodes of your choice, which will be able to verify your message is from you, and include in in their cloud. If the instruction within is merely a publish, then no further action is needed. If it is another action type, such as a head migration, it will further validate the signal within against the authors public key, and either reject or accept it depending on the result. 
 
+
+## Usage
+
+For running the webserver, you can either build and execute the docker container, which will run on port 8080 within the container. 
+
+You can also call `go run` on the subfolder trustedtext-webserver
+
+This will host the required endpoints, and make use of the 3 .json files in the base directory to determine the chain of blocks, and the set of peers to check against. 
+
+To build new blocks, you can either build and sign custom blocks manually, or you can call `go run` in the subfolder trustedtext-localapp which will open a dialogue for you to add new blocks to the local chain
