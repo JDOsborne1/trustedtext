@@ -121,8 +121,9 @@ func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, 
 	return maps.Keys(new_keys_of_peer), nil
 }
 
-func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, error) {
-	resp, err := http.Get("http://" + peer.Path + "/block" + "/" + block_hash)
+
+func helper_retrieve_and_format_external_block(_path string) (Trustedtext_s, error) {
+	resp, err := http.Get(_path)
 	if err != nil {
 		return Trustedtext_s{}, err
 	}
@@ -135,5 +136,11 @@ func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, e
 	}
 
 	return *returned_block, nil
+}
+
+func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, error) {
+	composed_path := "http://" + peer.Path + "/block" + "/" + block_hash
+	
+	return helper_retrieve_and_format_external_block(composed_path)
 
 }
