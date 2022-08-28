@@ -90,19 +90,31 @@ func retrieve_blocklist_from_peer(_blocklist []string, _peer Peer_detail) ([]Tru
 	return returned_blocklist, nil
 }
 
-func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, error) {
-
-	// Get and decode known blocks
-	resp, err := http.Get("http://" + _peer.Path + "/all_blocks")
+func helper_format_external_block_list(_path string) (map[string]bool, error) {
+	resp, err := http.Get(_path + "/all_blocks")
 	if err != nil {
-		return []string{}, err
+		return make(map[string]bool), err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
 	known_blocks_of_peer := &[]string{}
-	response_decoder.Decode(known_blocks_of_peer)
+	err = response_decoder.Decode(known_blocks_of_peer)
+	if err != nil {
+		return make(map[string]bool), err
+	}
 
 	// Determine missing elements
 	peer_blocks_map := util_make_boolean_map_from_slice(*known_blocks_of_peer)
+
+	return peer_blocks_map, nil
+}
+
+func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, error) {
+
+	// Get and decode known blocks
+	peer_blocks_map, err := helper_format_external_block_list("http://" + _peer.Path)
+	if err != nil {
+		return []string{}, err
+	}
 
 	new_keys_of_peer := util_anti_set_map(peer_blocks_map, _existing_blocks)
 
