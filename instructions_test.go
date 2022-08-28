@@ -70,7 +70,7 @@ func Test_serialise_deserialise(t *testing.T) {
 
 }
 
-func Test_head_move_block(t *testing.T) {
+func Test_move_head_block_core_functions(t *testing.T) {
 
 	lab_chain_2 := generate_standard_test_chain(false)
 	var err error
@@ -108,7 +108,7 @@ func Test_head_move_block(t *testing.T) {
 }
 
 
-func Test_amending_head_hash(t *testing.T) {
+func Test_amending_head_hash_using_processor(t *testing.T) {
 	lab_chain_1 := generate_standard_test_chain(false)
 
 	head_move_block_1, err := Generate_head_move_block(
@@ -184,4 +184,13 @@ func Test_amending_head_hash(t *testing.T) {
 		t.Log("head hash change process fails to actually change head hash")
 		t.Fail()
 	}
+
+	first_head_still_in_tree := new_chain.Head_hash_tree[first_standard_message]
+
+	if !first_head_still_in_tree {
+		t.Log("fails to retain record of previous head hashes")
+		t.Fail()
+	}
+
+	
 }
