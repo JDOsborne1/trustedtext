@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"trustedtext"
 )
 
 
@@ -20,6 +21,12 @@ func webservice_main(_port_to_use int) {
 }
 
 func main() {
+	config, err := trustedtext.Read_config(default_config_path)
 
-	webservice_main(8080)
+	if err != nil  {
+		fmt.Println("Failed to load config")
+		return
+	}
+
+	webservice_main(config.Port_used)
 }
