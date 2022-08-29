@@ -73,3 +73,11 @@ You can also call `go run` on the subfolder trustedtext-webserver
 This will host the required endpoints, and make use of the 3 .json files in the base directory to determine the chain of blocks, and the set of peers to check against. 
 
 To build new blocks, you can either build and sign custom blocks manually, or you can call `go run` in the subfolder trustedtext-localapp which will open a dialogue for you to add new blocks to the local chain
+
+## Testing 
+
+Both the core package and the webserver have tests set up. 
+
+For the core package it's a simple `go test` whenever you wish.
+
+For the webserver there is a script in the core directory called `integration_test_setup.sh` which will need to be run as sudo, this will set up the required docker image running in the background to test against.
