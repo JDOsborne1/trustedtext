@@ -57,24 +57,24 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 
 // action_head_move_block first validates that the instruction was from the original author.
 // It then moves the head hash.
-func action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block Trustedtext_s) (trustedtext_chain_s, error) {
+func action_head_move_block(_existing_ttc Trustedtext_chain_s, _head_move_block Trustedtext_s) (Trustedtext_chain_s, error) {
 	head_change_by_original_author, err := verify_hex_encoded_values(_existing_ttc.Original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
 	if err != nil {
-		return trustedtext_chain_s{}, err
+		return Trustedtext_chain_s{}, err
 	}
 
 	if !head_change_by_original_author {
-		return trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
+		return Trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
 	}
 
 	head_change_value, err := deserialise_head_change(_head_move_block.Body.Instruction)
 	if err != nil {
-		return trustedtext_chain_s{}, err
+		return Trustedtext_chain_s{}, err
 	}
 
 	_existing_ttc, err = move_head_hash(_existing_ttc, head_change_value.New_head)
 	if err != nil {
-		return trustedtext_chain_s{}, err
+		return Trustedtext_chain_s{}, err
 	}
 
 	return _existing_ttc, nil
@@ -82,10 +82,10 @@ func action_head_move_block(_existing_ttc trustedtext_chain_s, _head_move_block 
 
 // move_head_hash is the function which executes the change of the head hash. At present this only validates
 // that the suggested hash is actually in the chain
-func move_head_hash(_existing_ttc trustedtext_chain_s, _new_head_hash string) (trustedtext_chain_s, error) {
+func move_head_hash(_existing_ttc Trustedtext_chain_s, _new_head_hash string) (Trustedtext_chain_s, error) {
 	hash_found := _existing_ttc.Tt_chain[_new_head_hash].Body != tt_body{}
 	if !hash_found {
-		return trustedtext_chain_s{}, errors.New("suggested new hash not in chain")
+		return Trustedtext_chain_s{}, errors.New("suggested new hash not in chain")
 	}
 	_existing_ttc.Head_hash = _new_head_hash
 	_existing_ttc.Head_hash_tree[_new_head_hash] = true

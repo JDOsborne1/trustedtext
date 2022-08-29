@@ -2,10 +2,11 @@ package trustedtext
 
 import (
 	"testing"
+
 	"golang.org/x/exp/maps"
 )
 
-func generate_additonal_test_block(_existing_chain trustedtext_chain_s) Trustedtext_s {
+func generate_additonal_test_block(_existing_chain Trustedtext_chain_s) Trustedtext_s {
 	dexters_instruction_2 := tt_body{
 		Instruction_type: "publish",
 		Instruction:      "Intruder alert, DeeDee in the lab. Again!",
@@ -14,7 +15,7 @@ func generate_additonal_test_block(_existing_chain trustedtext_chain_s) Trustedt
 	return new_block
 }
 
-func generate_standard_test_chain(_init_only bool) trustedtext_chain_s {
+func generate_standard_test_chain(_init_only bool) Trustedtext_chain_s {
 	dexters_instruction_1 := tt_body{
 		Instruction_type: "publish",
 		Instruction:      "Intruder alert, DeeDee in the lab",
@@ -144,5 +145,3 @@ func Test_distribute_validation(t *testing.T) {
 		t.Fail()
 	}
 }
-
-

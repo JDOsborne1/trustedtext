@@ -17,14 +17,14 @@ type Peer_detail struct {
 // This copy of the 'essentials' only takes the elements of the head_hash_tree with it,
 // producing the effect of preserving and copying the core progression of the trusted text
 // elements, and ignoring any un-promoted blocks
-func fork_chain_essentials(_trusted_text_chain trustedtext_chain_s) trustedtext_chain_s {
+func fork_chain_essentials(_trusted_text_chain Trustedtext_chain_s) Trustedtext_chain_s {
 	essential_keys := maps.Keys(_trusted_text_chain.Head_hash_tree)
 	_trusted_text_chain.Tt_chain = util_subset_map(_trusted_text_chain.Tt_chain, essential_keys)
 	return _trusted_text_chain
 }
 
 // get_head_hashes_missing_from_comp takes a trusted text chain and a comparison list, and returns any missing keys
-func get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext_chain_s, _comparison_list []string) []string {
+func get_head_hashes_missing_from_comp(_trusted_text_chain Trustedtext_chain_s, _comparison_list []string) []string {
 	all_head_hashes := _trusted_text_chain.Head_hash_tree
 	anti_set_map := util_anti_set_map(all_head_hashes, _comparison_list)
 	return maps.Keys(anti_set_map)
@@ -121,7 +121,6 @@ func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, 
 	return maps.Keys(new_keys_of_peer), nil
 }
 
-
 func helper_retrieve_and_format_external_block(_path string) (Trustedtext_s, error) {
 	resp, err := http.Get(_path)
 	if err != nil {
@@ -140,7 +139,7 @@ func helper_retrieve_and_format_external_block(_path string) (Trustedtext_s, err
 
 func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, error) {
 	composed_path := "http://" + peer.Path + "/block" + "/" + block_hash
-	
+
 	return helper_retrieve_and_format_external_block(composed_path)
 
 }
