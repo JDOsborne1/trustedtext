@@ -1,9 +1,8 @@
 package trustedtext
 
-
-// util_make_boolean_map_from_slice is a function which takes a slice of strings, and turns it into
+// util_slice_to_bool_map is a function which takes a slice of strings, and turns it into
 // a convenient shape for easy checking
-func util_make_boolean_map_from_slice(input_slice_of_keys []string) map[string]bool {
+func util_slice_to_bool_map(input_slice_of_keys []string) map[string]bool {
 	mapped_keys_to_keep := make(map[string]bool)
 
 	for _, key := range input_slice_of_keys {
@@ -15,7 +14,7 @@ func util_make_boolean_map_from_slice(input_slice_of_keys []string) map[string]b
 
 // util_subset_map is a function to return a subset of the input map, based on a slice of keys to keep.
 func util_subset_map(_original_map map[string]Trustedtext_s, _keys_to_keep []string) map[string]Trustedtext_s {
-	mapped_keys_to_keep := util_make_boolean_map_from_slice(_keys_to_keep)
+	mapped_keys_to_keep := util_slice_to_bool_map(_keys_to_keep)
 
 	new_map := make(map[string]Trustedtext_s)
 	for key, value := range _original_map {
@@ -28,7 +27,7 @@ func util_subset_map(_original_map map[string]Trustedtext_s, _keys_to_keep []str
 }
 
 func util_anti_set_map[Res Trustedtext_s | bool](_original_map map[string]Res, _keys_to_compare []string) map[string]Res {
-	mapped_keys_to_keep := util_make_boolean_map_from_slice(_keys_to_compare)
+	mapped_keys_to_keep := util_slice_to_bool_map(_keys_to_compare)
 
 	new_map := make(map[string]Res)
 	for key, value := range _original_map {

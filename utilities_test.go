@@ -5,7 +5,7 @@ import "testing"
 func Test_boolean_mapping_as_string_membership(t *testing.T) {
 	test_slice := []string{"testkey1", "testkey2"}
 
-	test_map := util_make_boolean_map_from_slice(test_slice)
+	test_map := util_slice_to_bool_map(test_slice)
 
 	for _, val := range test_slice {
 		if !test_map[val] {

@@ -103,7 +103,7 @@ func helper_format_external_block_list(_path string) (map[string]bool, error) {
 	}
 
 	// Determine missing elements
-	peer_blocks_map := util_make_boolean_map_from_slice(*known_blocks_of_peer)
+	peer_blocks_map := util_slice_to_bool_map(*known_blocks_of_peer)
 
 	return peer_blocks_map, nil
 }
