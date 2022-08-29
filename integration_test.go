@@ -33,7 +33,28 @@ func Test_block_list_helper(t *testing.T) {
 	}
 }
 
-func Test_block_submission_works(t *testing.T) {
+func helper_post_block_to_path(_block Trustedtext_s, _path string) (*http.Response, error) {
+	marshalled_test_block, err := json.MarshalIndent(_block, "", " ")
+	if err != nil {
+		return &http.Response{}, err
+	}
+
+	test_block_reader := bytes.NewReader(marshalled_test_block)
+
+	submission_request, err := http.NewRequest("POST", _path, test_block_reader)
+
+	if err != nil {
+		return &http.Response{}, err
+	}
+
+	submission_request.Header.Set("Content-Type", "application/json")
+
+	sending_client := &http.Client{}
+
+	return sending_client.Do(submission_request)
+}
+
+func Test_publish_submission_works(t *testing.T) {
 
 	
 	all_blocks_check_map, _ := helper_format_external_block_list(first_test_env)
@@ -45,29 +66,10 @@ func Test_block_submission_works(t *testing.T) {
 		t.Fail()
 	}
 
-	marshalled_test_block, err := json.MarshalIndent(test_block, "", " ")
-	if err != nil {
-		t.Log("Fails to marshal block")
-		t.Fail()
-	}
-
-	test_block_reader := bytes.NewReader(marshalled_test_block)
-
-	submission_request, err := http.NewRequest("POST", first_test_env + "/block", test_block_reader)
+	response, err := helper_post_block_to_path(test_block, first_test_env + "/block")
 
 	if err != nil {
-		t.Log("Fails to compose http request")
-		t.Fail()
-	}
-
-	submission_request.Header.Set("Content-Type", "application/json")
-
-	sending_client := &http.Client{}
-
-	response, err := sending_client.Do(submission_request)
-
-	if err != nil {
-		t.Log("Submission request fails")
+		t.Log("Submission request fails, with error", err)
 		t.Fail()
 	}
 
@@ -92,6 +94,50 @@ func Test_block_submission_works(t *testing.T) {
 
 	if restrieved_block.Hash_signature != test_block.Hash_signature {
 		t.Log("submitted block, and resultant block have mismatched signatures")
+		t.Fail()
+	}
+
+
+}
+
+
+
+
+func Test_head_move_submission_works(t *testing.T) {
+	head_move_block, _ := Generate_head_move_block(
+		junk_pub_key,
+		second_standard_message,
+		junk_pri_key,		
+	)
+
+	all_blocks_check_map, _ := helper_format_external_block_list(first_test_env)
+
+	if all_blocks_check_map[head_move_block.Hash] {
+		t.Log("attempting to use test block which is already in test chain")
+		t.Fail()
+	}
+
+	response, err := helper_post_block_to_path(head_move_block, first_test_env + "/block")
+
+	if err != nil {
+		t.Log("Submission request fails, with error", err)
+		t.Fail()
+	}
+
+	if response.StatusCode != 201 {
+		t.Log("Did not successfully create resource, instead received code: ", response.StatusCode)
+		t.Fail()
+	}
+
+	new_head_block, err := helper_retrieve_and_format_external_block(first_test_env + "/block/head" )
+
+	if err != nil {
+		t.Log("Failed to retrieve new head block")
+		t.Fail()
+	}
+	
+	if new_head_block.Hash != second_standard_message {
+		t.Log("Head change submission failed to change head hash")
 		t.Fail()
 	}
 
