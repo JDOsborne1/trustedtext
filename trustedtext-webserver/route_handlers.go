@@ -66,8 +66,8 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	new_chain, err := trustedtext.Process_incoming_block(existing_chain, *resultant_block)
 	util_error_wrapper(w, err)
 
-	if err != nil {
-		err:= trustedtext.Write_chain(new_chain, config)
+	if err == nil {
+		err := trustedtext.Write_chain(new_chain, config)
 		if err != nil {
 			util_error_wrapper(w, err)
 		}
