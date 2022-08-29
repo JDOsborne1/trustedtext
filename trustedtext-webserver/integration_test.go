@@ -125,3 +125,75 @@ func Test_head_move_submission_works(t *testing.T) {
 
 
 }
+
+
+func Test_peer_setup(t *testing.T) {
+	first_test_env_details := trustedtext.Peer_detail{
+		Claimed_name: "first_test_env",
+		Path: "http://172.17.0.2:8080",
+	}
+
+	second_test_env_details := trustedtext.Peer_detail{
+		Claimed_name: "second_test_env",
+		Path: "http://172.17.0.3:8080",
+	}
+
+	// submit second peer to first env
+	second_to_first_response, err := trustedtext.Test_helper_post_peer_to_path(second_test_env_details, first_test_env_details.Path)
+
+	if err != nil {
+		t.Log("Error in attempting to post second env to the first as a peer", err)
+		t.Fail()
+	}
+
+	if second_to_first_response.StatusCode != http.StatusCreated {
+		t.Log("Fails to create peer resource in 1st env, status:", second_to_first_response.StatusCode)
+		t.Fail()
+	}
+
+	// submit new block to second env
+	new_block, _ := trustedtext.Test_helper_generate_standard_test_block() 
+
+	new_block_to_second_response, err := trustedtext.Test_helper_post_block_to_path(new_block, second_test_env_details.Path)
+
+	if err != nil {
+		t.Log("Error in attempting to post new block to second env", err)
+		t.Fail()
+	}
+
+	if new_block_to_second_response.StatusCode != http.StatusCreated {
+		t.Log("Fails to create new block in 2nd env, status: ", new_block_to_second_response.StatusCode)
+		t.Fail()
+	}
+
+	// Trigger alignment
+
+	check_response, err := http.Get(first_test_env_details.Path + "/check")
+
+	if err != nil {
+		t.Log("Error in calling check endpoint", err)
+		t.Fail()
+	}
+
+	if check_response.StatusCode != http.StatusOK {
+		t.Log("Unsuccessful call to check endpoint, status:", check_response.StatusCode)
+		t.Fail()
+	}
+
+	// Check alignment successful
+	composed_new_block_string := first_test_env_details.Path + "/block/" + new_block.Hash
+	retrieved_block, err :=  helper_retrieve_and_format_external_block(composed_new_block_string)
+
+
+	if err != nil {
+		t.Log("Error in retrieving block from first env", err)
+		t.Fail()
+	}
+
+	if retrieved_block.Hash != new_block.Hash {
+		t.Log("Shared block doesn't match sent block")
+		t.Fail()
+	}
+
+
+}
