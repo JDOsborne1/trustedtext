@@ -28,7 +28,7 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else if head == "all_blocks" {
 		give_known_blocks(w, r)
 	} else if head == "head_block" {
-		give_head_block(w, r)
+		give_head_block_md_processed(w, r)
 	} else if head == "peer" {
 		peer_handler(w, r)
 	} else if head == "all_peers" {
@@ -43,7 +43,10 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func block_handler(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
-	if r.Method == "GET" {
+	if r.Method == "GET" && head == "head" {
+		give_head_block_unprocessed(w, r)
+	}
+	if r.Method == "GET" && head != "head" {
 		give_block(w, r, head)
 	}
 	if r.Method == "POST" {

@@ -7,13 +7,8 @@ import (
 	"net/http"
 	"trustedtext"
 
-
 	"golang.org/x/exp/maps"
 )
-
-
-
-
 
 func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
 	config, err := trustedtext.Read_config(default_config_path)
@@ -29,16 +24,9 @@ func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
 	fmt.Fprint(w, string(text_block))
 }
 
-func give_head_block(w http.ResponseWriter, r *http.Request) {
-	config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err) 
+func give_head_block_md_processed(w http.ResponseWriter, r *http.Request) {
 
-	existing_chain, err := trustedtext.Read_chain(config)
-	util_error_wrapper(w, err) 
-
-	head_hash := existing_chain.Head_hash
-	
-	requested_block, err := trustedtext.Return_specified_hash(existing_chain, head_hash)
+	requested_block, err := give_head_block_raw(w, r)
 	util_error_wrapper(w, err)
 
 	text_block, err := process_md_block(requested_block.Body.Instruction)
@@ -46,6 +34,32 @@ func give_head_block(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, text_block)
 
+}
+
+func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request) {
+
+	requested_block, err := give_head_block_raw(w, r)
+	util_error_wrapper(w, err)
+
+	text_block, err := json.Marshal(requested_block)
+	util_error_wrapper(w, err)
+
+	fmt.Fprint(w, string(text_block))
+
+}
+
+
+
+func give_head_block_raw(w http.ResponseWriter, r *http.Request) (trustedtext.Trustedtext_s, error) {
+	config, err := trustedtext.Read_config(default_config_path)
+	util_error_wrapper(w, err)
+
+	existing_chain, err := trustedtext.Read_chain(config)
+	util_error_wrapper(w, err)
+
+	head_hash := existing_chain.Head_hash
+
+	return trustedtext.Return_specified_hash(existing_chain, head_hash)
 }
 
 func submit_block(w http.ResponseWriter, r *http.Request) {
