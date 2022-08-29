@@ -1,9 +1,5 @@
 package trustedtext
 
-import (
-	"fmt"
-	"net/http"
-)
 
 // util_make_boolean_map_from_slice is a function which takes a slice of strings, and turns it into
 // a convenient shape for easy checking
@@ -42,11 +38,4 @@ func util_anti_set_map[Res Trustedtext_s | bool](_original_map map[string]Res, _
 	}
 
 	return new_map
-}
-
-func util_error_wrapper(_response_writer http.ResponseWriter, _possible_error error) {
-	if _possible_error != nil {
-		_response_writer.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(_response_writer, _possible_error)
-	}
 }
