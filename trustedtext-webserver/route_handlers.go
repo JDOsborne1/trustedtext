@@ -151,7 +151,7 @@ func peer_check(w http.ResponseWriter, r *http.Request) {
 	peerlist, err := trustedtext.Read_peerlist(used_config)
 	util_error_wrapper(w, err)
 
-	err = trustedtext.Synchronise_with_peers(peerlist, used_config)
+	err = Synchronise_with_peers(peerlist, used_config)
 	util_error_wrapper(w, err)
 	w.WriteHeader(http.StatusAccepted)
 }

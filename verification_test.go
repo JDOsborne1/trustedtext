@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
-const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
-
 func Test_key_pair(t *testing.T) {
 	message := []byte("junk message")
 	var err error
@@ -32,7 +29,7 @@ func Test_key_pair(t *testing.T) {
 }
 
 func Test_that_hashes_can_be_validated(t *testing.T) {
-	test_block, _ := generate_standard_test_block()
+	test_block, _ := Test_helper_generate_standard_test_block()
 
 	valid_signature, err := verify_hex_encoded_values(test_block.Author, test_block.Hash, test_block.Hash_signature)
 	if err != nil {
@@ -72,7 +69,7 @@ func Test_that_pairs_are_properly_checked(t *testing.T) {
 }
 
 func Test_that_validate_function_works_basic(t *testing.T) {
-	tb, _ := generate_standard_test_block()
+	tb, _ := Test_helper_generate_standard_test_block()
 
 	valid, err := verify_block_is_valid(tb)
 	if err != nil {
@@ -84,11 +81,11 @@ func Test_that_validate_function_works_basic(t *testing.T) {
 	}
 }
 
-
 type keypair struct {
 	pub_key string
 	pri_key string
 }
+
 func helper_generate_key_pair() (keypair, error) {
 	diff_pub, diff_pri, err := ed25519.GenerateKey(nil)
 	if err != nil {
@@ -104,7 +101,6 @@ func helper_generate_key_pair() (keypair, error) {
 	}, nil
 
 }
-
 
 func Test_keypair_helper(t *testing.T) {
 	_, err := helper_generate_key_pair()

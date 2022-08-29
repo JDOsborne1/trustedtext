@@ -5,7 +5,12 @@ import (
 	"os"
 )
 
-func Read_peerlist(_config config_struct) ([]Peer_detail, error) {
+type Peer_detail struct {
+	Claimed_name string
+	Path         string
+}
+
+func Read_peerlist(_config Config_struct) ([]Peer_detail, error) {
 	bytefile, err := os.ReadFile(_config.Peerlist_path)
 	if err != nil {
 		return []Peer_detail{}, err
@@ -18,7 +23,7 @@ func Read_peerlist(_config config_struct) ([]Peer_detail, error) {
 	return *peerlist, nil
 }
 
-func Write_peerlist(_peerlist []Peer_detail, _config config_struct) error {
+func Write_peerlist(_peerlist []Peer_detail, _config Config_struct) error {
 	marshalled_peerlist, err := json.MarshalIndent(_peerlist, "", " ")
 	if err != nil {
 		return err
@@ -33,7 +38,7 @@ func Write_peerlist(_peerlist []Peer_detail, _config config_struct) error {
 	return nil
 }
 
-func write_config(_config config_struct) error {
+func write_config(_config Config_struct) error {
 	marshalled_config, err := json.MarshalIndent(
 		_config,
 		"",
@@ -53,21 +58,21 @@ func write_config(_config config_struct) error {
 	return nil
 }
 
-func Read_config(_config_path string) (config_struct, error) {
+func Read_config(_config_path string) (Config_struct, error) {
 	bytefile, err := os.ReadFile(_config_path)
 	if err != nil {
-		return config_struct{}, err
+		return Config_struct{}, err
 	}
-	config := &config_struct{}
+	config := &Config_struct{}
 	err = json.Unmarshal(bytefile, config)
 	if err != nil {
-		return config_struct{}, err
+		return Config_struct{}, err
 	}
 
 	return *config, nil
 }
 
-func Write_chain(_chain Trustedtext_chain_s, _config config_struct) error {
+func Write_chain(_chain Trustedtext_chain_s, _config Config_struct) error {
 	marshalled_chain, err := json.MarshalIndent(_chain, "", "  ")
 	if err != nil {
 		return err
@@ -79,7 +84,7 @@ func Write_chain(_chain Trustedtext_chain_s, _config config_struct) error {
 	return err
 }
 
-func Read_chain(_config config_struct) (Trustedtext_chain_s, error) {
+func Read_chain(_config Config_struct) (Trustedtext_chain_s, error) {
 	bytefile, err := os.ReadFile(_config.Chain_path)
 	if err != nil {
 		return Trustedtext_chain_s{}, err

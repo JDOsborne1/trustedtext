@@ -1,13 +1,15 @@
-package trustedtext
+package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 	"testing"
+	"trustedtext"
 )
 
 const first_test_env = "http://localhost:8081"
+
+const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
+const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 
 
 func Test_integration_environment_setup(t *testing.T) {
@@ -33,40 +35,20 @@ func Test_block_list_helper(t *testing.T) {
 	}
 }
 
-func helper_post_block_to_path(_block Trustedtext_s, _path string) (*http.Response, error) {
-	marshalled_test_block, err := json.MarshalIndent(_block, "", " ")
-	if err != nil {
-		return &http.Response{}, err
-	}
-
-	test_block_reader := bytes.NewReader(marshalled_test_block)
-
-	submission_request, err := http.NewRequest("POST", _path, test_block_reader)
-
-	if err != nil {
-		return &http.Response{}, err
-	}
-
-	submission_request.Header.Set("Content-Type", "application/json")
-
-	sending_client := &http.Client{}
-
-	return sending_client.Do(submission_request)
-}
 
 func Test_publish_submission_works(t *testing.T) {
 
 	
 	all_blocks_check_map, _ := helper_format_external_block_list(first_test_env)
 
-	test_block, _  := generate_standard_test_block()
+	test_block, _  := trustedtext.Test_helper_generate_standard_test_block()
 
 	if all_blocks_check_map[test_block.Hash] {
 		t.Log("attempting to use test block which is already in test chain")
 		t.Fail()
 	}
 
-	response, err := helper_post_block_to_path(test_block, first_test_env + "/block")
+	response, err := trustedtext.Test_helper_post_block_to_path(test_block, first_test_env + "/block")
 
 	if err != nil {
 		t.Log("Submission request fails, with error", err)
@@ -104,7 +86,7 @@ func Test_publish_submission_works(t *testing.T) {
 
 
 func Test_head_move_submission_works(t *testing.T) {
-	head_move_block, _ := Generate_head_move_block(
+	head_move_block, _ := trustedtext.Generate_head_move_block(
 		junk_pub_key,
 		"de2ad46ae2a00b8bf758e29285037a715f0fe033",
 		junk_pri_key,		
@@ -117,7 +99,7 @@ func Test_head_move_submission_works(t *testing.T) {
 		t.Fail()
 	}
 
-	response, err := helper_post_block_to_path(head_move_block, first_test_env + "/block")
+	response, err := trustedtext.Test_helper_post_block_to_path(head_move_block, first_test_env + "/block")
 
 	if err != nil {
 		t.Log("Submission request fails, with error", err)

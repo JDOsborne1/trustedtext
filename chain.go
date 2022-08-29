@@ -137,7 +137,7 @@ func dispatch_instruction_processor(_block Trustedtext_s) func(Trustedtext_chain
 	}
 }
 
-func process_multiple_blocks(_incoming_chain Trustedtext_chain_s, _incoming_list_of_blocks []Trustedtext_s) (Trustedtext_chain_s, error) {
+func Process_multiple_blocks(_incoming_chain Trustedtext_chain_s, _incoming_list_of_blocks []Trustedtext_s) (Trustedtext_chain_s, error) {
 	var err error
 
 	for _, block := range _incoming_list_of_blocks {

@@ -1,36 +1,32 @@
-package trustedtext
+package main
 
 import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"trustedtext"
 
 	"golang.org/x/exp/maps"
 )
-
-type Peer_detail struct {
-	Claimed_name string
-	Path         string
-}
 
 // fork_chain_essentials takes an existing trusted text chain, and generates a copy of it.
 // This copy of the 'essentials' only takes the elements of the head_hash_tree with it,
 // producing the effect of preserving and copying the core progression of the trusted text
 // elements, and ignoring any un-promoted blocks
-func fork_chain_essentials(_trusted_text_chain Trustedtext_chain_s) Trustedtext_chain_s {
+func fork_chain_essentials(_trusted_text_chain trustedtext.Trustedtext_chain_s) trustedtext.Trustedtext_chain_s {
 	essential_keys := maps.Keys(_trusted_text_chain.Head_hash_tree)
-	_trusted_text_chain.Tt_chain = Util_subset_map(_trusted_text_chain.Tt_chain, essential_keys)
+	_trusted_text_chain.Tt_chain = trustedtext.Util_subset_map(_trusted_text_chain.Tt_chain, essential_keys)
 	return _trusted_text_chain
 }
 
 // get_head_hashes_missing_from_comp takes a trusted text chain and a comparison list, and returns any missing keys
-func get_head_hashes_missing_from_comp(_trusted_text_chain Trustedtext_chain_s, _comparison_list []string) []string {
+func get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext.Trustedtext_chain_s, _comparison_list []string) []string {
 	all_head_hashes := _trusted_text_chain.Head_hash_tree
-	anti_set_map := Util_anti_set_map(all_head_hashes, _comparison_list)
+	anti_set_map := trustedtext.Util_anti_set_map(all_head_hashes, _comparison_list)
 	return maps.Keys(anti_set_map)
 }
 
-func Synchronise_with_peers(_peerlist []Peer_detail, _config config_struct) error {
+func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _config trustedtext.Config_struct) error {
 	if len(_peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
 	}
@@ -47,8 +43,8 @@ func Synchronise_with_peers(_peerlist []Peer_detail, _config config_struct) erro
 	return nil
 }
 
-func synchronise_with_peer(_config config_struct, _peer Peer_detail) error {
-	existing_chain, err := Read_chain(_config)
+func synchronise_with_peer(_config trustedtext.Config_struct, _peer trustedtext.Peer_detail) error {
+	existing_chain, err := trustedtext.Read_chain(_config)
 	if err != nil {
 		return err
 	}
@@ -65,12 +61,12 @@ func synchronise_with_peer(_config config_struct, _peer Peer_detail) error {
 		return err
 	}
 
-	new_chain, err := process_multiple_blocks(existing_chain, returned_blocks)
+	new_chain, err := trustedtext.Process_multiple_blocks(existing_chain, returned_blocks)
 	if err != nil {
 		return err
 	}
 
-	err = Write_chain(new_chain, _config)
+	err = trustedtext.Write_chain(new_chain, _config)
 	if err != nil {
 		return err
 	}
@@ -78,12 +74,12 @@ func synchronise_with_peer(_config config_struct, _peer Peer_detail) error {
 	return nil
 }
 
-func retrieve_blocklist_from_peer(_blocklist []string, _peer Peer_detail) ([]Trustedtext_s, error) {
-	returned_blocklist := []Trustedtext_s{}
+func retrieve_blocklist_from_peer(_blocklist []string, _peer trustedtext.Peer_detail) ([]trustedtext.Trustedtext_s, error) {
+	returned_blocklist := []trustedtext.Trustedtext_s{}
 	for _, block := range _blocklist {
 		retrieved_block, err := retrieve_from_a_peer(_peer, block)
 		if err != nil {
-			return []Trustedtext_s{}, err
+			return []trustedtext.Trustedtext_s{}, err
 		}
 		returned_blocklist = append(returned_blocklist, retrieved_block)
 	}
@@ -103,12 +99,12 @@ func helper_format_external_block_list(_path string) (map[string]bool, error) {
 	}
 
 	// Determine missing elements
-	peer_blocks_map := Util_slice_to_bool_map(*known_blocks_of_peer)
+	peer_blocks_map := trustedtext.Util_slice_to_bool_map(*known_blocks_of_peer)
 
 	return peer_blocks_map, nil
 }
 
-func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, error) {
+func check_with_a_peer(_peer trustedtext.Peer_detail, _existing_blocks []string) ([]string, error) {
 
 	// Get and decode known blocks
 	peer_blocks_map, err := helper_format_external_block_list("http://" + _peer.Path)
@@ -116,28 +112,28 @@ func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, 
 		return []string{}, err
 	}
 
-	new_keys_of_peer := Util_anti_set_map(peer_blocks_map, _existing_blocks)
+	new_keys_of_peer := trustedtext.Util_anti_set_map(peer_blocks_map, _existing_blocks)
 
 	return maps.Keys(new_keys_of_peer), nil
 }
 
-func helper_retrieve_and_format_external_block(_path string) (Trustedtext_s, error) {
+func helper_retrieve_and_format_external_block(_path string) (trustedtext.Trustedtext_s, error) {
 	resp, err := http.Get(_path)
 	if err != nil {
-		return Trustedtext_s{}, err
+		return trustedtext.Trustedtext_s{}, err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
-	returned_block := &Trustedtext_s{}
+	returned_block := &trustedtext.Trustedtext_s{}
 
 	err = response_decoder.Decode(returned_block)
 	if err != nil {
-		return Trustedtext_s{}, err
+		return trustedtext.Trustedtext_s{}, err
 	}
 
 	return *returned_block, nil
 }
 
-func retrieve_from_a_peer(peer Peer_detail, block_hash string) (Trustedtext_s, error) {
+func retrieve_from_a_peer(peer trustedtext.Peer_detail, block_hash string) (trustedtext.Trustedtext_s, error) {
 	composed_path := "http://" + peer.Path + "/block" + "/" + block_hash
 
 	return helper_retrieve_and_format_external_block(composed_path)

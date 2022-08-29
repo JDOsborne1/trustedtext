@@ -5,13 +5,13 @@ import (
 )
 
 func Test_head_hash_functionality(t *testing.T) {
-	lab_chain_1 := generate_standard_test_chain(true)
+	lab_chain_1 := helper_generate_standard_test_chain(true)
 	if len(lab_chain_1.Head_hash) == 0 {
 		t.Log("chain not instantiated with a head hash")
 		t.Fail()
 	}
 
-	lab_chain_2 := generate_standard_test_chain(false)
+	lab_chain_2 := helper_generate_standard_test_chain(false)
 	var err error
 
 	_, err = move_head_hash(lab_chain_2, lab_chain_2.Tt_chain[second_standard_message].Hash)
@@ -29,7 +29,7 @@ func Test_head_hash_functionality(t *testing.T) {
 }
 
 func Test_head_hash_history(t *testing.T) {
-	lab_chain_1 := generate_standard_test_chain(false)
+	lab_chain_1 := helper_generate_standard_test_chain(false)
 	if !lab_chain_1.Head_hash_tree[first_standard_message] {
 		t.Log("Genesis block not in head hash tree")
 		t.Fail()
@@ -70,7 +70,7 @@ func Test_serialise_deserialise(t *testing.T) {
 
 func Test_move_head_block_core_functions(t *testing.T) {
 
-	lab_chain_2 := generate_standard_test_chain(false)
+	lab_chain_2 := helper_generate_standard_test_chain(false)
 	var err error
 
 	head_move_block, err := Generate_head_move_block(junk_pub_key, second_standard_message, junk_pri_key)
@@ -105,7 +105,6 @@ func Test_move_head_block_core_functions(t *testing.T) {
 
 }
 
-
 func Test_generating_head_move_blocks(t *testing.T) {
 	var err error
 
@@ -119,13 +118,12 @@ func Test_generating_head_move_blocks(t *testing.T) {
 		t.Fail()
 	}
 
-
 	new_keypair, _ := helper_generate_key_pair()
 
 	_, err = Generate_head_move_block(
 		new_keypair.pub_key,
 		"024c74fed7eaf14ffbb71fba7b2423d1d868b550",
-		new_keypair.pri_key, 
+		new_keypair.pri_key,
 	)
 
 	if err != nil {
@@ -133,8 +131,7 @@ func Test_generating_head_move_blocks(t *testing.T) {
 		t.Fail()
 	}
 
-
-	_, err =  Generate_head_move_block(
+	_, err = Generate_head_move_block(
 		junk_pub_key,
 		second_standard_message,
 		junk_pri_key,
@@ -147,17 +144,16 @@ func Test_generating_head_move_blocks(t *testing.T) {
 }
 
 
-
 func Test_amending_head_hash_using_processor(t *testing.T) {
 	var err error
-	lab_chain_1 := generate_standard_test_chain(false)
+	lab_chain_1 := helper_generate_standard_test_chain(false)
 
 	head_move_block_1, _ := Generate_head_move_block(
 		junk_pub_key,
 		"newh_hash",
 		junk_pri_key,
 	)
-	
+
 	_, err = Process_incoming_block(
 		lab_chain_1,
 		head_move_block_1,
@@ -168,14 +164,12 @@ func Test_amending_head_hash_using_processor(t *testing.T) {
 		t.Fail()
 	}
 
-
-
 	new_keypair, _ := helper_generate_key_pair()
 
 	head_move_block_2, _ := Generate_head_move_block(
 		new_keypair.pub_key,
 		"024c74fed7eaf14ffbb71fba7b2423d1d868b550",
-		new_keypair.pri_key, 
+		new_keypair.pri_key,
 	)
 
 	_, err = Process_incoming_block(
@@ -188,13 +182,11 @@ func Test_amending_head_hash_using_processor(t *testing.T) {
 		t.Fail()
 	}
 
-
-	head_move_block_3, _ :=  Generate_head_move_block(
+	head_move_block_3, _ := Generate_head_move_block(
 		junk_pub_key,
 		second_standard_message,
 		junk_pri_key,
 	)
-
 
 	new_chain, err := Process_incoming_block(
 		lab_chain_1,
@@ -218,5 +210,4 @@ func Test_amending_head_hash_using_processor(t *testing.T) {
 		t.Fail()
 	}
 
-	
 }
