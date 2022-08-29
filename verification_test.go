@@ -83,3 +83,33 @@ func Test_that_validate_function_works_basic(t *testing.T) {
 		t.Log("Validate function fails valid input")
 	}
 }
+
+
+type keypair struct {
+	pub_key string
+	pri_key string
+}
+func helper_generate_key_pair() (keypair, error) {
+	diff_pub, diff_pri, err := ed25519.GenerateKey(nil)
+	if err != nil {
+		return keypair{}, err
+	}
+
+	string_diff_pub := hex.EncodeToString(diff_pub)
+	string_diff_pri := hex.EncodeToString(diff_pri)
+
+	return keypair{
+		string_diff_pub,
+		string_diff_pri,
+	}, nil
+
+}
+
+
+func Test_keypair_helper(t *testing.T) {
+	_, err := helper_generate_key_pair()
+	if err != nil {
+		t.Log("Fails to generate key pair without failing")
+		t.Fail()
+	}
+}
