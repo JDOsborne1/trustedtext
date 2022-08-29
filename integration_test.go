@@ -106,7 +106,7 @@ func Test_publish_submission_works(t *testing.T) {
 func Test_head_move_submission_works(t *testing.T) {
 	head_move_block, _ := Generate_head_move_block(
 		junk_pub_key,
-		second_standard_message,
+		"de2ad46ae2a00b8bf758e29285037a715f0fe033",
 		junk_pri_key,		
 	)
 
@@ -136,7 +136,7 @@ func Test_head_move_submission_works(t *testing.T) {
 		t.Fail()
 	}
 	
-	if new_head_block.Hash != second_standard_message {
+	if new_head_block.Hash != "de2ad46ae2a00b8bf758e29285037a715f0fe033" {
 		t.Log("Head change submission failed to change head hash")
 		t.Fail()
 	}
