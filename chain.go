@@ -6,14 +6,6 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-type Trustedtext_chain_i interface {
-	Genesis(_author string, _tags []string) Trustedtext_chain_i
-	Amend(_existing_ttc Trustedtext_chain_i, _author string, _body string) Trustedtext_chain_i
-	Most_recent_hash(_existing_ttc Trustedtext_chain_i) string
-	Head_hash(_existing_ttc Trustedtext_chain_i) string
-	Move_head_hash(_existing_ttc Trustedtext_chain_i, _new_head_hash string) Trustedtext_chain_i
-	Return_head_block(_existing_ttc Trustedtext_chain_i) Trustedtext_s
-}
 
 type trustedtext_chain_s struct {
 	Original_author string
