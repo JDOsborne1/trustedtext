@@ -19,14 +19,14 @@ type Peer_detail struct {
 // elements, and ignoring any un-promoted blocks
 func fork_chain_essentials(_trusted_text_chain Trustedtext_chain_s) Trustedtext_chain_s {
 	essential_keys := maps.Keys(_trusted_text_chain.Head_hash_tree)
-	_trusted_text_chain.Tt_chain = util_subset_map(_trusted_text_chain.Tt_chain, essential_keys)
+	_trusted_text_chain.Tt_chain = Util_subset_map(_trusted_text_chain.Tt_chain, essential_keys)
 	return _trusted_text_chain
 }
 
 // get_head_hashes_missing_from_comp takes a trusted text chain and a comparison list, and returns any missing keys
 func get_head_hashes_missing_from_comp(_trusted_text_chain Trustedtext_chain_s, _comparison_list []string) []string {
 	all_head_hashes := _trusted_text_chain.Head_hash_tree
-	anti_set_map := util_anti_set_map(all_head_hashes, _comparison_list)
+	anti_set_map := Util_anti_set_map(all_head_hashes, _comparison_list)
 	return maps.Keys(anti_set_map)
 }
 
@@ -103,7 +103,7 @@ func helper_format_external_block_list(_path string) (map[string]bool, error) {
 	}
 
 	// Determine missing elements
-	peer_blocks_map := util_slice_to_bool_map(*known_blocks_of_peer)
+	peer_blocks_map := Util_slice_to_bool_map(*known_blocks_of_peer)
 
 	return peer_blocks_map, nil
 }
@@ -116,7 +116,7 @@ func check_with_a_peer(_peer Peer_detail, _existing_blocks []string) ([]string, 
 		return []string{}, err
 	}
 
-	new_keys_of_peer := util_anti_set_map(peer_blocks_map, _existing_blocks)
+	new_keys_of_peer := Util_anti_set_map(peer_blocks_map, _existing_blocks)
 
 	return maps.Keys(new_keys_of_peer), nil
 }

@@ -101,7 +101,7 @@ func Process_incoming_block(_existing_ttc Trustedtext_chain_s, _incoming_block T
 
 	// Check if block is already added
 	hashes_in_chain := maps.Keys(_existing_ttc.Tt_chain)
-	in_chain_map := util_slice_to_bool_map(hashes_in_chain)
+	in_chain_map := Util_slice_to_bool_map(hashes_in_chain)
 	hash_already_in_chain := in_chain_map[_incoming_block.Hash]
 	if hash_already_in_chain {
 		return Trustedtext_chain_s{}, errors.New("incoming block already in chain")
@@ -153,6 +153,6 @@ func process_multiple_blocks(_incoming_chain Trustedtext_chain_s, _incoming_list
 // is_hash_in_chain is a function to determine if a hash is a part of the the trusted text chain
 func is_hash_in_chain(_trusted_text_chain Trustedtext_chain_s, _comparison_hash string) bool {
 	all_hashes := maps.Keys(_trusted_text_chain.Tt_chain)
-	check_map := util_slice_to_bool_map(all_hashes)
+	check_map := Util_slice_to_bool_map(all_hashes)
 	return check_map[_comparison_hash]
 }
