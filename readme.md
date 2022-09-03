@@ -6,18 +6,19 @@ Content hosted using trusted text will be modifiable, But not secretly, and the 
 
 ## Key objectives
 
-* It is possible for an author to claim a segment of trusted text, by signing it with an identity key (such as PGP). 
-* It is possible to identify a segment of trusted text using a set of keys, identified by the author at creation
-    - It is allowable to have a trusted text segment without any keys. This is considered as the 'profile' of the original author. It is suggested that outside amendments to is segment is ignored.
-* It is possible to easily include this text in a webpage
-* Multiple segments of text can refer to the same set of keys, but only one of them has the 'HEAD' flag
-* In its simplest state, only the authenticated original author can move the 'HEAD' flag
+* It is possible for an author to claim a segment of trusted text, by signing it with a private key. [x]
+* It is possible to identify a segment of trusted text using a set of keys, identified by the author at creation [x]
+    - It is allowable to have a trusted text segment without any keys. This is considered as the 'profile' of the original author. It is suggested that outside amendments to is segment is ignored. [x]
+* It is possible to easily include this text in a webpage [x]
+* Multiple segments of text can refer to the same set of keys, but only one of them has the 'HEAD' flag [x]
+* In its simplest state, only the authenticated original author can move the 'HEAD' flag [x]
 * There exists a publically accessible repository of any set of published keys
 * There is some form of distributed content delivery network, which will always return the consensus 'HEAD' for any given set of keys 
 
 ## Secondary objectives
 
 * Mechanism for clear distinction between opinion segments (which the author always has full control over) and information segments, which can have a consensus control over the head pointer.
+* Integrate with system keyrings so that private keys never need to be entered
 * Mechanism for a consensus to be formed on alternative interpretations of text. 
     - Possibly through using some kind of proof of stake. This should be linked to some idea of thorough research.... Not quite sure how to price that in though.
     - Or making use of some kind of outside metric of trustworthiness on certain fact checkers etc
@@ -55,8 +56,6 @@ On a regular basis, peers will perform a handshake, identifying to each other if
 
 Peers also regularly check on the n and n+1 peers. By requesting a peerlist, you will be given the peerlist endpoints for all of their peers. After excluding yourself, a given node can check that that peer is a valid one, which is in alignment. 
 
-You can identify specific 'pillars' which you trust, then your own node will only align itself with changes which are aligned to one or more of those nodes. In this manner you can assemble a web of trust which will allow valid messages to propagate through the network without allowing the same access to compromised ones. 
-
 ### Distributing complete blocks
 
 The planned usage strategy would be that one would generate new blocks in a local environment. This will then be the only environment that your private key needs to be present, and trusted text should integrate with keyring tools to ensure that there is minimal exposure surface. 
@@ -80,4 +79,6 @@ Both the core package and the webserver have tests set up.
 
 For the core package it's a simple `go test` whenever you wish.
 
-For the webserver there is a script in the core directory called `integration_test_setup.sh` which will need to be run as sudo, this will set up the required docker image running in the background to test against.
+For the webserver there is a script in the core directory called `integration_test.sh` which may need to be run as sudo, this will set up the required docker images in the background and run the tests found in `trustedtext-webserver/integration_test.go` to validate that the image tagged as `tt_test` behaves as expected.
+
+You will need to rebuild `tt_test` if you make any changes in order to test them here.
