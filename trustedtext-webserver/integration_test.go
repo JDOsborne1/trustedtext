@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"testing"
 	"trustedtext"
+
+	"golang.org/x/exp/maps"
 )
 
 const first_test_env = "http://localhost:8081"
@@ -84,8 +86,6 @@ func Test_publish_submission_works(t *testing.T) {
 }
 
 
-
-
 func Test_head_move_submission_works(t *testing.T) {
 	head_move_block, _ := trustedtext.Generate_head_move_block(
 		junk_pub_key,
@@ -127,36 +127,56 @@ func Test_head_move_submission_works(t *testing.T) {
 
 }
 
+var second_test_env_details = trustedtext.Peer_detail{
+	Claimed_name: "second_test_env",
+	Path: "http://trustedtext-test_beta-1:8080",
+}
 
 func Test_peer_setup(t *testing.T) {
+		// submit second peer to first env
+
+		second_to_first_response, err := trustedtext.Test_helper_post_peer_to_path(second_test_env_details, first_test_env + "/peer")
+
+		if err != nil {
+			t.Log("Error in attempting to post second env to the first as a peer", err)
+			t.Fail()
+		}
+	
+		if second_to_first_response.StatusCode != http.StatusCreated {
+			t.Log("Fails to create peer resource in 1st env, status:", second_to_first_response.StatusCode)
+			t.Fail()
+		}
+
+		peer_names, err := helper_format_external_peer_names(first_test_env)
+
+		if err != nil {
+			t.Log("Error in retrieviving the peerlist", err)
+			t.Fail()
+		}
+
+		new_peer_in_list := peer_names[second_test_env_details.Claimed_name]
+
+		if !new_peer_in_list {
+			t.Log("Failed find newly created peer in list, only found", maps.Keys(peer_names))
+			t.Fail()
+		}
+
+		
+}
+
+
+func Test_peer_alignment(t *testing.T) {
 	// first_test_env_details := trustedtext.Peer_detail{
 	// 	Claimed_name: "first_test_env",
 	// 	Path: "http://trustedtext-test_alpha-1:8080",
 	// }
 
 
-	second_test_env_details := trustedtext.Peer_detail{
-		Claimed_name: "second_test_env",
-		Path: "http://trustedtext-test_beta-1:8080",
-	}
-
-	// submit second peer to first env
-	second_to_first_response, err := trustedtext.Test_helper_post_peer_to_path(second_test_env_details, first_test_env)
-
-	if err != nil {
-		t.Log("Error in attempting to post second env to the first as a peer", err)
-		t.Fail()
-	}
-
-	if second_to_first_response.StatusCode != http.StatusCreated {
-		t.Log("Fails to create peer resource in 1st env, status:", second_to_first_response.StatusCode)
-		t.Fail()
-	}
 
 	// submit new block to second env
 	new_block, _ := trustedtext.Test_helper_generate_standard_test_block() 
 
-	new_block_to_second_response, err := trustedtext.Test_helper_post_block_to_path(new_block, second_test_env)
+	new_block_to_second_response, err := trustedtext.Test_helper_post_block_to_path(new_block, second_test_env + "/block")
 
 	if err != nil {
 		t.Log("Error in attempting to post new block to second env", err)

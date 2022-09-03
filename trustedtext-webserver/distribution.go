@@ -104,6 +104,30 @@ func helper_format_external_block_list(_path string) (map[string]bool, error) {
 	return peer_blocks_map, nil
 }
 
+func helper_format_external_peer_names(_path string) (map[string]bool, error) {
+	resp, err := http.Get(_path + "/all_peers")
+	if err != nil {
+		return make(map[string]bool), err
+	}
+	response_decoder := json.NewDecoder(resp.Body)
+	known_peers := &[]trustedtext.Peer_detail{}
+	err = response_decoder.Decode(known_peers)
+	if err != nil {
+		return make(map[string]bool), err
+	}
+
+	peer_names := []string{}
+
+	for _, peer := range *known_peers {
+		peer_names = append(peer_names, peer.Claimed_name)
+	}
+
+	// Determine missing elements
+	peer_details := trustedtext.Util_slice_to_bool_map(peer_names)
+
+	return peer_details, nil
+}
+
 func check_with_a_peer(_peer trustedtext.Peer_detail, _existing_blocks []string) ([]string, error) {
 
 	// Get and decode known blocks
@@ -132,6 +156,7 @@ func helper_retrieve_and_format_external_block(_path string) (trustedtext.Truste
 
 	return *returned_block, nil
 }
+
 
 func retrieve_from_a_peer(peer trustedtext.Peer_detail, block_hash string) (trustedtext.Trustedtext_s, error) {
 	composed_path := "http://" + peer.Path + "/block" + "/" + block_hash
