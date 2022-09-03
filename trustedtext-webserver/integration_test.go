@@ -7,6 +7,7 @@ import (
 )
 
 const first_test_env = "http://localhost:8081"
+const second_test_env = "http://localhost:8082"
 
 const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
@@ -128,18 +129,19 @@ func Test_head_move_submission_works(t *testing.T) {
 
 
 func Test_peer_setup(t *testing.T) {
-	first_test_env_details := trustedtext.Peer_detail{
-		Claimed_name: "first_test_env",
-		Path: "http://172.17.0.2:8080",
-	}
+	// first_test_env_details := trustedtext.Peer_detail{
+	// 	Claimed_name: "first_test_env",
+	// 	Path: "http://trustedtext-test_alpha-1:8080",
+	// }
+
 
 	second_test_env_details := trustedtext.Peer_detail{
 		Claimed_name: "second_test_env",
-		Path: "http://172.17.0.3:8080",
+		Path: "http://trustedtext-test_beta-1:8080",
 	}
 
 	// submit second peer to first env
-	second_to_first_response, err := trustedtext.Test_helper_post_peer_to_path(second_test_env_details, first_test_env_details.Path)
+	second_to_first_response, err := trustedtext.Test_helper_post_peer_to_path(second_test_env_details, first_test_env)
 
 	if err != nil {
 		t.Log("Error in attempting to post second env to the first as a peer", err)
@@ -154,7 +156,7 @@ func Test_peer_setup(t *testing.T) {
 	// submit new block to second env
 	new_block, _ := trustedtext.Test_helper_generate_standard_test_block() 
 
-	new_block_to_second_response, err := trustedtext.Test_helper_post_block_to_path(new_block, second_test_env_details.Path)
+	new_block_to_second_response, err := trustedtext.Test_helper_post_block_to_path(new_block, second_test_env)
 
 	if err != nil {
 		t.Log("Error in attempting to post new block to second env", err)
@@ -168,7 +170,7 @@ func Test_peer_setup(t *testing.T) {
 
 	// Trigger alignment
 
-	check_response, err := http.Get(first_test_env_details.Path + "/check")
+	check_response, err := http.Get(first_test_env + "/check")
 
 	if err != nil {
 		t.Log("Error in calling check endpoint", err)
@@ -181,7 +183,7 @@ func Test_peer_setup(t *testing.T) {
 	}
 
 	// Check alignment successful
-	composed_new_block_string := first_test_env_details.Path + "/block/" + new_block.Hash
+	composed_new_block_string := first_test_env + "/block/" + new_block.Hash
 	retrieved_block, err :=  helper_retrieve_and_format_external_block(composed_new_block_string)
 
 
