@@ -38,7 +38,7 @@ func Write_peerlist(_peerlist []Peer_detail, _config Config_struct) error {
 	return nil
 }
 
-func write_config(_config Config_struct) error {
+func Write_config(_config Config_struct) error {
 	marshalled_config, err := json.MarshalIndent(
 		_config,
 		"",
