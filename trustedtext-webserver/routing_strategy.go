@@ -55,8 +55,10 @@ func block_handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func peer_handler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
-		add_peer(w, r)
+	if r.Method != "POST" {
+		http.Error(w, "Only post handling for peers", http.StatusMethodNotAllowed)
+	return
 	}
-	http.Error(w, "Only post handling for peers", http.StatusMethodNotAllowed)
+	
+	add_peer(w, r)
 }
