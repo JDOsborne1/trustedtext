@@ -9,22 +9,6 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-// fork_chain_essentials takes an existing trusted text chain, and generates a copy of it.
-// This copy of the 'essentials' only takes the elements of the head_hash_tree with it,
-// producing the effect of preserving and copying the core progression of the trusted text
-// elements, and ignoring any un-promoted blocks
-func fork_chain_essentials(_trusted_text_chain trustedtext.Trustedtext_chain_s) trustedtext.Trustedtext_chain_s {
-	essential_keys := maps.Keys(_trusted_text_chain.Head_hash_tree)
-	_trusted_text_chain.Tt_chain = trustedtext.Util_subset_map(_trusted_text_chain.Tt_chain, essential_keys)
-	return _trusted_text_chain
-}
-
-// get_head_hashes_missing_from_comp takes a trusted text chain and a comparison list, and returns any missing keys
-func get_head_hashes_missing_from_comp(_trusted_text_chain trustedtext.Trustedtext_chain_s, _comparison_list []string) []string {
-	all_head_hashes := _trusted_text_chain.Head_hash_tree
-	anti_set_map := trustedtext.Util_anti_set_map(all_head_hashes, _comparison_list)
-	return maps.Keys(anti_set_map)
-}
 
 func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _config trustedtext.Config_struct) error {
 	if len(_peerlist) == 0 {

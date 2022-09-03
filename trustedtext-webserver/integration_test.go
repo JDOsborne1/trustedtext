@@ -166,13 +166,6 @@ func Test_peer_setup(t *testing.T) {
 
 
 func Test_peer_alignment(t *testing.T) {
-	// first_test_env_details := trustedtext.Peer_detail{
-	// 	Claimed_name: "first_test_env",
-	// 	Path: "trustedtext-test_alpha-1:8080",
-	// }
-
-
-
 	// submit new block to second env
 	new_block, _ := trustedtext.Test_helper_generate_standard_test_block() 
 
@@ -219,3 +212,4 @@ func Test_peer_alignment(t *testing.T) {
 
 
 }
+
