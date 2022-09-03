@@ -129,7 +129,7 @@ func Test_head_move_submission_works(t *testing.T) {
 
 var second_test_env_details = trustedtext.Peer_detail{
 	Claimed_name: "second_test_env",
-	Path: "http://trustedtext-test_beta-1:8080",
+	Path: "trustedtext-test_beta-1:8080",
 }
 
 func Test_peer_setup(t *testing.T) {
@@ -168,7 +168,7 @@ func Test_peer_setup(t *testing.T) {
 func Test_peer_alignment(t *testing.T) {
 	// first_test_env_details := trustedtext.Peer_detail{
 	// 	Claimed_name: "first_test_env",
-	// 	Path: "http://trustedtext-test_alpha-1:8080",
+	// 	Path: "trustedtext-test_alpha-1:8080",
 	// }
 
 
@@ -197,7 +197,7 @@ func Test_peer_alignment(t *testing.T) {
 		t.Fail()
 	}
 
-	if check_response.StatusCode != http.StatusOK {
+	if check_response.StatusCode != http.StatusAccepted {
 		t.Log("Unsuccessful call to check endpoint, status:", check_response.StatusCode)
 		t.Fail()
 	}
