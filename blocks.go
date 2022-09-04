@@ -5,7 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 )
-
+// Trustedtext_s is the data struct for a block of trusted text, of which all the fields can
+// be validated against one another to ensure validity. The exception being the `Head_hash_at_creation` 
+// which is not included since it lends itself to races without helping with the trust level.
 type Trustedtext_s struct {
 	Author                string
 	Body                  tt_body
@@ -88,6 +90,9 @@ func return_hash(_trusted_text_element Trustedtext_s) (string, error) {
 	return hex.EncodeToString(bytestring_hash), nil
 }
 
+// generate_tt_body is the instantiator function for a `tt_body` object which contains the structured form of
+// a trustedtext message. The intantiator has paired validation with the instruction processor, so that only the 
+// kinds of instruction there is a valid processor for can be created. 
 func generate_tt_body(_instruction_type string, _instruction_body string) (tt_body, error) {
 	if _instruction_type != "publish" && _instruction_type != "head_change" {
 		return tt_body{}, errors.New("invalid instruction type, cannot generate an instruction for: " + _instruction_type)
@@ -100,6 +105,8 @@ func generate_tt_body(_instruction_type string, _instruction_body string) (tt_bo
 	return new_instruction, nil
 }
 
+// Generate_block is the wrapper for the two 'new' instance generators needed in the creation of 
+// a new block of trustedtext.
 func Generate_block(_instruction_type string, _instruction_body string, _public_key string, _private_key string) (Trustedtext_s, error) {
 	new_instruction, err := generate_tt_body(_instruction_type, _instruction_body)
 	if err != nil {
