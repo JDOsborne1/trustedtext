@@ -20,6 +20,9 @@ func shift_path(p string) (head, tail string) {
 type generic_handler struct {
 }
 
+// ServeHTTP is a custom replacement for the default handler from the http package.
+// It makes use of the shift path strategy to walk through the route and then delegate
+// the processing to the appropriate sub handler or sub strategy. 
 func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
@@ -40,6 +43,8 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// block_handler is a strategy for dispatching block handlers, this allows the block route to 
+// handle retrievals, submissions, and special categories of blocks.
 func block_handler(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
@@ -54,6 +59,8 @@ func block_handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+// peer_handler is a dedicated strategy for peers, which currently just does method restricton
 func peer_handler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "Only post handling for peers", http.StatusMethodNotAllowed)
