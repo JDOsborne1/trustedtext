@@ -1,7 +1,7 @@
 go 1.18
 
 use (
-	.
+	./pkg/chain
 	./cmd/localapp
 	./cmd/webserver
 )
