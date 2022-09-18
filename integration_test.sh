@@ -1,5 +1,5 @@
 docker compose up -d
-cd trustedtext-webserver
+cd cmd/webserver
 go test 
 cd ..
 docker compose down

@@ -2,6 +2,6 @@ go 1.18
 
 use (
 	.
-	./trustedtext-localapp
-	./trustedtext-webserver
+	./cmd/localapp
+	./cmd/webserver
 )
