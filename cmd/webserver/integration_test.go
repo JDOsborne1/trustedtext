@@ -51,7 +51,7 @@ func Test_publish_submission_works(t *testing.T) {
 		t.Fail()
 	}
 
-	response, err := trustedtext.Test_helper_post_block_to_path(test_block, first_test_env + "/block")
+	response, err := test_helper_post_block_to_path(test_block, first_test_env + "/block")
 
 	if err != nil {
 		t.Log("Submission request fails, with error", err)
@@ -100,7 +100,7 @@ func Test_head_move_submission_works(t *testing.T) {
 		t.Fail()
 	}
 
-	response, err := trustedtext.Test_helper_post_block_to_path(head_move_block, first_test_env + "/block")
+	response, err := test_helper_post_block_to_path(head_move_block, first_test_env + "/block")
 
 	if err != nil {
 		t.Log("Submission request fails, with error", err)
@@ -135,7 +135,7 @@ var second_test_env_details = trustedtext.Peer_detail{
 func Test_peer_setup(t *testing.T) {
 		// submit second peer to first env
 
-		second_to_first_response, err := trustedtext.Test_helper_post_peer_to_path(second_test_env_details, first_test_env + "/peer")
+		second_to_first_response, err := test_helper_post_peer_to_path(second_test_env_details, first_test_env + "/peer")
 
 		if err != nil {
 			t.Log("Error in attempting to post second env to the first as a peer", err)
@@ -169,7 +169,7 @@ func Test_peer_alignment(t *testing.T) {
 	// submit new block to second env
 	new_block, _ := trustedtext.Test_helper_generate_standard_test_block() 
 
-	new_block_to_second_response, err := trustedtext.Test_helper_post_block_to_path(new_block, second_test_env + "/block")
+	new_block_to_second_response, err := test_helper_post_block_to_path(new_block, second_test_env + "/block")
 
 	if err != nil {
 		t.Log("Error in attempting to post new block to second env", err)
