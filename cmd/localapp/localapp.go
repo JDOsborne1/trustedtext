@@ -1,6 +1,7 @@
 package main
 
 import (
+	"file"
 	"log"
 	"trustedtext"
 
@@ -11,20 +12,15 @@ import (
 )
 
 
-func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string)  {
+func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string, _store file.Storage)  {
 	block, err := trustedtext.Generate_block(_instruction_type, _instruction_body, _public_key, _private_key)
 	if err != nil {
 		log.Println("Failed to initiate block, with error:", err)
 		return
 	}
 	log.Println("Successfully created block, with hash:", block.Hash)
-	config, err := trustedtext.Read_config(default_config_path)
-	if err != nil {
-		log.Println("Failed to read config, with error:", err)
-		return
-	}
 	
-	existing_chain, err := trustedtext.Read_chain(config)
+	existing_chain, err := _store.Chain.Read_chain()
 	if err != nil {
 		log.Println("Failed to load chain, with error:", err)
 		return
@@ -36,7 +32,7 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 		return
 	}
 	
-	err = trustedtext.Write_chain(new_chain, config)
+	err = _store.Chain.Write_chain(new_chain)
 	if err != nil {
 		log.Println("Failed to write chain, with error:", err)
 		return
@@ -45,7 +41,7 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 
 
 
-func block_generator_window(_app_to_launch_in fyne.App) fyne.Window {
+func block_generator_window(_app_to_launch_in fyne.App, _store file.Storage) fyne.Window {
 	main_window := _app_to_launch_in.NewWindow("Block Generator window")
 	main_window.SetFullScreen(false)
 	
@@ -57,7 +53,7 @@ func block_generator_window(_app_to_launch_in fyne.App) fyne.Window {
 	public_key_input := widget.NewEntry()
 	public_key_input.SetPlaceHolder("public key")
 	
-	save_button := widget.NewButton("Save", func() {announce_block_generation("publish", body_input.Text, public_key_input.Text, private_key_input.Text)})
+	save_button := widget.NewButton("Save", func() {announce_block_generation("publish", body_input.Text, public_key_input.Text, private_key_input.Text, _store)})
 	content := container.NewVBox(body_input, private_key_input, public_key_input, save_button)
 	
 	main_window.SetContent(content)
@@ -68,8 +64,10 @@ func block_generator_window(_app_to_launch_in fyne.App) fyne.Window {
 
 func localapp() {
 	tt_app := app.New()
+
+	store := file.Storage{}
 	
-	main_window := block_generator_window(tt_app)
+	main_window := block_generator_window(tt_app, store)
 	main_window.ShowAndRun()
 
 }

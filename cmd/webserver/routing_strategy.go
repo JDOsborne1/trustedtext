@@ -1,6 +1,7 @@
 package main
 
 import (
+	"file"
 	"net/http"
 	"path"
 	"strings"
@@ -18,6 +19,12 @@ func shift_path(p string) (head, tail string) {
 }
 
 type generic_handler struct {
+	persistence file.Storage
+}
+
+func (generic_handler) Return_storage() file.Storage {
+	return generic_handler.persistence
+
 }
 
 // ServeHTTP is a custom replacement for the default handler from the http package.
@@ -26,18 +33,21 @@ type generic_handler struct {
 func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
+
+	used_storage := generic_handler.Return_storage()
+	
 	if head == "block" {
-		block_handler(w, r)
+		block_handler(w, r, used_storage)
 	} else if head == "all_blocks" {
-		give_known_blocks(w, r)
+		give_known_blocks(w, r, used_storage)
 	} else if head == "head_block" {
-		give_head_block_md_processed(w, r)
+		give_head_block_md_processed(w, r, used_storage)
 	} else if head == "peer" {
-		peer_handler(w, r)
+		peer_handler(w, r, used_storage)
 	} else if head == "all_peers" {
-		share_peerlist(w, r)
+		share_peerlist(w, r, used_storage)
 	} else if head == "check" {
-		peer_check(w, r)
+		peer_check(w, r, used_storage)
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
 	}
@@ -45,27 +55,27 @@ func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // block_handler is a strategy for dispatching block handlers, this allows the block route to 
 // handle retrievals, submissions, and special categories of blocks.
-func block_handler(w http.ResponseWriter, r *http.Request) {
+func block_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
 	if r.Method == "GET" && head == "head" {
-		give_head_block_unprocessed(w, r)
+		give_head_block_unprocessed(w, r, _store)
 	}
 	if r.Method == "GET" && head != "head" {
-		give_block(w, r, head)
+		give_block(w, r, _store, head)
 	}
 	if r.Method == "POST" {
-		submit_block(w, r)
+		submit_block(w, r, _store)
 	}
 }
 
 
 // peer_handler is a dedicated strategy for peers, which currently just does method restricton
-func peer_handler(w http.ResponseWriter, r *http.Request) {
+func peer_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	if r.Method != "POST" {
 		http.Error(w, "Only post handling for peers", http.StatusMethodNotAllowed)
 	return
 	}
 	
-	add_peer(w, r)
+	add_peer(w, r, _store)
 }

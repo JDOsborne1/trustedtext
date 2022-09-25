@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"file"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,10 +11,8 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
-	config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err)
-	existing_chain, err := trustedtext.Read_chain(config)
+func give_block(w http.ResponseWriter, r *http.Request, _store file.Storage, _block_hash string) {
+	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
 
 	requested_block, err := trustedtext.Return_specified_hash(existing_chain, _block_hash)
@@ -24,9 +23,9 @@ func give_block(w http.ResponseWriter, r *http.Request, _block_hash string) {
 	fmt.Fprint(w, string(text_block))
 }
 
-func give_head_block_md_processed(w http.ResponseWriter, r *http.Request) {
+func give_head_block_md_processed(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
-	requested_block, err := give_head_block_raw(w, r)
+	requested_block, err := give_head_block_raw(w, r, _store)
 	util_error_wrapper(w, err)
 
 	text_block, err := process_md_block(requested_block.Body.Instruction)
@@ -36,9 +35,9 @@ func give_head_block_md_processed(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request) {
+func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
-	requested_block, err := give_head_block_raw(w, r)
+	requested_block, err := give_head_block_raw(w, r, _store)
 	util_error_wrapper(w, err)
 
 	text_block, err := json.Marshal(requested_block)
@@ -50,11 +49,9 @@ func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request) {
 
 
 
-func give_head_block_raw(w http.ResponseWriter, r *http.Request) (trustedtext.Trustedtext_s, error) {
-	config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err)
+func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Storage) (trustedtext.Trustedtext_s, error) {
 
-	existing_chain, err := trustedtext.Read_chain(config)
+	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
 
 	head_hash := existing_chain.Head_hash
@@ -62,7 +59,7 @@ func give_head_block_raw(w http.ResponseWriter, r *http.Request) (trustedtext.Tr
 	return trustedtext.Return_specified_hash(existing_chain, head_hash)
 }
 
-func submit_block(w http.ResponseWriter, r *http.Request) {
+func submit_block(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	var post_deposit []byte
 	var err error
 	post_deposit, err = io.ReadAll(r.Body)
@@ -72,16 +69,15 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
 
-	config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err)
-	existing_chain, err := trustedtext.Read_chain(config)
+
+	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
 
 	new_chain, err := trustedtext.Process_incoming_block(existing_chain, *resultant_block)
 	util_error_wrapper(w, err)
 
 	if err == nil {
-		err := trustedtext.Write_chain(new_chain, config)
+		err := _store.Chain.Write_chain(new_chain)
 		if err != nil {
 			util_error_wrapper(w, err)
 		}
@@ -89,11 +85,9 @@ func submit_block(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func give_known_blocks(w http.ResponseWriter, r *http.Request) {
-	config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err)
+func give_known_blocks(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
-	existing_chain, err := trustedtext.Read_chain(config)
+	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
 
 	output_encoder := json.NewEncoder(w)
@@ -101,15 +95,14 @@ func give_known_blocks(w http.ResponseWriter, r *http.Request) {
 	util_error_wrapper(w, err)
 }
 
-func share_peerlist(w http.ResponseWriter, r *http.Request) {
+func share_peerlist(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	used_config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err)
 
-	peerlist, err := trustedtext.Read_peerlist(used_config)
+
+	peerlist, err := _store.Peerlist.Read_peerlist()
 	util_error_wrapper(w, err)
 
 	marshalled_peerlist, err := json.Marshal(peerlist)
@@ -118,7 +111,7 @@ func share_peerlist(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(marshalled_peerlist))
 }
 
-func add_peer(w http.ResponseWriter, r *http.Request) {
+func add_peer(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
@@ -131,27 +124,22 @@ func add_peer(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(post_deposit, resultant_peer)
 	util_error_wrapper(w, err)
 
-	used_config, err := trustedtext.Read_config(default_config_path)
-	util_error_wrapper(w, err)
 
-	existing_peerlist, err := trustedtext.Read_peerlist(used_config)
+	existing_peerlist, err := _store.Peerlist.Read_peerlist()
 	util_error_wrapper(w, err)
 
 	new_peerlist := append(existing_peerlist, *resultant_peer)
 
-	trustedtext.Write_peerlist(new_peerlist, used_config)
+	_store.Peerlist.Write_peerlist(new_peerlist)
 	w.WriteHeader(http.StatusCreated)
 }
 
-func peer_check(w http.ResponseWriter, r *http.Request) {
+func peer_check(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
-	used_config, err := trustedtext.Read_config(default_config_path)
+	peerlist, err := _store.Peerlist.Read_peerlist()
 	util_error_wrapper(w, err)
 
-	peerlist, err := trustedtext.Read_peerlist(used_config)
-	util_error_wrapper(w, err)
-
-	err = Synchronise_with_peers(peerlist, used_config)
+	err = Synchronise_with_peers(peerlist, _store)
 	util_error_wrapper(w, err)
 	w.WriteHeader(http.StatusAccepted)
 }

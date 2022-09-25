@@ -28,7 +28,7 @@ func test_helper_post_block_to_path(_block trustedtext.Trustedtext_s, _path stri
 	return sending_client.Do(submission_request)
 }
 
-func test_helper_post_peer_to_path(_peer trustedtext.Peer_detail, _path string) (*http.Response, error) {
+func test_helper_post_peer_to_path(_peer Peer_detail, _path string) (*http.Response, error) {
 	marshalled_test_block, err := json.MarshalIndent(_peer, "", " ")
 	if err != nil {
 		return &http.Response{}, err

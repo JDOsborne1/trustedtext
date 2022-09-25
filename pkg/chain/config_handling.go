@@ -5,3 +5,8 @@ type Config_struct struct {
 	Chain_path    string
 	Port_used     int
 }
+
+type Config interface {
+	Write_config(Config_struct) error
+	Read_peerlist() (Config_struct, error)
+}
