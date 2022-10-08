@@ -31,7 +31,13 @@ func webservice_main(_store file.Storage) {
 }
 
 func main() {
-	store := file.Storage{}
+	store, err := file.Storage_from_file(default_config_path)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// fmt.Println(store.Chain.Read_chain())
 
 	webservice_main(store)
 }

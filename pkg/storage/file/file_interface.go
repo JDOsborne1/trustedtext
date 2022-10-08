@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"os"
 	"trustedtext"
+
+	"github.com/pkg/errors"
 )
 
 
@@ -13,10 +15,37 @@ type Storage struct {
 	Config File_config
 }
 
+func Storage_from_file(_config_path string) (Storage, error) {
+	config_entity := File_config{
+		path: _config_path,
+	}
+
+	tt_config, err := config_entity.Read_config()
+
+	if err != nil {
+		return Storage{}, err
+	}
+
+	chain_entity := File_chain{
+		path: tt_config.Chain_path,
+	}
+
+	peerlist_entity := File_peerlist{
+		path: tt_config.Peerlist_path,
+	}
+
+	storage_entity := Storage{
+		Peerlist: peerlist_entity,
+		Chain: chain_entity,
+		Config: config_entity,
+	}
+
+	return storage_entity, nil
+}
+
 type File_peerlist struct {
 	path string
 }
-
 
 func Generate_peerlist_from_config(_config trustedtext.Config_struct) File_peerlist {
 	needed_path := _config.Peerlist_path
@@ -26,13 +55,14 @@ func Generate_peerlist_from_config(_config trustedtext.Config_struct) File_peerl
 
 func (_peerlist_store File_peerlist) Read_peerlist() ([]trustedtext.Peer_detail, error) {
 	bytefile, err := os.ReadFile(_peerlist_store.path)
+	
 	if err != nil {
-		return []trustedtext.Peer_detail{}, err
+		return []trustedtext.Peer_detail{}, errors.Wrap(err, "Fails to generate bytefile")
 	}
 	peerlist := &[]trustedtext.Peer_detail{}
 	err = json.Unmarshal(bytefile, peerlist)
 	if err != nil {
-		return []trustedtext.Peer_detail{}, err
+		return []trustedtext.Peer_detail{}, errors.Wrap(err, "Fails to unmarshal bytefile")
 	}
 	return *peerlist, nil
 }
