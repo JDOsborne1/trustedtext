@@ -22,19 +22,19 @@ type generic_handler struct {
 	persistence file.Storage
 }
 
-func (generic_handler) Return_storage() file.Storage {
-	return generic_handler.persistence
+func (h generic_handler) Return_storage() file.Storage {
+	return h.persistence
 
 }
 
 // ServeHTTP is a custom replacement for the default handler from the http package.
 // It makes use of the shift path strategy to walk through the route and then delegate
 // the processing to the appropriate sub handler or sub strategy. 
-func (generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
 
-	used_storage := generic_handler.Return_storage()
+	used_storage := h.Return_storage()
 	
 	if head == "block" {
 		block_handler(w, r, used_storage)
