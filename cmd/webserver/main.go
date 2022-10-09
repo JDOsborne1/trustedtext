@@ -24,7 +24,7 @@ func webservice_main(_store file.Storage) {
 		return
 	}
 	test_handler := new(generic_handler)
-
+	test_handler.persistence = _store
 	
 
 	log.Fatal(http.ListenAndServe(":" + fmt.Sprint(config.Port_used), test_handler))
@@ -37,7 +37,7 @@ func main() {
 		return
 	}
 
-	// fmt.Println(store.Chain.Read_chain())
+	
 
 	webservice_main(store)
 }
