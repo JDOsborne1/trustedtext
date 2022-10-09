@@ -14,6 +14,12 @@ type Trustedtext_chain_s struct {
 	Head_hash_tree  map[string]bool
 }
 
+type Chain_store interface {
+	Write_chain(Trustedtext_chain_s) error
+	Read_chain() (Trustedtext_chain_s, error)
+}
+
+
 // genesis is the function called to create a new trusted text chain.
 // This is always initiated with the same first message. Partly because
 // the first element lacks a 'previous hash' which makes it harder to

@@ -127,7 +127,7 @@ func Test_head_move_submission_works(t *testing.T) {
 
 }
 
-var second_test_env_details = trustedtext.Peer_detail{
+var second_test_env_details = Peer_detail{
 	Claimed_name: "second_test_env",
 	Path: "trustedtext-test_beta-1:8080",
 }

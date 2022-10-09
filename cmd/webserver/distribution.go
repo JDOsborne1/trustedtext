@@ -3,14 +3,22 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"file"
 	"net/http"
 	"trustedtext"
 
 	"golang.org/x/exp/maps"
 )
 
+type Peer_detail struct {
+	Claimed_name string
+	Path         string
+}
 
-func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _config trustedtext.Config_struct) error {
+
+
+
+func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _store file.Storage) error {
 	if len(_peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
 	}
@@ -18,7 +26,7 @@ func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _config trusted
 	var err error
 
 	for _, peer := range _peerlist {
-		err = synchronise_with_peer(_config, peer)
+		err = synchronise_with_peer(_store, peer)
 		if err != nil {
 			return err
 		}
@@ -27,8 +35,8 @@ func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _config trusted
 	return nil
 }
 
-func synchronise_with_peer(_config trustedtext.Config_struct, _peer trustedtext.Peer_detail) error {
-	existing_chain, err := trustedtext.Read_chain(_config)
+func synchronise_with_peer(_store file.Storage, _peer trustedtext.Peer_detail) error {
+	existing_chain, err := _store.Chain.Read_chain()
 	if err != nil {
 		return err
 	}
@@ -50,7 +58,7 @@ func synchronise_with_peer(_config trustedtext.Config_struct, _peer trustedtext.
 		return err
 	}
 
-	err = trustedtext.Write_chain(new_chain, _config)
+	err = _store.Chain.Write_chain(new_chain)
 	if err != nil {
 		return err
 	}
@@ -94,7 +102,7 @@ func helper_format_external_peer_names(_path string) (map[string]bool, error) {
 		return make(map[string]bool), err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
-	known_peers := &[]trustedtext.Peer_detail{}
+	known_peers := &[]Peer_detail{}
 	err = response_decoder.Decode(known_peers)
 	if err != nil {
 		return make(map[string]bool), err
