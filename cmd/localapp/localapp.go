@@ -62,12 +62,10 @@ func block_generator_window(_app_to_launch_in fyne.App, _store file.Storage) fyn
 }
 
 
-func localapp() {
+func localapp(_given_store file.Storage) {
 	tt_app := app.New()
-
-	store := file.Storage{}
 	
-	main_window := block_generator_window(tt_app, store)
+	main_window := block_generator_window(tt_app, _given_store)
 	main_window.ShowAndRun()
 
 }
