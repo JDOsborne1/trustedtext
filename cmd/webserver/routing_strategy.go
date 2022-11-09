@@ -49,7 +49,7 @@ func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else if head == "check" {
 		peer_check(w, r, used_storage)
 	} else {
-		w.WriteHeader(http.StatusServiceUnavailable)
+		http.Error(w, "service not implemented", http.StatusServiceUnavailable)
 	}
 }
 
