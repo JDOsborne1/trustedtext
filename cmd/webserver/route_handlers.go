@@ -11,6 +11,7 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+// give_block writes out a specified block from a storage layer
 func give_block(w http.ResponseWriter, r *http.Request, _store file.Storage, _block_hash string) {
 	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
@@ -23,6 +24,8 @@ func give_block(w http.ResponseWriter, r *http.Request, _store file.Storage, _bl
 	fmt.Fprint(w, string(text_block))
 }
 
+// Gives the head block as it would be after processing the content as markdown. This is to make it viable 
+// to show a webpage using just trustedtext blocks
 func give_head_block_md_processed(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
 	requested_block, err := give_head_block_raw(w, r, _store)
@@ -35,6 +38,7 @@ func give_head_block_md_processed(w http.ResponseWriter, r *http.Request, _store
 
 }
 
+// This function gives the head block unprocessed, to allow comparison on the JSON level
 func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
 	requested_block, err := give_head_block_raw(w, r, _store)
@@ -48,7 +52,7 @@ func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request, _store 
 }
 
 
-
+// The baseline function to give the head block, unprocessed, so that it can have multiple downstream versions
 func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Storage) (trustedtext.Trustedtext_s, error) {
 
 	existing_chain, err := _store.Chain.Read_chain()
@@ -59,6 +63,7 @@ func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Sto
 	return trustedtext.Return_specified_hash(existing_chain, head_hash)
 }
 
+// Handler to accept incoming blocks in the form of a Post request, and action it within the provided store
 func submit_block(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	var post_deposit []byte
 	var err error
@@ -85,6 +90,7 @@ func submit_block(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	}
 }
 
+// Listing handler, which shares the set of all known blocks in the chain.
 func give_known_blocks(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
 	existing_chain, err := _store.Chain.Read_chain()
@@ -95,6 +101,7 @@ func give_known_blocks(w http.ResponseWriter, r *http.Request, _store file.Stora
 	util_error_wrapper(w, err)
 }
 
+// Peer management route which shares the peerlist of the server
 func share_peerlist(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	if r.Method != "GET" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -111,6 +118,7 @@ func share_peerlist(w http.ResponseWriter, r *http.Request, _store file.Storage)
 	fmt.Fprint(w, string(marshalled_peerlist))
 }
 
+// Peer management request which allows you to add a new peer to a given server
 func add_peer(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	if r.Method != "POST" {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -134,6 +142,7 @@ func add_peer(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	w.WriteHeader(http.StatusCreated)
 }
 
+// Calling route which triggers the Synchronisation process
 func peer_check(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
 	peerlist, err := _store.Peerlist.Read_peerlist()
