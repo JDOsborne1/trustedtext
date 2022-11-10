@@ -34,8 +34,9 @@ func give_head_block_md_processed(w http.ResponseWriter, r *http.Request, _store
 	text_block, err := process_md_block(requested_block.Body.Instruction)
 	util_error_wrapper(w, err)
 
-	fmt.Fprint(w, text_block)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 
+	fmt.Fprint(w, text_block)
 }
 
 // This function gives the head block unprocessed, to allow comparison on the JSON level
