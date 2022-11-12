@@ -24,7 +24,7 @@ func give_block(w http.ResponseWriter, r *http.Request, _store file.Storage, _bl
 	fmt.Fprint(w, string(text_block))
 }
 
-// Gives the head block as it would be after processing the content as markdown. This is to make it viable 
+// Gives the head block as it would be after processing the content as markdown. This is to make it viable
 // to show a webpage using just trustedtext blocks
 func give_head_block_md_processed(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 
@@ -59,7 +59,6 @@ func give_head_block_hash(w http.ResponseWriter, r *http.Request, _store file.St
 	fmt.Fprint(w, requested_block.Hash)
 }
 
-
 // The baseline function to give the head block, unprocessed, so that it can have multiple downstream versions
 func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Storage) (trustedtext.Trustedtext_s, error) {
 
@@ -81,7 +80,6 @@ func submit_block(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	resultant_block := &trustedtext.Trustedtext_s{}
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
-
 
 	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
@@ -116,7 +114,6 @@ func share_peerlist(w http.ResponseWriter, r *http.Request, _store file.Storage)
 		return
 	}
 
-
 	peerlist, err := _store.Peerlist.Read_peerlist()
 	util_error_wrapper(w, err)
 
@@ -139,7 +136,6 @@ func add_peer(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	resultant_peer := &trustedtext.Peer_detail{}
 	err = json.Unmarshal(post_deposit, resultant_peer)
 	util_error_wrapper(w, err)
-
 
 	existing_peerlist, err := _store.Peerlist.Read_peerlist()
 	util_error_wrapper(w, err)

@@ -8,11 +8,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-
 type Storage struct {
 	Peerlist File_peerlist
-	Chain File_chain
-	Config File_config
+	Chain    File_chain
+	Config   File_config
 }
 
 func Storage_from_file(_config_path string) (Storage, error) {
@@ -36,8 +35,8 @@ func Storage_from_file(_config_path string) (Storage, error) {
 
 	storage_entity := Storage{
 		Peerlist: peerlist_entity,
-		Chain: chain_entity,
-		Config: config_entity,
+		Chain:    chain_entity,
+		Config:   config_entity,
 	}
 
 	return storage_entity, nil
@@ -52,10 +51,9 @@ func Generate_peerlist_from_config(_config trustedtext.Config_struct) File_peerl
 	return File_peerlist{path: needed_path}
 }
 
-
 func (_peerlist_store File_peerlist) Read_peerlist() ([]trustedtext.Peer_detail, error) {
 	bytefile, err := os.ReadFile(_peerlist_store.path)
-	
+
 	if err != nil {
 		return []trustedtext.Peer_detail{}, errors.Wrap(err, "Fails to generate bytefile")
 	}
@@ -119,7 +117,6 @@ func (_config File_config) Read_config() (trustedtext.Config_struct, error) {
 
 	return *config, nil
 }
-
 
 type File_chain struct {
 	path string

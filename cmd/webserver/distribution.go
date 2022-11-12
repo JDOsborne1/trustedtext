@@ -15,9 +15,6 @@ type Peer_detail struct {
 	Path         string
 }
 
-
-
-
 func Synchronise_with_peers(_peerlist []trustedtext.Peer_detail, _store file.Storage) error {
 	if len(_peerlist) == 0 {
 		return errors.New("cant validate against empty peerlist")
@@ -148,7 +145,6 @@ func helper_retrieve_and_format_external_block(_path string) (trustedtext.Truste
 
 	return *returned_block, nil
 }
-
 
 func retrieve_from_a_peer(peer trustedtext.Peer_detail, block_hash string) (trustedtext.Trustedtext_s, error) {
 	composed_path := "http://" + peer.Path + "/block" + "/" + block_hash

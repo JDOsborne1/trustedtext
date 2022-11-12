@@ -6,7 +6,6 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-
 func Test_genesis_validation(t *testing.T) {
 	var err error
 	_, err = genesis(

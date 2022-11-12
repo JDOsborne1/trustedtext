@@ -143,7 +143,6 @@ func Test_generating_head_move_blocks(t *testing.T) {
 	}
 }
 
-
 func Test_amending_head_hash_using_processor(t *testing.T) {
 	var err error
 	lab_chain_1 := helper_generate_standard_test_chain(false)

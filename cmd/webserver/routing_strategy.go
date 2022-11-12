@@ -29,13 +29,13 @@ func (h generic_handler) Return_storage() file.Storage {
 
 // ServeHTTP is a custom replacement for the default handler from the http package.
 // It makes use of the shift path strategy to walk through the route and then delegate
-// the processing to the appropriate sub handler or sub strategy. 
+// the processing to the appropriate sub handler or sub strategy.
 func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
 
 	used_storage := h.Return_storage()
-	
+
 	if head == "block" {
 		block_handler(w, r, used_storage)
 	} else if head == "all_blocks" {
@@ -53,7 +53,7 @@ func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// block_handler is a strategy for dispatching block handlers, this allows the block route to 
+// block_handler is a strategy for dispatching block handlers, this allows the block route to
 // handle retrievals, submissions, and special categories of blocks.
 func block_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	var head string
@@ -66,14 +66,13 @@ func block_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) 
 	}
 }
 
-
 // peer_handler is a dedicated strategy for peers, which currently just does method restricton
 func peer_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	if r.Method != "POST" {
 		http.Error(w, "Only post handling for peers", http.StatusMethodNotAllowed)
-	return
+		return
 	}
-	
+
 	add_peer(w, r, _store)
 }
 

@@ -12,8 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-
-func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string, _store file.Storage)  {
+func announce_block_generation(_instruction_type string, _instruction_body string, _public_key string, _private_key string, _store file.Storage) {
 	block, err := trustedtext.Generate_block(_instruction_type, _instruction_body, _public_key, _private_key)
 	if err != nil {
 		log.Println("Failed to initiate block, with error:", err)
@@ -27,7 +26,7 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 		log.Println(err)
 		return
 	}
-	
+
 }
 
 func amend_chain_with(_store file.Storage, _block trustedtext.Trustedtext_s) error {
@@ -36,13 +35,13 @@ func amend_chain_with(_store file.Storage, _block trustedtext.Trustedtext_s) err
 		errors.Wrap(err, "Failed to load chain")
 		return err
 	}
-	
+
 	new_chain, err := trustedtext.Process_incoming_block(existing_chain, _block)
 	if err != nil {
 		errors.Wrap(err, "Failed to process new block")
 		return err
 	}
-	
+
 	err = _store.Chain.Write_chain(new_chain)
 	if err != nil {
 		errors.Wrap(err, "Failed to write chain")
@@ -65,25 +64,25 @@ func announce_head_change_block(_new_head_hash string, _public_key string, _priv
 		return
 	}
 
-
 }
-
 
 func block_generator_window(_app_to_launch_in fyne.App, _store file.Storage) fyne.Window {
 	main_window := _app_to_launch_in.NewWindow("Block Generator window")
 	main_window.SetFullScreen(false)
-	
+
 	body_input := widget.NewMultiLineEntry()
 	body_input.SetMinRowsVisible(10)
-	
+
 	private_key_input := widget.NewPasswordEntry()
 	private_key_input.SetPlaceHolder("private key")
 	public_key_input := widget.NewEntry()
 	public_key_input.SetPlaceHolder("public key")
-	
-	save_button := widget.NewButton("Save", func() {announce_block_generation("publish", body_input.Text, public_key_input.Text, private_key_input.Text, _store)})
+
+	save_button := widget.NewButton("Save", func() {
+		announce_block_generation("publish", body_input.Text, public_key_input.Text, private_key_input.Text, _store)
+	})
 	content := container.NewVBox(body_input, private_key_input, public_key_input, save_button)
-	
+
 	main_window.SetContent(content)
 
 	return main_window
@@ -100,19 +99,20 @@ func head_hash_change_window(_app_to_launch_in fyne.App, _store file.Storage) fy
 	private_key_input.SetPlaceHolder("private key")
 	public_key_input := widget.NewEntry()
 	public_key_input.SetPlaceHolder("public key")
-	
-	save_button := widget.NewButton("Save", func() {announce_head_change_block(new_head_hash_input.Text, public_key_input.Text, private_key_input.Text, _store)})
+
+	save_button := widget.NewButton("Save", func() {
+		announce_head_change_block(new_head_hash_input.Text, public_key_input.Text, private_key_input.Text, _store)
+	})
 	content := container.NewVBox(new_head_hash_input, private_key_input, public_key_input, save_button)
-	
+
 	change_window.SetContent(content)
 
 	return change_window
 }
 
-
 func localapp(_given_store file.Storage) {
 	tt_app := app.New()
-	
+
 	main_window := head_hash_change_window(tt_app, _given_store)
 	main_window.ShowAndRun()
 

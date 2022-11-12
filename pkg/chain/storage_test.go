@@ -6,6 +6,7 @@ import (
 )
 
 const default_config_path = "config.json"
+
 func Test_storage_establishment(t *testing.T) {
 	test_storage, err := file.Storage_from_file(default_config_path)
 
@@ -36,7 +37,6 @@ func Test_storage_establishment(t *testing.T) {
 	}
 
 }
-
 
 func Test_store_retrieve_peers(t *testing.T) {
 	t.Fail()

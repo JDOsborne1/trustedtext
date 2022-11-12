@@ -19,7 +19,6 @@ type Chain_store interface {
 	Read_chain() (Trustedtext_chain_s, error)
 }
 
-
 // genesis is the function called to create a new trusted text chain.
 // This is always initiated with the same first message. Partly because
 // the first element lacks a 'previous hash' which makes it harder to
