@@ -52,6 +52,13 @@ func give_head_block_unprocessed(w http.ResponseWriter, r *http.Request, _store 
 
 }
 
+func give_head_block_hash(w http.ResponseWriter, r *http.Request, _store file.Storage) {
+	requested_block, err := give_head_block_raw(w, r, _store)
+	util_error_wrapper(w, err)
+
+	fmt.Fprint(w, requested_block.Hash)
+}
+
 
 // The baseline function to give the head block, unprocessed, so that it can have multiple downstream versions
 func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Storage) (trustedtext.Trustedtext_s, error) {
