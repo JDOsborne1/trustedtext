@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"file"
+	"golang.org/x/exp/maps"
 	"net/http"
 	"trustedtext"
-
-	"golang.org/x/exp/maps"
 )
 
 type Peer_detail struct {
