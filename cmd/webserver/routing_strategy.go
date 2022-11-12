@@ -41,7 +41,7 @@ func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else if head == "all_blocks" {
 		give_known_blocks(w, r, used_storage)
 	} else if head == "head_block" {
-		give_head_block_md_processed(w, r, used_storage)
+		head_block_handler(w, r, used_storage)
 	} else if head == "peer" {
 		peer_handler(w, r, used_storage)
 	} else if head == "all_peers" {
@@ -58,10 +58,7 @@ func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func block_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	var head string
 	head, r.URL.Path = shift_path(r.URL.Path)
-	if r.Method == "GET" && head == "head" {
-		give_head_block_unprocessed(w, r, _store)
-	}
-	if r.Method == "GET" && head != "head" {
+	if r.Method == "GET" {
 		give_block(w, r, _store, head)
 	}
 	if r.Method == "POST" {
@@ -78,4 +75,20 @@ func peer_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	}
 	
 	add_peer(w, r, _store)
+}
+
+func head_block_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
+	var head string
+	head, r.URL.Path = shift_path(r.URL.Path)
+
+	if head == "hash" {
+		give_head_block_hash(w, r, _store)
+		return
+	}
+	if head == "raw" {
+		give_head_block_unprocessed(w, r, _store)
+		return
+	}
+
+	give_head_block_md_processed(w, r, _store)
 }

@@ -112,7 +112,7 @@ func Test_head_move_submission_works(t *testing.T) {
 		t.Fail()
 	}
 
-	new_head_block, err := helper_retrieve_and_format_external_block(first_test_env + "/block/head" )
+	new_head_block, err := helper_retrieve_and_format_external_block(first_test_env + "/head_block/raw" )
 
 	if err != nil {
 		t.Log("Failed to retrieve new head block")
