@@ -84,6 +84,8 @@ type File_config struct {
 	path string
 }
 
+//TODO - Fix the config writer to actually satisfy the interface
+
 func (_config File_config) Write_config() error {
 	marshalled_config, err := json.MarshalIndent(
 		_config,
