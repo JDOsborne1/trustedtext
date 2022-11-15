@@ -164,10 +164,10 @@ func alignment_handler(w http.ResponseWriter, r *http.Request, _store file.Stora
 	current_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
 
-	head_move_block, err := trustedtext.Generate_head_move_block(temp_pub_key, new_head_hash, temp_pri_key)
+	config, err := _store.Config.Read_config()
 	util_error_wrapper(w, err)
 
-	new_chain, err := trustedtext.Process_incoming_block(current_chain, head_move_block)
+	new_chain, err := trustedtext.Move_head_hash(current_chain, new_head_hash, config.Authoritative_mode)
 	util_error_wrapper(w, err)
 
 	err = _store.Chain.Write_chain(new_chain)

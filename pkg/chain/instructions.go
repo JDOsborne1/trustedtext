@@ -91,3 +91,12 @@ func move_head_hash(_existing_ttc Trustedtext_chain_s, _new_head_hash string) (T
 	_existing_ttc.Head_hash_tree[_new_head_hash] = true
 	return _existing_ttc, nil
 }
+
+
+func Move_head_hash(_existing_ttc Trustedtext_chain_s, _new_head_hash string, _authoritative bool) (Trustedtext_chain_s, error) {
+	if _authoritative {
+		return Trustedtext_chain_s{}, errors.New("consensus head changes not allowed in authoritative mode")
+	}
+
+	return move_head_hash(_existing_ttc, _new_head_hash)
+}
