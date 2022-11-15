@@ -10,6 +10,8 @@ import (
 
 const first_test_env = "http://localhost:8081"
 const second_test_env = "http://localhost:8082"
+const third_test_env = "http://localhost:8083"
+const fourth_test_env = "http://localhost:8084"
 
 const junk_pub_key = "faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
 const junk_pri_key = "366c15a87d86f7a6fe6f7509ecaab3d453f0488b414aef12175a870cc5d1b124faa372113c86e434298d3c2c76c230c41f8ec890d165ef0d124c62758d89a66a"
@@ -201,4 +203,15 @@ func Test_peer_alignment(t *testing.T) {
 		t.Fail()
 	}
 
+}
+
+
+func Test_head_hash_changes_by_author(t *testing.T) {
+	t.Log("Haven't yet implemented 'authoritative' head hash change model tests in:", third_test_env)
+	t.Fail()
+}
+
+func Test_head_hash_changes_by_consensus(t *testing.T) {
+	t.Log("Haven't yet implemented consensus based head hash change model tests in:", fourth_test_env)
+	t.Fail()
 }
