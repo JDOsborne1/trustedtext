@@ -156,3 +156,20 @@ func peer_check(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	util_error_wrapper(w, err)
 	w.WriteHeader(http.StatusAccepted)
 }
+
+func alignment_handler(w http.ResponseWriter, r *http.Request, _store file.Storage) {
+	new_head_hash, err := peer_consensus(_store)
+	util_error_wrapper(w, err)
+
+	current_chain, err := _store.Chain.Read_chain()
+	util_error_wrapper(w, err)
+
+	head_move_block, err := trustedtext.Generate_head_move_block(temp_pub_key, new_head_hash, temp_pri_key)
+	util_error_wrapper(w, err)
+
+	new_chain, err := trustedtext.Process_incoming_block(current_chain, head_move_block)
+	util_error_wrapper(w, err)
+
+	err = _store.Chain.Write_chain(new_chain)
+	util_error_wrapper(w, err)
+}

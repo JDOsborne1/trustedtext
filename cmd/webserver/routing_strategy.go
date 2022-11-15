@@ -48,6 +48,8 @@ func (h generic_handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		share_peerlist(w, r, used_storage)
 	} else if head == "check" {
 		peer_check(w, r, used_storage)
+	} else if head == "align" {
+		alignment_handler(w, r, used_storage)
 	} else {
 		http.Error(w, "service not implemented", http.StatusServiceUnavailable)
 	}
