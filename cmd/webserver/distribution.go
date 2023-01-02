@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"file"
-	"golang.org/x/exp/maps"
 	"net/http"
 	"trustedtext"
+
+	"golang.org/x/exp/maps"
 )
 
 type Peer_detail struct {
@@ -62,12 +63,12 @@ func synchronise_with_peer(_store file.Storage, _peer trustedtext.Peer_detail) e
 	return nil
 }
 
-func retrieve_blocklist_from_peer(_blocklist []string, _peer trustedtext.Peer_detail) ([]trustedtext.Trustedtext_s, error) {
-	returned_blocklist := []trustedtext.Trustedtext_s{}
+func retrieve_blocklist_from_peer(_blocklist []string, _peer trustedtext.Peer_detail) ([]trustedtext.Block, error) {
+	returned_blocklist := []trustedtext.Block{}
 	for _, block := range _blocklist {
 		retrieved_block, err := retrieve_from_a_peer(_peer, block)
 		if err != nil {
-			return []trustedtext.Trustedtext_s{}, err
+			return []trustedtext.Block{}, err
 		}
 		returned_blocklist = append(returned_blocklist, retrieved_block)
 	}
@@ -129,23 +130,23 @@ func check_with_a_peer(_peer trustedtext.Peer_detail, _existing_blocks []string)
 	return maps.Keys(new_keys_of_peer), nil
 }
 
-func helper_retrieve_and_format_external_block(_path string) (trustedtext.Trustedtext_s, error) {
+func helper_retrieve_and_format_external_block(_path string) (trustedtext.Block, error) {
 	resp, err := http.Get(_path)
 	if err != nil {
-		return trustedtext.Trustedtext_s{}, err
+		return trustedtext.Block{}, err
 	}
 	response_decoder := json.NewDecoder(resp.Body)
-	returned_block := &trustedtext.Trustedtext_s{}
+	returned_block := &trustedtext.Block{}
 
 	err = response_decoder.Decode(returned_block)
 	if err != nil {
-		return trustedtext.Trustedtext_s{}, err
+		return trustedtext.Block{}, err
 	}
 
 	return *returned_block, nil
 }
 
-func retrieve_from_a_peer(peer trustedtext.Peer_detail, block_hash string) (trustedtext.Trustedtext_s, error) {
+func retrieve_from_a_peer(peer trustedtext.Peer_detail, block_hash string) (trustedtext.Block, error) {
 	composed_path := "http://" + peer.Path + "/block" + "/" + block_hash
 
 	return helper_retrieve_and_format_external_block(composed_path)

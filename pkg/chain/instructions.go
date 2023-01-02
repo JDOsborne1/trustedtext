@@ -30,18 +30,18 @@ func deserialise_head_change(instruction_body_to_deserialise string) (head_chang
 }
 
 // Generate_head_move_block creates a new block, which contains only an instruction, signed by the private key of the author.
-func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (Trustedtext_s, error) {
+func Generate_head_move_block(_author string, _new_head_hash string, _private_key string) (Block, error) {
 	change_instruction := head_change_instruction{New_head: _new_head_hash}
 
 	serialised_change, err := serialise_head_change(change_instruction)
 
-	instruction_body := tt_body{
+	instruction_body := body{
 		Instruction_type: "head_change",
 		Instruction:      serialised_change,
 	}
 
 	if err != nil {
-		return Trustedtext_s{}, err
+		return Block{}, err
 	}
 
 	new_element, err := instantiate(
@@ -50,31 +50,31 @@ func Generate_head_move_block(_author string, _new_head_hash string, _private_ke
 		_private_key,
 	)
 	if err != nil {
-		return Trustedtext_s{}, err
+		return Block{}, err
 	}
 	return new_element, nil
 }
 
 // action_head_move_block first validates that the instruction was from the original author.
 // It then moves the head hash.
-func action_head_move_block(_existing_ttc Trustedtext_chain_s, _head_move_block Trustedtext_s) (Trustedtext_chain_s, error) {
+func action_head_move_block(_existing_ttc Chain, _head_move_block Block) (Chain, error) {
 	head_change_by_original_author, err := verify_hex_encoded_values(_existing_ttc.Original_author, _head_move_block.Hash, _head_move_block.Hash_signature)
 	if err != nil {
-		return Trustedtext_chain_s{}, err
+		return Chain{}, err
 	}
 
 	if !head_change_by_original_author {
-		return Trustedtext_chain_s{}, errors.New("head change block is not signed by original author")
+		return Chain{}, errors.New("head change block is not signed by original author")
 	}
 
 	head_change_value, err := deserialise_head_change(_head_move_block.Body.Instruction)
 	if err != nil {
-		return Trustedtext_chain_s{}, err
+		return Chain{}, err
 	}
 
 	_existing_ttc, err = move_head_hash(_existing_ttc, head_change_value.New_head)
 	if err != nil {
-		return Trustedtext_chain_s{}, err
+		return Chain{}, err
 	}
 
 	return _existing_ttc, nil
@@ -82,20 +82,19 @@ func action_head_move_block(_existing_ttc Trustedtext_chain_s, _head_move_block 
 
 // move_head_hash is the function which executes the change of the head hash. At present this only validates
 // that the suggested hash is actually in the chain
-func move_head_hash(_existing_ttc Trustedtext_chain_s, _new_head_hash string) (Trustedtext_chain_s, error) {
-	hash_found := _existing_ttc.Tt_chain[_new_head_hash].Body != tt_body{}
+func move_head_hash(_existing_ttc Chain, _new_head_hash string) (Chain, error) {
+	hash_found := _existing_ttc.Tt_chain[_new_head_hash].Body != body{}
 	if !hash_found {
-		return Trustedtext_chain_s{}, errors.New("suggested new hash not in chain")
+		return Chain{}, errors.New("suggested new hash not in chain")
 	}
 	_existing_ttc.Head_hash = _new_head_hash
 	_existing_ttc.Head_hash_tree[_new_head_hash] = true
 	return _existing_ttc, nil
 }
 
-
-func Move_head_hash(_existing_ttc Trustedtext_chain_s, _new_head_hash string, _authoritative bool) (Trustedtext_chain_s, error) {
+func Move_head_hash(_existing_ttc Chain, _new_head_hash string, _authoritative bool) (Chain, error) {
 	if _authoritative {
-		return Trustedtext_chain_s{}, errors.New("consensus head changes not allowed in authoritative mode")
+		return Chain{}, errors.New("consensus head changes not allowed in authoritative mode")
 	}
 
 	return move_head_hash(_existing_ttc, _new_head_hash)

@@ -29,7 +29,7 @@ func announce_block_generation(_instruction_type string, _instruction_body strin
 
 }
 
-func amend_chain_with(_store file.Storage, _block trustedtext.Trustedtext_s) error {
+func amend_chain_with(_store file.Storage, _block trustedtext.Block) error {
 	existing_chain, err := _store.Chain.Read_chain()
 	if err != nil {
 		errors.Wrap(err, "Failed to load chain")

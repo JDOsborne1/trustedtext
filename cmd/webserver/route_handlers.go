@@ -60,7 +60,7 @@ func give_head_block_hash(w http.ResponseWriter, r *http.Request, _store file.St
 }
 
 // The baseline function to give the head block, unprocessed, so that it can have multiple downstream versions
-func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Storage) (trustedtext.Trustedtext_s, error) {
+func give_head_block_raw(w http.ResponseWriter, r *http.Request, _store file.Storage) (trustedtext.Block, error) {
 
 	existing_chain, err := _store.Chain.Read_chain()
 	util_error_wrapper(w, err)
@@ -77,7 +77,7 @@ func submit_block(w http.ResponseWriter, r *http.Request, _store file.Storage) {
 	post_deposit, err = io.ReadAll(r.Body)
 	util_error_wrapper(w, err)
 
-	resultant_block := &trustedtext.Trustedtext_s{}
+	resultant_block := &trustedtext.Block{}
 	err = json.Unmarshal(post_deposit, resultant_block)
 	util_error_wrapper(w, err)
 

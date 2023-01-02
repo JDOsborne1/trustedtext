@@ -63,7 +63,7 @@ func encoded_key_pair_is_valid(_encoded_public_key string, _encoded_private_key 
 }
 
 // verify_block_is_valid takes an input block and validates its author & signature match
-func verify_block_is_valid(_input_block Trustedtext_s) (bool, error) {
+func verify_block_is_valid(_input_block Block) (bool, error) {
 	rehash_of_body, err := return_hash(_input_block)
 	if err != nil {
 		return false, err

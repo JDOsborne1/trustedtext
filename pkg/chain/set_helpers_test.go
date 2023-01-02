@@ -16,10 +16,10 @@ func Test_boolean_mapping_as_string_membership(t *testing.T) {
 }
 
 func Test_subsetting_maps(t *testing.T) {
-	test_map := make(map[string]Trustedtext_s)
+	test_map := make(map[string]Block)
 
-	test_map["testkey1"] = Trustedtext_s{}
-	test_map["testkey2"] = Trustedtext_s{}
+	test_map["testkey1"] = Block{}
+	test_map["testkey2"] = Block{}
 
 	test_map2 := Util_subset_map(test_map, []string{"testkey2"})
 

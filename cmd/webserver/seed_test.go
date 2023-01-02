@@ -7,7 +7,7 @@ import (
 	"trustedtext"
 )
 
-func test_helper_post_block_to_path(_block trustedtext.Trustedtext_s, _path string) (*http.Response, error) {
+func test_helper_post_block_to_path(_block trustedtext.Block, _path string) (*http.Response, error) {
 	marshalled_test_block, err := json.MarshalIndent(_block, "", " ")
 	if err != nil {
 		return &http.Response{}, err

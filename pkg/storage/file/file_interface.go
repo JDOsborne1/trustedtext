@@ -124,7 +124,7 @@ type File_chain struct {
 	path string
 }
 
-func (_file_chain File_chain) Write_chain(_chain trustedtext.Trustedtext_chain_s) error {
+func (_file_chain File_chain) Write_chain(_chain trustedtext.Chain) error {
 	marshalled_chain, err := json.MarshalIndent(_chain, "", "  ")
 	if err != nil {
 		return err
@@ -136,15 +136,15 @@ func (_file_chain File_chain) Write_chain(_chain trustedtext.Trustedtext_chain_s
 	return err
 }
 
-func (_file_chain File_chain) Read_chain() (trustedtext.Trustedtext_chain_s, error) {
+func (_file_chain File_chain) Read_chain() (trustedtext.Chain, error) {
 	bytefile, err := os.ReadFile(_file_chain.path)
 	if err != nil {
-		return trustedtext.Trustedtext_chain_s{}, err
+		return trustedtext.Chain{}, err
 	}
-	chain := &trustedtext.Trustedtext_chain_s{}
+	chain := &trustedtext.Chain{}
 	err = json.Unmarshal(bytefile, chain)
 	if err != nil {
-		return trustedtext.Trustedtext_chain_s{}, err
+		return trustedtext.Chain{}, err
 	}
 	return *chain, nil
 }
