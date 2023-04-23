@@ -82,3 +82,10 @@ For the core package it's a simple `go test` whenever you wish.
 For the webserver there is a script in the core directory called `integration_test.sh` which may need to be run as sudo, this will set up the required docker images in the background and run the tests found in `trustedtext-webserver/integration_test.go` to validate that the image tagged as `tt_test` behaves as expected.
 
 You will need to rebuild `tt_test` if you make any changes in order to test them here.
+
+## Formats
+The current primary format is JSON, which is common in REST applications. 
+
+Another viable format would be HTML, which will need some adjustments to the formatting process, which currently embeds JSON marshalling. 
+
+Does a similar marshalling tool exist for html? Likely not
